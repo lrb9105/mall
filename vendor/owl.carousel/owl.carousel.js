@@ -2998,14 +2998,14 @@
 
 		this._controls.$previous = $('<' + settings.navElement + '>')
 			.addClass(settings.navClass[0])
-			.html(settings.navText[0])
+			.php(settings.navText[0])
 			.prependTo(this._controls.$relative)
 			.on('click', $.proxy(function(e) {
 				this.prev(settings.navSpeed);
 			}, this));
 		this._controls.$next = $('<' + settings.navElement + '>')
 			.addClass(settings.navClass[1])
-			.html(settings.navText[1])
+			.php(settings.navText[1])
 			.appendTo(this._controls.$relative)
 			.on('click', $.proxy(function(e) {
 				this.next(settings.navSpeed);
@@ -3063,7 +3063,7 @@
 		}
 		for (control in this._controls) {
 			if (control === '$relative' && settings.navContainer) {
-				this._controls[control].html('');
+				this._controls[control].php('');
 			} else {
 				this._controls[control].remove();
 			}
@@ -3137,7 +3137,7 @@
 			difference = this._pages.length - this._controls.$absolute.children().length;
 
 			if (settings.dotsData && difference !== 0) {
-				this._controls.$absolute.html(this._templates.join(''));
+				this._controls.$absolute.php(this._templates.join(''));
 			} else if (difference > 0) {
 				this._controls.$absolute.append(new Array(difference + 1).join(this._templates[0]));
 			} else if (difference < 0) {
