@@ -40,7 +40,7 @@
                 <div class="col-lg-6 text-center text-lg-right">
                     <ul class="menu list-inline mb-0">
                         <li class="list-inline-item"><a href="#" data-toggle="modal" data-target="#login-modal">Login</a></li>
-                        <li class="list-inline-item"><a href="register.php">Register</a></li>
+                        <li class="list-inline-item"><a href="registerComplete.php">Register</a></li>
                         <li class="list-inline-item"><a href="contact.php">Contact</a></li>
                         <li class="list-inline-item"><a href="#">Recently viewed</a></li>
                     </ul>
@@ -67,7 +67,7 @@
                             </p>
                         </form>
                         <p class="text-center text-muted">Not registered yet?</p>
-                        <p class="text-center text-muted"><a href="register.php"><strong>Register now</strong></a>! It is easy and done in 1 minute and gives you access to special discounts and much more!</p>
+                        <p class="text-center text-muted"><a href="registerComplete.php"><strong>Register now</strong></a>! It is easy and done in 1 minute and gives you access to special discounts and much more!</p>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
 
     </div>
     <nav class="navbar navbar-expand-lg">
-        <div class="container"><a href="index.php" class="navbar-brand home"><img src="img/logo.png" alt="Obaju logo" class="d-none d-md-inline-block"><img src="img/logo-small.png" alt="Obaju logo" class="d-inline-block d-md-none"><span class="sr-only">Obaju - go to homepage</span></a>
+        <div class="container"><a href="index.php" class="navbar-brand home"><img src="img/logo.png" alt="MallForMan" class="d-none d-md-inline-block"><img src="img/logo-small.png" alt="Obaju logo" class="d-inline-block d-md-none"><span class="sr-only">Obaju - go to homepage</span></a>
             <div class="navbar-buttons">
                 <button type="button" data-toggle="collapse" data-target="#navigation" class="btn btn-outline-secondary navbar-toggler"><span class="sr-only">Toggle navigation</span><i class="fa fa-align-justify"></i></button>
                 <button type="button" data-toggle="collapse" data-target="#search" class="btn btn-outline-secondary navbar-toggler"><span class="sr-only">Toggle search</span><i class="fa fa-search"></i></button><a href="basket.php" class="btn btn-outline-secondary navbar-toggler"><i class="fa fa-shopping-cart"></i></a>
@@ -200,7 +200,7 @@
                                     <div class="col-md-6 col-lg-3">
                                         <h5>User</h5>
                                         <ul class="list-unstyled mb-3">
-                                            <li class="nav-item"><a href="register.php" class="nav-link">Register / login</a></li>
+                                            <li class="nav-item"><a href="registerComplete.php" class="nav-link">Register / login</a></li>
                                             <li class="nav-item"><a href="customer-orders.php" class="nav-link">Orders history</a></li>
                                             <li class="nav-item"><a href="customer-order.php" class="nav-link">Order history detail</a></li>
                                             <li class="nav-item"><a href="customer-wishlist.php" class="nav-link">Wishlist</a></li>
@@ -237,7 +237,7 @@
                 <div class="navbar-buttons d-flex justify-content-end">
                     <!-- /.nav-collapse-->
                     <div id="search-not-mobile" class="navbar-collapse collapse"></div><a data-toggle="collapse" href="#search" class="btn navbar-btn btn-primary d-none d-lg-inline-block"><span class="sr-only">Toggle search</span><i class="fa fa-search"></i></a>
-                    <div id="basket-overview" class="navbar-collapse collapse d-none d-lg-block"><a href="basket.php" class="btn btn-primary navbar-btn"><i class="fa fa-shopping-cart"></i><span>3 items in cart</span></a></div>
+                    <div id="basket-overview" class="navbar-collapse collapse d-none d-lg-block"><a href="basket.php" class="btn btn-primary navbar-btn"><i class="fa fa-shopping-cart"></i><span>.modal-header h5 in cart</span></a></div>
                 </div>
             </div>
         </div>
@@ -605,7 +605,7 @@ _________________________________________________________
                 <h4 class="mb-3">User section</h4>
                 <ul class="list-unstyled">
                     <li><a href="#" data-toggle="modal" data-target="#login-modal">Login</a></li>
-                    <li><a href="register.php">Regiter</a></li>
+                    <li><a href="registerComplete.php">Regiter</a></li>
                 </ul>
             </div>
             <!-- /.col-lg-3-->
