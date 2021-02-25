@@ -3,6 +3,21 @@ session_start();
 if($_SESSION['USER_TYPE'] != "0"){
     echo "<script> document.location.href='/mall/index.php'; </script>";
 }
+
+$seq = $_GET['SEQ'];
+
+// mysql커넥션 연결
+$conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
+$sql = null;
+
+// 데이터 가져오기(자주묻는 질문, 공지사항)
+$sql = "SELECT SEQ, TITLE, CONTENTS,TYPE
+            FROM NOTICE_AND_FAQ
+            WHERE SEQ = '$seq'
+            ";
+// 쿼리를 통해 가져온 결과
+$result = mysqli_query($conn, $sql);
+$row = mysqli_fetch_array($result);
 ?>
 
 <!DOCTYPE html>
@@ -59,28 +74,31 @@ include 'head.php'
                                                     <tr>
                                                         <td>종류</td>
                                                         <td>
-                                                            <select name="board-type" id="board-type">
+                                                            <select name="board-type" id="board-type" disabled>
                                                                 <option value="">종류</option>
-                                                                <option value="1">공지사항</option>
-                                                                <option value="2">자주묻는 질문</option>
+                                                                <?if($row['TYPE'] == "1") { ?>
+                                                                <option value="1" selected>공지사항</option>
+                                                                <?} else {?>
+                                                                <option value="2" selected>자주묻는 질문</option>
+                                                                <?}?>
                                                             </select>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>제목</td>
-                                                        <td><input class="form-control py-4" type="text" name="title" id="title" maxlength="1000"></td>
+                                                        <td><input class="form-control py-4" type="text" name="title" id="title" maxlength="1000" value="<?echo $row['TITLE']?>"></td>
                                                     </tr>
 
                                                     <tr>
                                                         <td>내용</td>
-                                                        <td><textarea class="form-control py-4" id="contents" name="contents" name="id" cols=85 rows=15 maxlength="4000"></textarea></td>
+                                                        <td><textarea class="form-control py-4" id="contents" name="contents" name="id" cols=85 rows=15 maxlength="4000"><?echo $row['CONTENTS']?></textarea></td>
                                                     </tr>
                                                 </table>
                                             </td>
                                         </tr>
                                     </table>
                                     <div align="right">
-                                        <button id="btn_write" class="btn btn-primary navbar-btn">작성하기</button>
+                                        <button id="btn_modify" class="btn btn-primary navbar-btn">수정하기</button>
                                     </div>
                             </section>
                             <!-- Contact Section End -->
@@ -114,29 +132,24 @@ include 'head.php'
     include 'jsfile.php'
     ?>
         <script>
-            $('#btn_write').on("click",function(){
-                if($('#board-type').val() == ''){
-                    alert("종류를 선택해주세요.");
-                    return;
-                }
-                
-                if(confirm("작성하시겠습니까?")){
+            $('#btn_modify').on("click",function(){
+                if(confirm("수정완료 하시겠습니까?")){
                     $.ajax({
                         type: 'post',
                         dataType: 'json',
-                        url: '/mall/php/writeNoticeOrFaqCompl.php',
+                        url: '/mall/php/updateNoticeOrFaqCompl.php',
                         data: {
-                            board_type: $('#board-type').val()
-                            , title: $('#title').val()
-                            , contents: $('#contents').val()
+                            SEQ: <?echo $seq?>
+                            , TITLE: $('#title').val()
+                            , CONTENTS: $('#contents').val()
                         },
 
                         success: function (json) {
                             if (json.result == 'ok') {
-                                alert("작성완료했습니다.");
-                                location.replace('/mall/board.php?board_no=' + $('#board-type').val());
+                                alert("수정 완료했습니다.");
+                                location.replace('/mall/board.php?board_no=<?echo $row['TYPE']?>');
                             } else {
-                                alert("작성에 실패했습니다!");
+                                alert("수정에 실패했습니다!");
                             }
                         },
                         error: function () {

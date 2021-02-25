@@ -8,7 +8,7 @@
 
     // 데이터 가져오기(자주묻는 질문, 공지사항)
     if($board_no != '3'){
-        $sql = "SELECT TITLE, CONTENTS
+        $sql = "SELECT TITLE, CONTENTS, SEQ, TYPE
             FROM NOTICE_AND_FAQ
             WHERE TYPE = '$board_no'
             ORDER BY SEQ
@@ -95,7 +95,6 @@ include 'head.php'
                             <!-- 공지사항, 자주묻는 질문-->
                             <?if($board_no != '3'){?>
                             <div id="contact" class="box">
-
                                 <?
                                     if($board_no == '1'){
                                         echo "<h1>공지사항</h1>";
@@ -118,6 +117,13 @@ include 'head.php'
                                         </div>
                                         <div id="collapse<?echo $i?>" aria-labelledby="heading<?echo $i?>" data-parent="#accordion" class="collapse">
                                             <div class="card-body"><? echo $row['CONTENTS'] ?></div>
+                                            <? if($_SESSION['USER_TYPE'] == "0") { ?>
+                                                <div class="navbar-buttons" align="right" style="display: flex;">
+                                                    <!-- /.nav-collapse-->
+                                                    <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=<?echo $row['SEQ']?>" class="btn btn-primary navbar-btn">수정</a></div>
+                                                    <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=<?echo $row['SEQ']?>&TYPE=<?echo $row['TYPE']?>" class="btn btn-primary navbar-btn">삭제</a></div>
+                                                </div>
+                                            <?}?>
                                         </div>
                                     </div>
                                     <?}?>

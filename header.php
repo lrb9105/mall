@@ -70,16 +70,14 @@
                             </li>
                         </ul>
                     </li>
-                    <?if($_SESSION['USER_TYPE'] == 0) {?>
+                    <?if($_SESSION['USER_TYPE'] == "0") {?>
                     <li class="nav-item dropdown menu-large"><a href="#" data-toggle="dropdown" data-hover="dropdown" data-delay="200" class="dropdown-toggle nav-link">관리자<b class="caret"></b></a>
                         <ul class="dropdown-menu megamenu">
                             <li>
                                 <div class="row">
                                     <div class="col-md-6 col-lg-3">
-                                        <!-- DEPTH가 2인 메뉴-->
                                         <h5>관리자</h5>
                                         <ul class="list-unstyled mb-3">
-                                            <!-- DEPTH가 3인 메뉴-->
                                             <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">공지사항&자주묻는질문 작성</a></li>
                                             <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">후기 답변하기</a></li>
                                             <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">Q&A 답변하기</a></li>
