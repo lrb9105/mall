@@ -3,6 +3,11 @@
 <?php
 include 'head.php'
 ?>
+<style>
+    .register_form > span{
+        color: red;
+    }
+</style>
 <body>
 <!-- navbar-->
 <header class="header mb-5">
@@ -50,27 +55,31 @@ include 'head.php'
                         <hr>
                         <div id="register">
                             <div class="form-group">
-                                <label for="login_id">아이디</label>
-                                <input id="login_id" name="login_id" type="text" class="form-control">
+                                <label class="register_form" for="zip_code"><span>* </span>아이디</label>
+                                <div class="form-inline">
+                                    <input id="login_id" name="login_id" type="text" class="form-control" style="width: 80%; margin-right: 5px;">
+                                    <button class="btn btn-primary" id="btn_check_dupl">중복체크</button>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label for="password">비밀번호</label>
+                                <label class="register_form" for="password"><span>* </span>비밀번호</label>
                                 <input id="password" name="password" type="password" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="password_confirm">비밀번호 확인</label>
+                                <label class="register_form" for="password_confirm"><span>* </span>비밀번호 확인</label>
                                 <input id="password_confirm" name="password_confirm" type="password" class="form-control">
+
                             </div>
                             <div class="form-group">
-                                <label for="name">이름</label>
+                                <label class="register_form" for="name"><span>* </span>이름</label>
                                 <input id="name" name="name" type="text" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="email">이메일</label>
+                                <label class="register_form" for="email"><span>* </span>이메일</label>
                                 <input id="email" name="email" type="email" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="zip_code">주소</label>
+                                <label class="register_form" for="zip_code"><span>* </span>주소</label>
                                 <div class="form-inline">
                                     <input id="zip_code" name="zip_code" type="number" placeholder="우편 번호" class="form-control" style="width: 100px; margin-right: 5px;">
                                     <button class="btn btn-primary">찾기</button>
@@ -146,34 +155,132 @@ include 'copyright.php'
 include 'jsfile.php'
 ?>
     <script>
-        $('#btn_register').on("click",function () {
-            // ajax로 registerComplete.php에 데이터 보내기
+        let idCheckComplete = false;
+
+        // 중복체크
+        $('#btn_check_dupl').on("click", function() {
+            let id = $('#login_id').val();
+            // 아이디는 영어 숫자만 허용(8-20자리)
+            let idReg = /^[A-Za-z0-9+]{8,20}$/;
+
+            // 영문자 혼합
+            let chk_num = id.search(/[0-9]/g);
+            let chk_eng = id.search(/[a-z]/ig);
+
+
+            if (id == '') {
+                alert("아이디를 입력하세요.");
+                return;
+            }
+
+            if (!idReg.test(id) || chk_num < 0 || chk_eng < 0) {
+                alert('아이디는 영어, 숫자를 혼합해야 하며 8-20자리 이내로 만들어야 합니다.');
+                return;
+            }
+
             $.ajax({
                 type: 'post',
                 dataType: 'json',
-                url: '/mall/php/registerComplete.php',
+                url: '/mall/php/idCheck.php',
                 data: {
-                    login_id: $('#login_id').val()
-                    , password: $('#password').val()
-                    , name: $('#name').val()
-                    , email: $('#email').val()
-                    , zip_code: $('#zip_code').val()
-                    , address_basic: $('#address_basic').val()
-                    , address_detail: $('#address_detail').val()
+                    login_id: id
                 },
 
                 success: function (json) {
                     if (json.result == 'ok') {
-                        alert("회원가입에 성공했습니다!");
-                        location.replace('/mall/index.php');
+                        idCheckComplete = true;
+                        alert("사용할 수 있는 아이디 입니다.");
                     } else {
-                        alert("회원가입에 실패했습니다!");
+                        alert("이미 사용중인 아이디 입니다.");
+                        $('#login_id').val('');
+                        $('#login_id').focus();
                     }
                 },
                 error: function () {
                     alert("에러가 발생했습니다.");
                 }
             });
+        });
+
+        $('#btn_register').on("click",function () {
+            // 이메일 체크
+            let regExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+
+            if($('#login_id').val() == ''){
+                alert("아이디를 입력해주세요.");
+                return;
+            }
+
+            if(!idCheckComplete){
+                alert("아이디 중복체크를 해주세요.");
+                return;
+            }
+
+            if($('#password').val() == ''){
+                alert("비밀번호를 입력해주세요.");
+                return;
+            }
+
+            if($('#password_confirm').val() == ''){
+                alert("비밀번호를 확인해주세요.");
+                return;
+            }
+
+            if($('#password').val() != $('#password_confirm').val()){
+                alert("비밀번호가 일치하지 않습니다.");
+                return;
+            }
+
+            if($('#name').val() == ''){
+                alert("이름을 입력해주세요.");
+                return;
+            }
+
+            if($('#email').val() == ''){
+                alert("이메일을 입력해주세요.");
+                return;
+            }
+
+            if(!regExp.test($('#email').val())){
+                alert("이메일 형식에 맞게 작성해주세요.");
+                return;
+            }
+
+            if($('#zip_code').val() == ''){
+                alert("주소를 입력해주세요.");
+                return;
+            }
+
+
+            if(confirm("회원가입을 완료하시겠습니까?")){
+                // ajax로 registerComplete.php에 데이터 보내기
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: '/mall/php/registerComplete.php',
+                    data: {
+                        login_id: $('#login_id').val()
+                        , password: $('#password').val()
+                        , name: $('#name').val()
+                        , email: $('#email').val()
+                        , zip_code: $('#zip_code').val()
+                        , address_basic: $('#address_basic').val()
+                        , address_detail: $('#address_detail').val()
+                    },
+
+                    success: function (json) {
+                        if (json.result == 'ok') {
+                            alert("회원가입에 성공했습니다!");
+                            location.replace('/mall/index.php');
+                        } else {
+                            alert("회원가입에 실패했습니다!");
+                        }
+                    },
+                    error: function () {
+                        alert("에러가 발생했습니다.");
+                    }
+                });
+            }
         });
     </script>
 </body>
