@@ -27,7 +27,8 @@ $sql  = "
             '$address_detail',
             '$email',
             NOW(),
-            NULL
+            NULL,
+            '1'
     )";
 
 // 회원정보 db에 입력

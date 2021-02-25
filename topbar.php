@@ -1,19 +1,25 @@
 <?php
+    session_start();
     $loginId = $_SESSION['LOGIN_ID'];
+    $name = $_SESSION['NAME'];
     $isSet = isset($_SESSION['LOGIN_ID']);
 ?>
+
 <div id="top">
     <div class="container">
         <div class="row">
             <!--<div class="col-lg-6 offer mb-3 mb-lg-0"><a href="#" class="btn btn-success btn-sm">Offer of the day</a><a href="#" class="ml-1">Get flat 35% off on orders over $50!</a></div>-->
             <div class="col-lg-12 text-right text-lg-right">
                 <ul class="menu list-inline mb-0">
-                    <li class="list-inline-item" id="login"><a href="#" data-toggle="modal" data-target="#login-modal">로그인</a></li>
-                    <li class="list-inline-item" id="login_id_li" style="display: none; color: #FFFFFF"><a href="#" ></a></li>
-                    <li class="list-inline-item" id="logout" style="display: none;"><a href="#">로그아웃</a></li>
-                    <li class="list-inline-item"><a href="register.php">회원가입</a></li>
+                    <?if($isSet){?>
+                        <li class="list-inline-item" id="login_id_li" style="color: #FFFFFF"><?echo $name?>님<a href="#" ></a></li>
+                        <li class="list-inline-item" id="logout"><a href="#">로그아웃</a></li>
+                    <?} else{?>
+                        <li class="list-inline-item" id="login"><a href="#" data-toggle="modal" data-target="#login-modal">로그인</a></li>
+                        <li class="list-inline-item"><a href="register.php">회원가입</a></li>
+                    <?}?>
                     <li class="list-inline-item"><a href="contact.php">고객센터</a></li>
-                    <li class="list-inline-item"><a href="#">최근본상품</a></li>
+                    <li class="list-inline-item"><a href="#">찜한상품</a></li>
                 </ul>
             </div>
         </div>
@@ -64,11 +70,7 @@
                 if (json.result == 'ok') {
                     alert("로그인에 성공했습니다.");
                     // 로그인 -> 로그아웃으로 변경
-
-                    $('#login').hide();
-                    $('#logout').show();
-                    $('#login_id_li').show();
-                    $('#login_id_li').text(json.login_id + "님 ");
+                    location.reload();
                     // 모달창 종료
                     $('#login-modal').modal("hide");
                 } else {
@@ -83,9 +85,23 @@
 
     //로그아웃 => 세션종료
     $('#logout').on("click", function(){
-        $('#login').show();
-        $('#logout').hide();
-        $('#login_id_li').hide();
+        if(confirm("로그아웃 하시겠습니까?")){
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/logoutComplete.php',
+                success: function (json) {
+                    if (json.result == 'ok') {
+                        location.reload();
+                    } else {
+                        alert("로그아웃에 실패했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("에러가 발생했습니다.");
+                }
+            });
+        }
     });
 
 </script>

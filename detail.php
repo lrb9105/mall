@@ -84,7 +84,7 @@ include 'head.php'
                         </div>
                         <div class="card-body">
                             <ul class="nav nav-pills flex-column category-menu" id="category-menu">
-                                <li><a href="category.php?menu_no=2" class="nav-link top">상의 <span class="badge badge-secondary">42</span></a>
+                                <li><a href="category.php?menu_no=2" class="nav-link top">상의 <span class="badge badge-secondary">6</span></a>
                                     <ul class="list-unstyled top_ul">
                                         <li><a href="category.php?menu_no=5" class="nav-link" >반팔</a></li>
                                         <li><a href="category.php?menu_no=6" class="nav-link" id="banpal">긴팔</a></li>
@@ -97,7 +97,7 @@ include 'head.php'
                                         <li><a href="category.php?menu_no=13" class="nav-link">기타 상의</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="category.php?menu_no=3" class="nav-link outer">아우터 <span class="badge badge-light">123</span></a>
+                                <li><a href="category.php?menu_no=3" class="nav-link outer">아우터 <span class="badge badge-light">0</span></a>
                                     <ul class="list-unstyled outer_ul">
                                         <li><a href="category.php?menu_no=14" class="nav-link">후드 집업</a></li>
                                         <li><a href="category.php?menu_no=15" class="nav-link">라이더 자켓</a></li>
@@ -108,7 +108,7 @@ include 'head.php'
                                         <li><a href="category.php?menu_no=20" class="nav-link">기타 아우터</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="category.php?menu_no=4" class="nav-link bottom">바지  <span class="badge badge-secondary">11</span></a>
+                                <li><a href="category.php?menu_no=4" class="nav-link bottom">바지  <span class="badge badge-secondary">0</span></a>
                                     <ul class="list-unstyled bottom_ul">
                                         <li><a href="category.php?menu_no=21" class="nav-link">데님 팬츠</a></li>
                                         <li><a href="category.php?menu_no=22" class="nav-link">숏 팬츠</a></li>
@@ -124,11 +124,12 @@ include 'head.php'
                 <div class="col-lg-9 order-1 order-lg-2">
                     <div id="productMain" class="row">
                         <div class="col-md-6">
-                            <div data-slider-id="1" class="owl-carousel shop-detail-carousel">
-                                <div class="item"> <img src="<? echo $imgPath?>" alt="" class="img-fluid"></div>
-                                <div class="item"> <img src="<? echo $imgPath?>" alt="" class="img-fluid"></div>
-                                <div class="item"> <img src="<? echo $imgPath?>" alt="" class="img-fluid"></div>
-                            </div>
+                            <div class="item"> <img src="<? echo $imgPath?>" alt="" class="img-fluid"></div>
+                            <!--<div data-slider-id="1" class="owl-carousel shop-detail-carousel">
+                                <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
+                                <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
+                                <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
+                            </div>-->
                             <div class="ribbon sale">
                                 <div class="theribbon">SALE</div>
                                 <div class="ribbon-background"></div>
@@ -145,9 +146,13 @@ include 'head.php'
                                 <h1 class="text-center" id="product_name">White  Armani</h1>
                                 <p class="goToDescription"><a href="#details" class="scroll-to">Scroll to product details, material &amp; care and sizing</a></p>
                                 <p class="price" id="price">$124.00</p>
-                                <p class="text-center buttons"><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> Add to cart</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> Add to wishlist</a></p>
+                                <p class="text-center buttons"><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
                             </div>
                             <div data-slider-id="1" class="owl-thumbs">
+                                <!--클릭 할 때 해당 이미지로 메인 이미지 변경-->
+                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
+                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
+                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
                                 <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
                                 <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
                                 <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>

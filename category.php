@@ -55,7 +55,7 @@ include 'head.php'
                         </div>
                         <div class="card-body">
                             <ul class="nav nav-pills flex-column category-menu" id="category-menu">
-                                <li><a href="category.php?menu_no=2" class="nav-link top">상의 <span class="badge badge-secondary">42</span></a>
+                                <li><a href="category.php?menu_no=2" class="nav-link top">상의 <span class="badge badge-secondary">6</span></a>
                                     <ul class="list-unstyled top_ul">
                                         <li><a href="category.php?menu_no=5" class="nav-link" >반팔</a></li>
                                         <li><a href="category.php?menu_no=6" class="nav-link" id="banpal">긴팔</a></li>
@@ -68,7 +68,7 @@ include 'head.php'
                                         <li><a href="category.php?menu_no=13" class="nav-link">기타 상의</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="category.php?menu_no=3" class="nav-link outer">아우터 <span class="badge badge-light">123</span></a>
+                                <li><a href="category.php?menu_no=3" class="nav-link outer">아우터 <span class="badge badge-light">0</span></a>
                                     <ul class="list-unstyled outer_ul">
                                         <li><a href="category.php?menu_no=14" class="nav-link">후드 집업</a></li>
                                         <li><a href="category.php?menu_no=15" class="nav-link">라이더 자켓</a></li>
@@ -79,7 +79,7 @@ include 'head.php'
                                         <li><a href="category.php?menu_no=20" class="nav-link">기타 아우터</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="category.php?menu_no=4" class="nav-link bottom">바지  <span class="badge badge-secondary">11</span></a>
+                                <li><a href="category.php?menu_no=4" class="nav-link bottom">바지  <span class="badge badge-secondary">0</span></a>
                                     <ul class="list-unstyled bottom_ul">
                                         <li><a href="category.php?menu_no=21" class="nav-link">데님 팬츠</a></li>
                                         <li><a href="category.php?menu_no=22" class="nav-link">숏 팬츠</a></li>
@@ -176,6 +176,8 @@ include 'head.php'
                         <div class="row">
                             <?if($menu_no == "5" || $menu_no == "6" || $menu_no == "7" || $menu_no == "8" || $menu_no == "9"|| $menu_no == "10") {?>
                                 <div class="col-md-12 col-lg-3 products-showing">전체 <strong>1개</strong> 상품</div>
+                            <?} elseif($menu_no == "2") {?>
+                                <div class="col-md-12 col-lg-3 products-showing">전체 <strong>6개</strong> 상품</div>
                             <?} else {?>
                                 <div class="col-md-12 col-lg-3 products-showing">전체 <strong>0개</strong> 상품</div>
                             <?}?>
@@ -205,7 +207,33 @@ include 'head.php'
                         </div>
                     </div>
                     <div class="row products">
-                        <? if($menu_no == "6") {?>
+                        <? if($menu_no == "5" || $menu_no == "2") {?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="product">
+                                    <div class="flip-container">
+                                        <div class="flipper">
+                                            <div class="front"><a href="detail.php?menu_no=5&product_no=160"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a></div>
+                                            <div class="back"><a href="detail.php?menu_no=5&product_no=160"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a></div>
+                                        </div>
+                                    </div><a href="detail.php?menu_no=5&product_no=160" class="invisible"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a>
+                                    <div class="text">
+                                        <h3><a href="detail.php?menu_no=5&product_no=160">기본 반팔</a></h3>
+                                        <p class="price">
+                                            <del></del>9,000원
+                                        </p>
+                                        <p class="buttons"><a href="detail.php?menu_no=5&product_no=160" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
+                                    </div>
+                                    <!-- /.text-->
+                                    <div class="ribbon gift">
+                                        <div class="theribbon">GIFT</div>
+                                        <div class="ribbon-background"></div>
+                                    </div>
+                                    <!-- /.ribbon-->
+                                </div>
+                                <!-- /.product            -->
+                            </div>
+                        <?}?>
+                        <? if($menu_no == "6" || $menu_no == "2") {?>
                         <div class="col-lg-4 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
@@ -226,7 +254,7 @@ include 'head.php'
                             <!-- /.product            -->
                         </div>
                         <?}?>
-                        <? if($menu_no == "7") {?>
+                        <? if($menu_no == "7" || $menu_no == "2") {?>
                         <div class="col-lg-4 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
@@ -262,7 +290,7 @@ include 'head.php'
                             <!-- /.product            -->
                         </div>
                         <?}?>
-                        <? if($menu_no == "8") {?>
+                        <? if($menu_no == "8" || $menu_no == "2") {?>
                         <div class="col-lg-4 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
@@ -283,7 +311,7 @@ include 'head.php'
                             <!-- /.product            -->
                         </div>
                         <?}?>
-                        <? if($menu_no == "9") {?>
+                        <? if($menu_no == "9" || $menu_no == "2") {?>
                         <div class="col-lg-4 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
@@ -304,7 +332,7 @@ include 'head.php'
                             <!-- /.product            -->
                         </div>
                         <?}?>
-                        <? if($menu_no == "10") {?>
+                        <? if($menu_no == "10" || $menu_no == "2") {?>
                         <div class="col-lg-4 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
@@ -330,34 +358,8 @@ include 'head.php'
                             <!-- /.product            -->
                         </div>
                         <?}?>
-                        <? if($menu_no == "5") {?>
-                        <div class="col-lg-4 col-md-6">
-                            <div class="product">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php?menu_no=5&product_no=160"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php?menu_no=5&product_no=160"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php?menu_no=5&product_no=160" class="invisible"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3><a href="detail.php?menu_no=5&product_no=160">기본 반팔</a></h3>
-                                    <p class="price">
-                                        <del></del>9,000원
-                                    </p>
-                                    <p class="buttons"><a href="detail.php?menu_no=5&product_no=160" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
-                                </div>
-                                <!-- /.text-->
-                                <div class="ribbon gift">
-                                    <div class="theribbon">GIFT</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <!-- /.ribbon-->
-                            </div>
-                            <!-- /.product            -->
-                        </div>
                         <!-- /.products-->
                     </div>
-                    <?}?>
                     <!--<div class="pages">-->
                         <!--<p class="loadMore"><a href="#" class="btn btn-primary btn-lg"><i class="fa fa-chevron-down"></i> Load more</a></p>-->
                         <!--<nav aria-label="Page navigation example" class="d-flex justify-content-center">
