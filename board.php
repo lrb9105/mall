@@ -20,10 +20,13 @@
             $board_name = '자주묻는질문';
         }
     } else{// 데이터 가져오기(자유게시판)
-        $sql = "SELECT TITLE, CONTENTS
-            FROM NOTICE_AND_FAQ
-            WHERE TYPE = '$board_no'
-            ORDER BY SEQ
+        $sql = "SELECT SEQ
+                     , TITLE
+                     , WRITER
+                     , CRE_DATETIME
+                     , CNT
+            FROM FREE_BOARD
+            ORDER BY GROUP_NO DESC, GROUP_ORDER ASC
             ";
         $board_name = '자유게시판';
     }
@@ -116,7 +119,7 @@ include 'head.php'
                                             <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse<?echo $i?>" aria-expanded="false" aria-controls="collapse<?echo $i?>" class="btn btn-primary d-block text-left rounded-0"><?echo $i + 1 ?>. <? echo $row['TITLE'] ?></a></h4>
                                         </div>
                                         <div id="collapse<?echo $i?>" aria-labelledby="heading<?echo $i?>" data-parent="#accordion" class="collapse">
-                                            <div class="card-body"><? echo $row['CONTENTS'] ?></div>
+                                            <div class="card-body"><? echo str_replace("\n","</br>",$row['CONTENTS']) ?></div>
                                             <? if($_SESSION['USER_TYPE'] == "0") { ?>
                                                 <div class="navbar-buttons" align="right" style="display: flex;">
                                                     <!-- /.nav-collapse-->
@@ -147,40 +150,30 @@ include 'head.php'
                                 <div class="container">
                                     <table class="table table-hover" style="text-align: center;">
                                         <thead>
-                                        <tr >
+                                        <tr>
                                             <th>번호</th>
-                                            <th>제목</th>
+                                            <th style="width: 60%;">제목</th>
                                             <th>작성자</th>
                                             <th>날짜</th>
                                             <th>조회수</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>제목</td>
-                                            <td>작성자</td>
-                                            <td>2021.02.02</td>
-                                            <td>1</td>
+                                        <?for($i = 0; $i < $count; $i++){
+                                        $row = mysqli_fetch_array($result);
+                                        ?>
+                                        <tr style="cursor: pointer;" onclick="location.href='detailFreeBoard.php?board_no=3&seq=<?echo $row['SEQ']?>'">
+                                            <td><?echo $row['SEQ']?></td>
+                                            <td style="text-align: left;"><a href="detailFreeBoard.php?board_no=3&seq=<?echo $row['SEQ']?>"><u><?echo $row['TITLE']?></u></a></td>
+                                            <td><?echo $row['WRITER']?></td>
+                                            <td><?echo substr($row['CRE_DATETIME'],0,10)?></td>
+                                            <td><?echo $row['CNT']?></td>
                                         </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>제목</td>
-                                            <td>작성자</td>
-                                            <td>2021.02.02</td>
-                                            <td>1</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>제목</td>
-                                            <td>작성자</td>
-                                            <td>2021.02.02</td>
-                                            <td>1</td>
-                                        </tr>
+                                        <?}?>
                                         </tbody>
                                     </table>
                                     <hr/>
-                                    <div id="btn_write" class="navbar-collapse collapse d-none d-lg-block" style="text-align: right"><a href="basket.php" class="btn btn-primary navbar-btn">작성하기</a></div>
+                                    <div id="btn_write" class="navbar-collapse collapse d-none d-lg-block" style="text-align: right"><a href="writeFreeBoard.php" class="btn btn-primary navbar-btn">작성하기</a></div>
 
                                     <nav aria-label="Page navigation">
                                         <ul class="pagination" style="justify-content: center;">

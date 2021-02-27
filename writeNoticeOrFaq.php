@@ -40,7 +40,7 @@ include 'head.php'
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="#">관리자</a></li>
-                                <li aria-current="page" class="breadcrumb-item active">공지사항&자주묻는질문 작성</li>
+                                <li aria-current="page" class="breadcrumb-item active">공지사항 | 자주묻는질문 작성</li>
                             </ol>
                         </nav>
                     </div>
@@ -51,7 +51,7 @@ include 'head.php'
                                 <div class="container">
                                     <table class="table">
                                         <tr>
-                                            <td height=20 align=center bgcolor=#ccc style="size: 20px;">작성하기</td>
+                                            <td height=20 align=center bgcolor=#ccc style="size: 20px;">공지사항 | 자주묻는 질문 작성</td>
                                         </tr>
                                         <tr>
                                             <td bgcolor=white>

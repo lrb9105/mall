@@ -55,7 +55,7 @@ include 'head.php'
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="#">관리자</a></li>
-                                <li aria-current="page" class="breadcrumb-item active">공지사항&자주묻는질문 작성</li>
+                                <li aria-current="page" class="breadcrumb-item active">공지사항 | 자주묻는 질문 작성</li>
                             </ol>
                         </nav>
                     </div>
@@ -74,7 +74,7 @@ include 'head.php'
                                                     <tr>
                                                         <td>종류</td>
                                                         <td>
-                                                            <select name="board-type" id="board-type" disabled>
+                                                            <select name="board-type" id="board-type" readonly>
                                                                 <option value="">종류</option>
                                                                 <?if($row['TYPE'] == "1") { ?>
                                                                 <option value="1" selected>공지사항</option>

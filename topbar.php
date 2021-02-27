@@ -53,16 +53,15 @@
     </div>
 </div>
 <script>
-    // 로그인 버튼 클릭 시 loginComplete.php로 이동
-    // ajax통신을 해서 db에 사용자가 입력한 데이터가 있는지 확인 => 있다면 ok반환
-    $('#btn_login').on("click",function(){
+    // 로그인 처리
+    function login(){
         // ajax로 registerComplete.php에 데이터 보내기
         $.ajax({
             type: 'post',
             dataType: 'json',
             url: '/mall/php/loginComplete.php',
             data: {
-                  login_id: $('#email-modal').val()
+                login_id: $('#email-modal').val()
                 , password: $('#password-modal').val()
             },
 
@@ -81,6 +80,12 @@
                 alert("에러가 발생했습니다.");
             }
         });
+    }
+
+    // 로그인 버튼 클릭 시 loginComplete.php로 이동
+    // ajax통신을 해서 db에 사용자가 입력한 데이터가 있는지 확인 => 있다면 ok반환
+    $('#btn_login').on("click",function(){
+        login();
     });
 
     //로그아웃 => 세션종료
@@ -104,4 +109,10 @@
         }
     });
 
+    // 로그인창 => 아이디, 비번 모두 입력 되어 있을 때 엔터 클릭 시 로그인 버튼 눌리도록
+    $("#password-modal").keydown(function(key) {
+        if ($('#email-modal').val() != '' && $('#password-modal').val() != '' && key.keyCode == 13) {
+            login();
+        }
+    });
 </script>
