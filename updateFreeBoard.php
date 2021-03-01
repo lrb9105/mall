@@ -25,7 +25,14 @@ $sql = "SELECT FB.TITLE ,
 // 쿼리를 통해 가져온 결과
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_array($result);
+$referer = $_SERVER['HTTP_REFERER']
 ?>
+<script>
+    if('<?echo $referer?>' == ''){
+        alert('잘못된 접근입니다.');
+        location.href = 'index.php';
+    }
+</script>
 
 <!DOCTYPE html>
 <html>

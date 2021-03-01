@@ -1,7 +1,14 @@
 <?php
 // 메뉴에 따라 카테고리, 메뉴명, active(클릭된 상태) 변경해주기
 $menu_no = $_GET['menu_no'];
+$referer = $_SERVER['HTTP_REFERER']
 ?>
+<script>
+    if('<?echo $referer?>' == ''){
+        alert('잘못된 접근입니다.');
+        location.href = 'index.php';
+    }
+</script>
 
 <!DOCTYPE html>
 <html>
@@ -29,8 +36,8 @@ include 'head.php'
     ?>
     <!-- *** HEADER END ***-->
 
-    <div id="all">
-    <div id="content">
+    <div id="all" >
+    <div id="content" >
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -44,7 +51,7 @@ include 'head.php'
                         </ol>
                     </nav>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-2">
                     <!--
                     *** MENUS AND FILTERS ***
                     _________________________________________________________
@@ -168,7 +175,7 @@ include 'head.php'
                     <!--<div class="banner"><a href="#"><img src="img/clothes/top/banner.jpg" alt="sales 2014" class="img-fluid"></a></div>-->
                 </div>
 
-                <div class="col-lg-9">
+                <div class="col-lg-10">
                     <div class="box">
                         <h1 id="menu_title"></h1>
                     </div>
@@ -208,7 +215,7 @@ include 'head.php'
                     </div>
                     <div class="row products">
                         <? if($menu_no == "5" || $menu_no == "2") {?>
-                            <div class="col-lg-4 col-md-6">
+                            <div class="col-lg-3 col-md-6">
                                 <div class="product">
                                     <div class="flip-container">
                                         <div class="flipper">
@@ -234,7 +241,7 @@ include 'head.php'
                             </div>
                         <?}?>
                         <? if($menu_no == "6" || $menu_no == "2") {?>
-                        <div class="col-lg-4 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
                                     <div class="flipper">
@@ -255,7 +262,7 @@ include 'head.php'
                         </div>
                         <?}?>
                         <? if($menu_no == "7" || $menu_no == "2") {?>
-                        <div class="col-lg-4 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
                                     <div class="flipper">
@@ -291,7 +298,7 @@ include 'head.php'
                         </div>
                         <?}?>
                         <? if($menu_no == "8" || $menu_no == "2") {?>
-                        <div class="col-lg-4 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
                                     <div class="flipper">
@@ -312,7 +319,7 @@ include 'head.php'
                         </div>
                         <?}?>
                         <? if($menu_no == "9" || $menu_no == "2") {?>
-                        <div class="col-lg-4 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
                                     <div class="flipper">
@@ -333,7 +340,7 @@ include 'head.php'
                         </div>
                         <?}?>
                         <? if($menu_no == "10" || $menu_no == "2") {?>
-                        <div class="col-lg-4 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                             <div class="product">
                                 <div class="flip-container">
                                     <div class="flipper">

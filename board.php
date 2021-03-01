@@ -5,6 +5,8 @@
     // mysql커넥션 연결
     $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
     $sql = null;
+    $result = null;
+    $count = null;
 
     // 데이터 가져오기(자주묻는 질문, 공지사항)
     if($board_no != '3'){
@@ -19,24 +21,31 @@
         } elseif ($board_no == '2'){
             $board_name = '자주묻는질문';
         }
+        // 쿼리를 통해 가져온 결과
+        $result = mysqli_query($conn, $sql);
+
+        //가져온 행의 갯수
+        $count = mysqli_num_rows($result);
     } else{// 데이터 가져오기(자유게시판)
-        $sql = "SELECT SEQ
+        /*$sql = "SELECT SEQ
                      , TITLE
                      , WRITER
                      , CRE_DATETIME
                      , CNT
+                     , DEPTH
             FROM FREE_BOARD
             ORDER BY GROUP_NO DESC, GROUP_ORDER ASC
-            ";
+            ";*/
         $board_name = '자유게시판';
     }
-
-    // 쿼리를 통해 가져온 결과
-    $result = mysqli_query($conn, $sql);
-
-    //가져온 행의 갯수
-    $count = mysqli_num_rows($result);
+$referer = $_SERVER['HTTP_REFERER']
 ?>
+<script>
+    if('<?echo $referer?>' == ''){
+        alert('잘못된 접근입니다.');
+        location.href = 'index.php';
+    }
+</script>
 
 <!DOCTYPE html>
 <html>
@@ -78,7 +87,7 @@ include 'head.php'
                         </nav>
                     </div>
                     <!-- 우측 사이드바-->
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <div class="card sidebar-menu mb-4">
                             <div class="card-header">
                                 <h3 class="h4 card-title">커뮤니티</h3>
@@ -93,7 +102,7 @@ include 'head.php'
                         </div>
                     </div>
                     <!--사이드바 종료-->
-                    <div id="board" class="col-lg-9">
+                    <div id="board" class="col-lg-10">
                         <div class="box">
                             <!-- 공지사항, 자주묻는 질문-->
                             <?if($board_no != '3'){?>
@@ -148,28 +157,31 @@ include 'head.php'
                             <!--자유게시판-->
                             <section class="contact spad">
                                 <div class="container">
-                                    <table class="table table-hover" style="text-align: center;">
+                                    <div class="search-box" style="margin-bottom: 5px;">
+                                        <select id="search-select" class=”form-control" style="float: left;">
+                                            <option value="">전체</option>
+                                            <option value="1">작성자</option>
+                                            <option value="2">제목</option>
+                                        </select>
+                                        <div class="input-group col-lg-10 col-md-12" >
+                                            <input id="search-text" type="text" class="form-control">
+                                            <div class="input-group-append" style="margin-left: 3px;">
+                                                <div id="search-button" class="navbar-collapse collapse d-none d-lg-block"><a href="#" class="btn btn-primary navbar-btn"><i class="fa fa-search"></i><span>검색</span></a></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <table id="free_board_post_tb" class="table table-hover" style="text-align: center;">
                                         <thead>
                                         <tr>
                                             <th>번호</th>
-                                            <th style="width: 60%;">제목</th>
+                                            <th style="width: 50%;">제목</th>
                                             <th>작성자</th>
                                             <th>날짜</th>
                                             <th>조회수</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <?for($i = 0; $i < $count; $i++){
-                                        $row = mysqli_fetch_array($result);
-                                        ?>
-                                        <tr style="cursor: pointer;" onclick="location.href='detailFreeBoard.php?board_no=3&seq=<?echo $row['SEQ']?>'">
-                                            <td><?echo $row['SEQ']?></td>
-                                            <td style="text-align: left;"><a href="detailFreeBoard.php?board_no=3&seq=<?echo $row['SEQ']?>"><u><?echo $row['TITLE']?></u></a></td>
-                                            <td><?echo $row['WRITER']?></td>
-                                            <td><?echo substr($row['CRE_DATETIME'],0,10)?></td>
-                                            <td><?echo $row['CNT']?></td>
-                                        </tr>
-                                        <?}?>
                                         </tbody>
                                     </table>
                                     <hr/>
@@ -222,6 +234,14 @@ include 'head.php'
     ?>
 
     <script>
+        $(document).ready(function(){
+            if(<?echo $board_no?> == '3'){
+                let searchSelect = $('#search-select').val();
+                let searchText = $('#search-text').val();
+                search(searchSelect, searchText);
+            }
+        });
+
         // menu_no에 따라 menu_title, cat_second, cat_third 변경하기
         boardNo = '<?echo $board_no?>';
 
@@ -232,6 +252,79 @@ include 'head.php'
                 $(item).addClass("active");
             }
             console.log(item);
+        });
+
+        //게시물 검색
+        function search(searchSelect, searchText){
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/selectFreeBoardCompl.php',
+                data: {
+                    searchSelect: searchSelect,
+                    searchText: searchText
+                },
+
+                success: function (json) {
+                    if (json.result == 'ok') {
+                        //alert("조회를 완료헀습니다.");
+                        // 가져온 데이터가 있다면 모든 행 삭제.
+                        if(json.seq.length != 0){
+                            //모든 행 삭제
+                            $('#free_board_post_tb > tbody > tr').remove();
+                        } else{
+                            alert("검색결과가 없습니다.");
+                            return;
+                        }
+
+                        for(let i = 0; i < json.seq.length; i++){
+                            let space = '';
+
+                            for(let j= 0; j < (json.depth[i] - 1) * 2; j++){
+                                space += '&nbsp';
+                            }
+                            if(space != ''){
+                                space += '┖';
+                            }
+                            $('#free_board_post_tb > tbody:last').append(
+                                '<tr style="cursor: pointer;" onclick="location.href=\'detailFreeBoard.php?board_no=3&seq=' + json.seq[i] + '\'">'
+                                +    '<td>'+json.seq[i]+'</td>'
+                                +    '<td style="text-align: left;">'
+                                +         '<a href="detailFreeBoard.php?board_no=3&seq='+json.seq[i]+'">'
+                                +             space + '<u>' + json.title[i] + '</u>'
+                                +         '</a>' + ' [' + json.commentCnt[i] + ']'
+                                +     '</td>'
+                                +     '<td>'+ json.name[i] +'</td>'
+                                +     '<td>'+ json.creDatetime[i].substring(0,10) +'</td>'
+                                +     '<td>'+ json.cnt[i] +'</td>'
+                                + '</tr>');
+                        }
+                    } else {
+                        alert("조회에 실패했습니다!");
+                    }
+                },
+                error: function () {
+                    alert("에러가 발생했습니다.");
+                }
+            });
+        }
+
+        $('#search-button').on("click", function(){
+            let searchSelect = $('#search-select').val();
+            let searchText = $('#search-text').val();
+
+            // 전체조회면 검색어 입력해도 적용안되도록
+            if(searchSelect == ''){
+                searchText = '';
+            }
+                // 검색어 입력안했으면 alert
+            if(searchSelect != '' && searchText == ''){
+                alert("검색어를 입력하세요.");
+                return;
+            }
+
+
+            search(searchSelect, searchText);
         });
     </script>
 </body>

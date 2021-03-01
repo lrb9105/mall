@@ -30,7 +30,14 @@ switch ($product_no){
         $imgPath = "img/clothes/top/karaTshirts/karaTshirts.jpg";
         break;
 }
+$referer = $_SERVER['HTTP_REFERER']
 ?>
+<script>
+    if('<?echo $referer?>' == ''){
+        alert('잘못된 접근입니다.');
+        location.href = 'index.php';
+    }
+</script>
 
 <!DOCTYPE html>
 <html>
@@ -73,7 +80,7 @@ include 'head.php'
                         </ol>
                     </nav>
                 </div>
-                <div class="col-lg-3 order-2 order-lg-1">
+                <div class="col-lg-2 order-2 order-lg-1">
                     <!--
                     *** MENUS AND FILTERS ***
                     _________________________________________________________
@@ -121,7 +128,7 @@ include 'head.php'
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-9 order-1 order-lg-2">
+                <div class="col-lg-10 order-1 order-lg-2">
                     <div id="productMain" class="row">
                         <div class="col-md-6">
                             <div class="item"> <img src="<? echo $imgPath?>" alt="" class="img-fluid"></div>
@@ -144,45 +151,64 @@ include 'head.php'
                         <div class="col-md-6">
                             <div class="box">
                                 <h1 class="text-center" id="product_name">White  Armani</h1>
+                                <p class="price" id="price">$124.00</p>
+                                <p class="text-center buttons"><a href="basket.php" class="btn btn-info"><i class="fa fa-first-order"></i> 바로구매</a><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
+                            </div>
+                        </div>
+                        <!-- 작은이미지 - 클릭 할 때 해당 이미지로 메인 이미지 변경-->
+                        <!--<div class="col-md-6">
+                            <div class="box">
+                                <h1 class="text-center" id="product_name">White  Armani</h1>
                                 <p class="goToDescription"><a href="#details" class="scroll-to">Scroll to product details, material &amp; care and sizing</a></p>
                                 <p class="price" id="price">$124.00</p>
-                                <p class="text-center buttons"><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
+                                <p class="text-center buttons"><a href="basket.php" class="btn btn-info"><i class="fa fa-first-order"></i> 바로구매</a><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
                             </div>
                             <div data-slider-id="1" class="owl-thumbs">
-                                <!--클릭 할 때 해당 이미지로 메인 이미지 변경-->
-                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<? echo $imgPath?>" alt="" class="img-fluid"></button>
+                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
+                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
+                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
+                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
+                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
+                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
+                            </div>
+                        </div>-->
+                    </div>
+                    <div id="details" class="box">
+                        <div class="col-lg-12">
+                            <ul id="pills-tab" role="tablist" class="nav nav-pills nav-justified">
+                                <li class="nav-item" ><a id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="false" class="nav-link active">상세정보</a></li>
+                                <li class="nav-item" ><a id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false" class="nav-link">후기</a></li>
+                                <li class="nav-item" ><a id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false" class="nav-link">Q&A</a></li>
+                            </ul>
+                            <div id="pills-tabContent" class="tab-content">
+                                <div id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" class="tab-pane fade active show">
+                                    <p></p>
+                                    <h4>Product details</h4>
+                                    <p>White lace top, woven, has a round neck, short sleeves, has knitted lining attached</p>
+                                    <h4>Material &amp; care</h4>
+                                    <ul>
+                                        <li>Polyester</li>
+                                        <li>Machine wash</li>
+                                    </ul>
+                                    <h4>Size &amp; Fit</h4>
+                                    <ul>
+                                        <li>Regular fit</li>
+                                        <li>The model (height 5'8" and chest 33") is wearing a size S</li>
+                                    </ul>
+                                    <blockquote>
+                                        <p><em>Define style this season with Armani's new range of trendy tops, crafted with intricate details. Create a chic statement look by teaming this lace number with skinny jeans and pumps.</em><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
+                                    </blockquote>
+                                    <hr>
+                                </div>
+                                <div id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.<br>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
+                                <div id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
+                                <div id="pills-marketing" role="tabpanel" aria-labelledby="pills-marketing-tab" class="tab-pane fade ">Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche high life echo park Austin. Cred vinyl keffiyeh DIY salvia PBR, banh mi before they sold out farm-to-table VHS viral locavore cosby sweater. Lomo wolf viral, mustache readymade thundercats keffiyeh craft beer marfa ethical. Wolf salvia freegan, sartorial keffiyeh echo park vegan.<br>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
                             </div>
                         </div>
                     </div>
-                    <div id="details" class="box">
-                        <p></p>
-                        <h4>Product details</h4>
-                        <p>White lace top, woven, has a round neck, short sleeves, has knitted lining attached</p>
-                        <h4>Material &amp; care</h4>
-                        <ul>
-                            <li>Polyester</li>
-                            <li>Machine wash</li>
-                        </ul>
-                        <h4>Size &amp; Fit</h4>
-                        <ul>
-                            <li>Regular fit</li>
-                            <li>The model (height 5'8" and chest 33") is wearing a size S</li>
-                        </ul>
-                        <blockquote>
-                            <p><em>Define style this season with Armani's new range of trendy tops, crafted with intricate details. Create a chic statement look by teaming this lace number with skinny jeans and pumps.</em></p>
-                        </blockquote>
-                        <hr>
-                        <div class="social">
-                            <h4>Show it to your friends</h4>
-                            <p><a href="#" class="external facebook"><i class="fa fa-facebook"></i></a><a href="#" class="external gplus"><i class="fa fa-google-plus"></i></a><a href="#" class="external twitter"><i class="fa fa-twitter"></i></a><a href="#" class="email"><i class="fa fa-envelope"></i></a></p>
-                        </div>
-                    </div>
-                    <div class="row same-height-row">
+
+
+                    <!--<div class="row same-height-row">
                         <div class="col-md-3 col-sm-6">
                             <div class="box same-height">
                                 <h3>You may also like these products</h3>
@@ -201,7 +227,6 @@ include 'head.php'
                                     <p class="price">$143</p>
                                 </div>
                             </div>
-                            <!-- /.product-->
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <div class="product same-height">
@@ -216,7 +241,6 @@ include 'head.php'
                                     <p class="price">$143</p>
                                 </div>
                             </div>
-                            <!-- /.product-->
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <div class="product same-height">
@@ -231,10 +255,9 @@ include 'head.php'
                                     <p class="price">$143</p>
                                 </div>
                             </div>
-                            <!-- /.product-->
                         </div>
-                    </div>
-                    <div class="row same-height-row">
+                    </div>-->
+                    <!--<div class="row same-height-row">
                         <div class="col-md-3 col-sm-6">
                             <div class="box same-height">
                                 <h3>Products viewed recently</h3>
@@ -253,7 +276,6 @@ include 'head.php'
                                     <p class="price">$143</p>
                                 </div>
                             </div>
-                            <!-- /.product-->
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <div class="product same-height">
@@ -268,7 +290,6 @@ include 'head.php'
                                     <p class="price">$143</p>
                                 </div>
                             </div>
-                            <!-- /.product-->
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <div class="product same-height">
@@ -283,10 +304,9 @@ include 'head.php'
                                     <p class="price">$143</p>
                                 </div>
                             </div>
-                            <!-- /.product-->
                         </div>
                     </div>
-                </div>
+                </div>-->
                 <!-- /.col-md-9-->
             </div>
         </div>

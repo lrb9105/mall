@@ -76,10 +76,9 @@
                             <li>
                                 <div class="row">
                                     <div class="col-md-6 col-lg-3">
-                                        <h5>관리자</h5>
+                                        <h5>작성</h5>
                                         <ul class="list-unstyled mb-3">
                                             <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">공지사항 | 자주묻는질문 작성</a></li>
-                                            <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">후기 답변하기</a></li>
                                             <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">Q&A 답변하기</a></li>
                                         </ul>
                                     </div>
@@ -91,7 +90,6 @@
 
                 <div class="navbar-buttons d-flex justify-content-end">
                     <!-- /.nav-collapse-->
-                    <div id="search-not-mobile" class="navbar-collapse collapse"></div><a data-toggle="collapse" href="#search" class="btn navbar-btn btn-primary d-none d-lg-inline-block"><i class="fa fa-search"></i><span>검색</span></a>
                     <div id="basket-overview" class="navbar-collapse collapse d-none d-lg-block"><a href="basket.php" class="btn btn-primary navbar-btn"><i class="fa fa-shopping-cart"></i><span>장바구니</span></a></div>
                 </div>
             </div>
