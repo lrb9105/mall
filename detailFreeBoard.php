@@ -99,8 +99,8 @@ include 'head.php'
                                             <td bgcolor=white>
                                                 <div id="title" class="box">
                                                     <div>
-                                                        <h1 style="text-align: center;"><?echo $row['TITLE'] ?></h1>
-                                                        <p style="text-align: left;" class="lead"><?echo $row['NAME']?> | <?echo $row['CRE_DATETIME']?> <span style="float: right;">조회수: <?echo $row['CNT']?></span></p>
+                                                        <h1 style="text-align: center;"><?echo $row['TITLE'] ?></h1><br>
+                                                        <p style="text-align: left;" class="lead">작성자: <?echo $row['NAME']?> <br> 작성일: <?echo $row['CRE_DATETIME']?> <span style="float: right;">조회수: <?echo $row['CNT']?></span></p>
                                                     </div>
                                                     <hr>
                                                     <div name="contents" id="contents" class="nse_content" style="width: 100%;" readonly><?echo $row['CONTENTS']?></div>

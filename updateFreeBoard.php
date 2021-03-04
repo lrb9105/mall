@@ -1,10 +1,4 @@
 <?php
-//자유게시판 상세페이지
-session_start();
-if($_SESSION['USER_TYPE'] != "0"){
-    echo "<script> document.location.href='/mall/index.php'; </script>";
-}
-
 $seq = $_GET['seq'];
 
 // mysql커넥션 연결

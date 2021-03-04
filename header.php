@@ -50,6 +50,24 @@
                                             <li class="nav-item"><a href="category.php?menu_no=25" class="nav-link">기타 바지</a></li>
                                         </ul>
                                     </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <h5>신발</h5>
+                                        <ul class="list-unstyled mb-3">
+                                            <li class="nav-item"><a href="category.php?menu_no=28" class="nav-link">스니커즈</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=29" class="nav-link">로퍼&구두</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=30" class="nav-link">슬리퍼&쪼리&샌들</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <h5>모자</h5>
+                                        <ul class="list-unstyled mb-3">
+                                            <li class="nav-item"><a href="category.php?menu_no=31" class="nav-link">야구모자</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=32" class="nav-link">스냅백</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=33" class="nav-link">비니</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=34" class="nav-link">사파리/벙거지</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=35" class="nav-link">페도라/중절모</a></li>
+                                        </ul>
+                                    </div>
                             </li>
                         </ul>
                     </li>
@@ -80,6 +98,12 @@
                                         <ul class="list-unstyled mb-3">
                                             <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">공지사항 | 자주묻는질문 작성</a></li>
                                             <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">Q&A 답변하기</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6 col-lg-3">
+                                        <h5>상품</h5>
+                                        <ul class="list-unstyled mb-3">
+                                            <li class="nav-item"><a href="writeProduct.php" class="nav-link">상품 등록</a></li>
                                         </ul>
                                     </div>
                             </li>

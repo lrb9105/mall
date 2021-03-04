@@ -1,8 +1,37 @@
 <?php
 // 메뉴에 따라 카테고리, 메뉴명, active(클릭된 상태) 변경해주기
 $menu_no = $_GET['menu_no'];
-$referer = $_SERVER['HTTP_REFERER']
+$referer = $_SERVER['HTTP_REFERER'];
+
+// menu_no에 해당하는 모든 상품 가져오기
+// mysql커넥션 연결
+$conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
+
+// 데이터 가져오기 - 자유게시판
+$sql = "SELECT P.PRODUCT_SEQ,
+                P.FIRST_CATEGORY, 
+                P.SECOND_CATEGORY,
+                P.PRODUCT_NAME,
+                P.PRODUCT_PRICE,
+                P.PRODUCT_PRICE_SALE,
+                P.MATERIAL,
+                P.MANUFACTURER,
+                P.COUNTRY_OF_MANUFACTURER,
+                P.CLEANING_METHOD,
+                P.DETAIL_INFO,
+                P.CRE_DATETIME,
+                F.SAVE_PATH
+        FROM PRODUCT P
+        INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
+        WHERE P.SECOND_CATEGORY = $menu_no
+        AND F.TYPE = 0
+        ";
+// 쿼리를 통해 가져온 결과
+$result = mysqli_query($conn, $sql);
+$count = mysqli_num_rows($result);
+
 ?>
+
 <script>
     if('<?echo $referer?>' == ''){
         alert('잘못된 접근입니다.');
@@ -51,129 +80,9 @@ include 'head.php'
                         </ol>
                     </nav>
                 </div>
-                <div class="col-lg-2">
-                    <!--
-                    *** MENUS AND FILTERS ***
-                    _________________________________________________________
-                    -->
-                    <div class="card sidebar-menu mb-4">
-                        <div class="card-header">
-                            <h3 class="h4 card-title">카테고리</h3>
-                        </div>
-                        <div class="card-body">
-                            <ul class="nav nav-pills flex-column category-menu" id="category-menu">
-                                <li><a href="category.php?menu_no=2" class="nav-link top">상의 <span class="badge badge-secondary">6</span></a>
-                                    <ul class="list-unstyled top_ul">
-                                        <li><a href="category.php?menu_no=5" class="nav-link" >반팔</a></li>
-                                        <li><a href="category.php?menu_no=6" class="nav-link" id="banpal">긴팔</a></li>
-                                        <li><a href="category.php?menu_no=7" class="nav-link">민소매</a></li>
-                                        <li><a href="category.php?menu_no=8" class="nav-link">셔츠</a></li>
-                                        <li><a href="category.php?menu_no=9" class="nav-link">맨투맨</a></li>
-                                        <li><a href="category.php?menu_no=10" class="nav-link">카라 티셔츠</a></li>
-                                        <li><a href="category.php?menu_no=11" class="nav-link">후드</a></li>
-                                        <li><a href="category.php?menu_no=12" class="nav-link">니트</a></li>
-                                        <li><a href="category.php?menu_no=13" class="nav-link">기타 상의</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="category.php?menu_no=3" class="nav-link outer">아우터 <span class="badge badge-light">0</span></a>
-                                    <ul class="list-unstyled outer_ul">
-                                        <li><a href="category.php?menu_no=14" class="nav-link">후드 집업</a></li>
-                                        <li><a href="category.php?menu_no=15" class="nav-link">라이더 자켓</a></li>
-                                        <li><a href="category.php?menu_no=16" class="nav-link">블루종/MA-1</a></li>
-                                        <li><a href="category.php?menu_no=17" class="nav-link">코트</a></li>
-                                        <li><a href="category.php?menu_no=18" class="nav-link">패딩</a></li>
-                                        <li><a href="category.php?menu_no=19" class="nav-link">트레이닝 상의</a></li>
-                                        <li><a href="category.php?menu_no=20" class="nav-link">기타 아우터</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="category.php?menu_no=4" class="nav-link bottom">바지  <span class="badge badge-secondary">0</span></a>
-                                    <ul class="list-unstyled bottom_ul">
-                                        <li><a href="category.php?menu_no=21" class="nav-link">데님 팬츠</a></li>
-                                        <li><a href="category.php?menu_no=22" class="nav-link">숏 팬츠</a></li>
-                                        <li><a href="category.php?menu_no=23" class="nav-link">슬랙스</a></li>
-                                        <li><a href="category.php?menu_no=24" class="nav-link">트레이닝 바지</a></li>
-                                        <li><a href="category.php?menu_no=25" class="nav-link">기타 바지</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!--브랜드 선택-->
-                    <!--
-                   <div class="card sidebar-menu mb-4">
-                        <div class="card-header">
-                            <h3 class="h4 card-title">Brands <a href="#" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times-circle"></i> Clear</a></h3>
-                        </div>
-                        <div class="card-body">
-                            <form>
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"> Armani  (10)
-                                        </label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"> Versace  (12)
-                                        </label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"> Carlo Bruni  (15)
-                                        </label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"> Jack Honey  (14)
-                                        </label>
-                                    </div>
-                                </div>
-                                <button class="btn btn-default btn-sm btn-primary"><i class="fa fa-pencil"></i> Apply</button>
-                            </form>
-                        </div>
-                    </div>-->
-
-                    <!--색상 선택-->
-                    <!--<div class="card sidebar-menu mb-4">
-                        <div class="card-header">
-                            <h3 class="h4 card-title">Colours <a href="#" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times-circle"></i> Clear</a></h3>
-                        </div>
-                        <div class="card-body">
-                            <form>
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"><span class="colour white"></span> White (14)
-                                        </label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"><span class="colour blue"></span> Blue (10)
-                                        </label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"><span class="colour green"></span>  Green (20)
-                                        </label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"><span class="colour yellow"></span>  Yellow (13)
-                                        </label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"><span class="colour red"></span>  Red (10)
-                                        </label>
-                                    </div>
-                                </div>
-                                <button class="btn btn-default btn-sm btn-primary"><i class="fa fa-pencil"></i> Apply</button>
-                            </form>
-                        </div>
-                    </div>-->
-                    <!--배너-->
-                    <!--<div class="banner"><a href="#"><img src="img/clothes/top/banner.jpg" alt="sales 2014" class="img-fluid"></a></div>-->
-                </div>
+                <?php
+                include 'sidebar.php'
+                ?>
 
                 <div class="col-lg-10">
                     <div class="box">
@@ -181,26 +90,7 @@ include 'head.php'
                     </div>
                     <div class="box info-bar">
                         <div class="row">
-                            <?if($menu_no == "5" || $menu_no == "6" || $menu_no == "7" || $menu_no == "8" || $menu_no == "9"|| $menu_no == "10") {?>
-                                <div class="col-md-12 col-lg-3 products-showing">전체 <strong>1개</strong> 상품</div>
-                            <?} elseif($menu_no == "2") {?>
-                                <div class="col-md-12 col-lg-3 products-showing">전체 <strong>6개</strong> 상품</div>
-                            <?} else {?>
-                                <div class="col-md-12 col-lg-3 products-showing">전체 <strong>0개</strong> 상품</div>
-                            <?}?>
-                            <!--<div class="col-md-12 col-lg-9 products-number-sort">
-                                <form class="form-inline d-block d-lg-flex justify-content-between flex-column flex-md-row">-->
-                                    <!--<div class="products-number"><strong>Show</strong><a href="#" class="btn btn-sm btn-primary">12</a><a href="#" class="btn btn-outline-secondary btn-sm">24</a><a href="#" class="btn btn-outline-secondary btn-sm">All</a><span>products</span></div>-->
-                                    <!--<div class="products-sort-by mt-7 mt-lg-7">
-                                        <select name="sort-by" class="form-control">
-                                            <option>인기순</option>
-                                            <option>신상품순</option>
-                                            <option>가격높은순</option>
-                                            <option>가격낮은순</option>
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>-->
+                            <div class="col-md-12 col-lg-3 products-showing">전체 <strong>1개</strong> 상품</div>
                         </div>
                         <div class="row">
                             <div class="col-lg-12 col-md-12 text-left text-lg-left">
@@ -214,157 +104,46 @@ include 'head.php'
                         </div>
                     </div>
                     <div class="row products">
-                        <? if($menu_no == "5" || $menu_no == "2") {?>
-                            <div class="col-lg-3 col-md-6">
+                        <div class="col-lg-3 col-md-6">
+                            <?for($i=0; $i < $count; $i++){
+                                $row = mysqli_fetch_array($result)
+                                ?>
                                 <div class="product">
                                     <div class="flip-container">
                                         <div class="flipper">
-                                            <div class="front"><a href="detail.php?menu_no=5&product_no=160"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a></div>
-                                            <div class="back"><a href="detail.php?menu_no=5&product_no=160"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a></div>
+                                            <div class="front"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a></div>
                                         </div>
-                                    </div><a href="detail.php?menu_no=5&product_no=160" class="invisible"><img src="img/clothes/top/short/short_sleeves.jpg" alt="" class="img-fluid"></a>
+                                    </div><a href="detail.html?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>" class="invisible"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a>
                                     <div class="text">
-                                        <h3><a href="detail.php?menu_no=5&product_no=160">기본 반팔</a></h3>
+                                        <h3><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><?echo $row['PRODUCT_NAME']?></a></h3>
                                         <p class="price">
-                                            <del></del>9,000원
+                                            <del></del><?echo $row['PRODUCT_PRICE']?>원
                                         </p>
-                                        <p class="buttons"><a href="detail.php?menu_no=5&product_no=160" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
+                                        <p class="buttons"><a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
                                     </div>
                                     <!-- /.text-->
+                                    <div class="ribbon sale">
+                                        <div class="theribbon">SALE</div>
+                                        <div class="ribbon-background"></div>
+                                    </div>
+                                    <!-- /.ribbon-->
+                                    <div class="ribbon new">
+                                        <div class="theribbon">NEW</div>
+                                        <div class="ribbon-background"></div>
+                                    </div>
+                                    <!-- /.ribbon-->
                                     <div class="ribbon gift">
                                         <div class="theribbon">GIFT</div>
                                         <div class="ribbon-background"></div>
                                     </div>
                                     <!-- /.ribbon-->
                                 </div>
-                                <!-- /.product            -->
-                            </div>
-                        <?}?>
-                        <? if($menu_no == "6" || $menu_no == "2") {?>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="product">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php?menu_no=6&product_no=100"><img src="img/clothes/top/long/long_sleeves.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php?menu_no=6&product_no=100"><img src="img/clothes/top/long/long_sleeves.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php?menu_no=6&product_no=100" class="invisible"><img src="img/clothes/top/long/long_sleeves.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3><a href="detail.php?menu_no=6&product_no=100">기본 긴팔</a></h3>
-                                    <p class="price">
-                                        <del></del>69,000원
-                                    </p>
-                                    <p class="buttons"><a href="detail.php?menu_no=6&product_no=100" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
-                                </div>
-                                <!-- /.text-->
-                            </div>
+
+
+
+                            <?} ?>
                             <!-- /.product            -->
                         </div>
-                        <?}?>
-                        <? if($menu_no == "7" || $menu_no == "2") {?>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="product">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php?menu_no=7&product_no=110"><img src="img/clothes/top/sleeveless/sleeveless.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php?menu_no=7&product_no=110"><img src="img/clothes/top/sleeveless/sleeveless.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php?menu_no=7&product_no=110" class="invisible"><img src="img/clothes/top/sleeveless/sleeveless.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3><a href="detail.php?menu_no=7&product_no=110">기본 민소매</a></h3>
-                                    <p class="price">
-                                        <del>20,000원</del>7,000원
-                                    </p>
-                                    <p class="buttons"><a href="detail.php?menu_no=7&product_no=110" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
-                                </div>
-                                <!-- /.text-->
-                                <div class="ribbon sale">
-                                    <div class="theribbon">SALE</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <!-- /.ribbon-->
-                                <div class="ribbon new">
-                                    <div class="theribbon">NEW</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <!-- /.ribbon-->
-                                <div class="ribbon gift">
-                                    <div class="theribbon">GIFT</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <!-- /.ribbon-->
-                            </div>
-                            <!-- /.product            -->
-                        </div>
-                        <?}?>
-                        <? if($menu_no == "8" || $menu_no == "2") {?>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="product">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php?menu_no=8&product_no=120"><img src="img/clothes/top/shirts/shirts.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php?menu_no=8&product_no=120"><img src="img/clothes/top/shirts/shirts.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php?menu_no=8&product_no=120" class="invisible"><img src="img/clothes/top/shirts/shirts.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3><a href="detail.php?menu_no=8&product_no=120">기본 셔츠</a></h3>
-                                    <p class="price">
-                                        <del></del>23,000원
-                                    </p>
-                                    <p class="buttons"><a href="detail.php?menu_no=8&product_no=120" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
-                                </div>
-                                <!-- /.text-->
-                            </div>
-                            <!-- /.product            -->
-                        </div>
-                        <?}?>
-                        <? if($menu_no == "9" || $menu_no == "2") {?>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="product">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php?menu_no=9&product_no=140"><img src="img/clothes/top/manToman/manToman.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php?menu_no=9&product_no=140"><img src="img/clothes/top/manToman/manToman.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php?menu_no=9&product_no=140" class="invisible"><img src="img/clothes/top/manToman/manToman.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3><a href="detail.php?menu_no=9&product_no=140">기본 맨투맨</a></h3>
-                                    <p class="price">
-                                        <del></del>50,000원
-                                    </p>
-                                    <p class="buttons"><a href="detail.php?menu_no=9&product_no=140" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
-                                </div>
-                                <!-- /.text-->
-                            </div>
-                            <!-- /.product            -->
-                        </div>
-                        <?}?>
-                        <? if($menu_no == "10" || $menu_no == "2") {?>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="product">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php?menu_no=10&product_no=150"><img src="img/clothes/top/karaTshirts/karaTshirts.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php?menu_no=10&product_no=150"><img src="img/clothes/top/karaTshirts/karaTshirts.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php?menu_no=10&product_no=150" class="invisible"><img src="img/clothes/top/karaTshirts/karaTshirts.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3><a href="detail.php?menu_no=10&product_no=150">기본 카라티셔츠</a></h3>
-                                    <p class="price">
-                                        <del></del>23,000원
-                                    </p>
-                                    <p class="buttons"><a href="detail.php?menu_no=10&product_no=150" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
-                                </div>
-                                <!-- /.text-->
-                                <div class="ribbon new">
-                                    <div class="theribbon">NEW</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <!-- /.ribbon-->
-                            </div>
-                            <!-- /.product            -->
-                        </div>
-                        <?}?>
                         <!-- /.products-->
                     </div>
                     <!--<div class="pages">-->
@@ -545,6 +324,65 @@ include 'jsfile.php'
                 $('#menu_title').text("기타 바지");
                 $('#cat_second').text("바지");
                 $('#cat_third').text("기타 바지");
+                break;
+            case "28":
+                $('#menu_title').text("스니커즈");
+                $('#cat_second').text("신발");
+                $('#cat_third').text("스니커즈");
+                break;
+            case "29":
+                $('#menu_title').text("로퍼&구두");
+                $('#cat_second').text("신발");
+                $('#cat_third').text("로퍼&구두");
+                break;
+            case "30":
+                $('#menu_title').text("슬리퍼&쪼리&샌들");
+                $('#cat_second').text("신발");
+                $('#cat_third').text("슬리퍼&쪼리&샌들");
+                break;
+            case "31":
+                $('#menu_title').text("야구모자");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("야구 모자");
+                break;
+            case "32":
+                $('#menu_title').text("스냅백");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("스냅백");
+                break;
+            case "33":
+                $('#menu_title').text("비니");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("비니");
+                break;
+            case "34":
+                $('#menu_title').text("사파리/벙거지");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("사파리/벙거지");
+                break;
+            case "35":
+                $('#menu_title').text("페도라/증절모");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("페도라/증절모");
+                break;
+        }
+
+        // 메뉴타이틀에 따라 해당하는 메뉴의 클래스에 show를 추가
+        switch ($('#cat_second').text()){
+            case "상의":
+                $('#collapse0').addClass("show");
+                break;
+            case "아우터":
+                $('#collapse1').addClass("show");
+                break;
+            case "하의":
+                $('#collapse2').addClass("show");
+                break;
+            case "신발":
+                $('#collapse3').addClass("show");
+                break;
+            case "모자":
+                $('#collapse4').addClass("show");
                 break;
         }
     </script>

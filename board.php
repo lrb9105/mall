@@ -10,10 +10,10 @@
 
     // 데이터 가져오기(자주묻는 질문, 공지사항)
     if($board_no != '3'){
-        $sql = "SELECT TITLE, CONTENTS, SEQ, TYPE
+        $sql = "SELECT TITLE, CONTENTS, SEQ, TYPE, CRE_DATETIME
             FROM NOTICE_AND_FAQ
             WHERE TYPE = '$board_no'
-            ORDER BY SEQ
+            ORDER BY SEQ DESC
             ";
 
         if($board_no == '1'){
@@ -125,9 +125,9 @@ include 'head.php'
 
                                     <div class="card border-primary mb-3">
                                         <div id="heading<?echo $i?>" class="card-header p-0 border-0">
-                                            <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse<?echo $i?>" aria-expanded="false" aria-controls="collapse<?echo $i?>" class="btn btn-primary d-block text-left rounded-0"><?echo $i + 1 ?>. <? echo $row['TITLE'] ?></a></h4>
+                                            <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse<?echo $i?>" aria-expanded="false" aria-controls="collapse<?echo $i?>" class="btn btn-primary d-block text-left rounded-0"><? echo $row['TITLE'] ?><span style="float: right;">등록일: <?echo  substr($row['CRE_DATETIME'],0,10)?></span></a></h4>
                                         </div>
-                                        <div id="collapse<?echo $i?>" aria-labelledby="heading<?echo $i?>" data-parent="#accordion" class="collapse">
+                                        <div id="collapse<?echo $i?>" aria-labelledby="heading<?echo $i?>" data-parent="#accordion" <?if($i != 0){?>class="collapse"<?} else {?>class="collapse show"<?}?>>
                                             <div class="card-body"><? echo str_replace("\n","</br>",$row['CONTENTS']) ?></div>
                                             <? if($_SESSION['USER_TYPE'] == "0") { ?>
                                                 <div class="navbar-buttons" align="right" style="display: flex;">
@@ -185,8 +185,9 @@ include 'head.php'
                                         </tbody>
                                     </table>
                                     <hr/>
+                                    <?if($_SESSION['LOGIN_ID'] != ''){?>
                                     <div id="btn_write" class="navbar-collapse collapse d-none d-lg-block" style="text-align: right"><a href="writeFreeBoard.php" class="btn btn-primary navbar-btn">작성하기</a></div>
-
+                                    <?}?>
                                     <nav aria-label="Page navigation">
                                         <ul class="pagination" style="justify-content: center;">
                                             <li class="page-item"><a href="#" class="page-link">«</a></li>
@@ -280,7 +281,7 @@ include 'head.php'
                         for(let i = 0; i < json.seq.length; i++){
                             let space = '';
 
-                            for(let j= 0; j < (json.depth[i] - 1) * 2; j++){
+                            for(let j= 0; j < (json.depth[i] - 1) * 3; j++){
                                 space += '&nbsp';
                             }
                             if(space != ''){
@@ -325,6 +326,15 @@ include 'head.php'
 
 
             search(searchSelect, searchText);
+        });
+
+        // 검색창에서 엔터 입력 시 조회되도록
+        $("#search-text").keydown(function(key) {
+            if(key.keyCode == 13){
+                let searchSelect = $('#search-select').val();
+                let searchText = $('#search-text').val();
+                search(searchSelect, searchText);
+            }
         });
     </script>
 </body>

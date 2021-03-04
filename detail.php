@@ -2,35 +2,56 @@
 // 메뉴에 따라 카테고리, 메뉴명, active(클릭된 상태) 변경해주기
 $menu_no = $_GET['menu_no'];
 $product_no = $_GET['product_no'];
-$imgPath = null;
 
-switch ($product_no){
-    // 반팔
-    case "160":
-        $imgPath = "img/clothes/top/short/short_sleeves.jpg";
-        break;
-    // 긴팔
-    case "100":
-        $imgPath = "img/clothes/top/long/long_sleeves.jpg";
-        break;
-    // 민소매
-    case "110":
-        $imgPath = "img/clothes/top/sleeveless/sleeveless.jpg";
-        break;
-    // 셔츠
-    case "120":
-        $imgPath = "img/clothes/top/shirts/shirts.jpg";
-        break;
-    // 맨투맨
-    case "140":
-        $imgPath = "img/clothes/top/manToman/manToman.jpg";
-        break;
-    // 카라티셔츠
-    case "150":
-        $imgPath = "img/clothes/top/karaTshirts/karaTshirts.jpg";
-        break;
-}
-$referer = $_SERVER['HTTP_REFERER']
+$referer = $_SERVER['HTTP_REFERER'];
+
+// product_no에 해당하는 상품 정보 가져오기
+// mysql커넥션 연결
+$conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
+
+/* 데이터 가져오기 */
+// 상품정보
+$sqlProductInfo = "SELECT P.PRODUCT_SEQ,
+                P.FIRST_CATEGORY, 
+                P.SECOND_CATEGORY,
+                P.PRODUCT_NAME,
+                P.PRODUCT_PRICE,
+                P.PRODUCT_PRICE_SALE,
+                P.MATERIAL,
+                P.MANUFACTURER,
+                P.COUNTRY_OF_MANUFACTURER,
+                P.CLEANING_METHOD,
+                P.DETAIL_INFO,
+                P.CRE_DATETIME
+        FROM PRODUCT P
+        WHERE P.PRODUCT_SEQ = $product_no
+        ";
+$resultProductInfo = mysqli_query($conn, $sqlProductInfo);
+$rowProductInfo = mysqli_fetch_array($resultProductInfo);
+
+// 상품 수량 정보
+$sqlProductNumInfo = "SELECT PO.SEQ,
+                          PO.PRODUCT_SEQ,
+                          PO.COLOR,
+                          PO.SIZE,
+                          PO.QUANTITY,
+                          PO.CRE_DATETIME
+        FROM PRODUCT_OPTION PO
+        WHERE PO.PRODUCT_SEQ = $product_no
+        ";
+$option1 = mysqli_query($conn, $sqlProductNumInfo);
+$option2 = mysqli_query($conn, $sqlProductNumInfo);;
+
+// 상품 이미지 정보
+$sqlFileInfo = "SELECT F.SEQ,
+                       F.REF_SEQ,
+                       F.SAVE_PATH
+        FROM FILE F
+        WHERE F.REF_SEQ = $product_no
+        ";
+$resultFileInfo = mysqli_query($conn, $sqlFileInfo);
+$rowFileInfo = mysqli_fetch_array($resultFileInfo);
+
 ?>
 <script>
     if('<?echo $referer?>' == ''){
@@ -80,58 +101,13 @@ include 'head.php'
                         </ol>
                     </nav>
                 </div>
-                <div class="col-lg-2 order-2 order-lg-1">
-                    <!--
-                    *** MENUS AND FILTERS ***
-                    _________________________________________________________
-                    -->
-                    <div class="card sidebar-menu mb-4">
-                        <div class="card-header">
-                            <h3 class="h4 card-title">카테고리</h3>
-                        </div>
-                        <div class="card-body">
-                            <ul class="nav nav-pills flex-column category-menu" id="category-menu">
-                                <li><a href="category.php?menu_no=2" class="nav-link top">상의 <span class="badge badge-secondary">6</span></a>
-                                    <ul class="list-unstyled top_ul">
-                                        <li><a href="category.php?menu_no=5" class="nav-link" >반팔</a></li>
-                                        <li><a href="category.php?menu_no=6" class="nav-link" id="banpal">긴팔</a></li>
-                                        <li><a href="category.php?menu_no=7" class="nav-link">민소매</a></li>
-                                        <li><a href="category.php?menu_no=8" class="nav-link">셔츠</a></li>
-                                        <li><a href="category.php?menu_no=9" class="nav-link">맨투맨</a></li>
-                                        <li><a href="category.php?menu_no=10" class="nav-link">카라 티셔츠</a></li>
-                                        <li><a href="category.php?menu_no=11" class="nav-link">후드</a></li>
-                                        <li><a href="category.php?menu_no=12" class="nav-link">니트</a></li>
-                                        <li><a href="category.php?menu_no=13" class="nav-link">기타 상의</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="category.php?menu_no=3" class="nav-link outer">아우터 <span class="badge badge-light">0</span></a>
-                                    <ul class="list-unstyled outer_ul">
-                                        <li><a href="category.php?menu_no=14" class="nav-link">후드 집업</a></li>
-                                        <li><a href="category.php?menu_no=15" class="nav-link">라이더 자켓</a></li>
-                                        <li><a href="category.php?menu_no=16" class="nav-link">블루종/MA-1</a></li>
-                                        <li><a href="category.php?menu_no=17" class="nav-link">코트</a></li>
-                                        <li><a href="category.php?menu_no=18" class="nav-link">패딩</a></li>
-                                        <li><a href="category.php?menu_no=19" class="nav-link">트레이닝 상의</a></li>
-                                        <li><a href="category.php?menu_no=20" class="nav-link">기타 아우터</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="category.php?menu_no=4" class="nav-link bottom">바지  <span class="badge badge-secondary">0</span></a>
-                                    <ul class="list-unstyled bottom_ul">
-                                        <li><a href="category.php?menu_no=21" class="nav-link">데님 팬츠</a></li>
-                                        <li><a href="category.php?menu_no=22" class="nav-link">숏 팬츠</a></li>
-                                        <li><a href="category.php?menu_no=23" class="nav-link">슬랙스</a></li>
-                                        <li><a href="category.php?menu_no=24" class="nav-link">트레이닝 바지</a></li>
-                                        <li><a href="category.php?menu_no=25" class="nav-link">기타 바지</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                <?php
+                include 'sidebar.php'
+                ?>
                 <div class="col-lg-10 order-1 order-lg-2">
                     <div id="productMain" class="row">
                         <div class="col-md-6">
-                            <div class="item"> <img src="<? echo $imgPath?>" alt="" class="img-fluid"></div>
+                            <div class="item"> <img src="<? echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></div>
                             <!--<div data-slider-id="1" class="owl-carousel shop-detail-carousel">
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
@@ -150,28 +126,56 @@ include 'head.php'
                         </div>
                         <div class="col-md-6">
                             <div class="box">
-                                <h1 class="text-center" id="product_name">White  Armani</h1>
-                                <p class="price" id="price">$124.00</p>
+                                <h1 class="text-center">상품명: <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
+                                <div class="product-info">
+                                    <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo $rowProductInfo['PRODUCT_PRICE']?>원</del></span></p>
+                                    <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</span>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100?>%할인<em class="color-lightgrey">(-<?echo $rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE']?>원)</em></span>
+                                    </p>
+                                    <hr>
+                                    <div class="option1 form-inline">
+                                        <span>색상: </span>
+                                        <select class="form-control"  name="option1" id="option1" style="width: 85%; margin-left: 20px;">
+                                            <option value="">[선택]</option>
+                                            <?while($rowProductNumInfo = mysqli_fetch_array($option1)){?>
+                                                <option value="<?echo $rowProductNumInfo['COLOR']?>"><?echo $rowProductNumInfo['COLOR']?></option>
+                                            <?}?>
+                                        </select>
+                                    </div>
+                                    <div class="option2 form-inline">
+                                        <span>사이즈: </span>
+                                        <select class="form-control"  name="option1" id="option1" style="width: 85%; margin: 5px;">
+                                            <option value="">[선택]</option>
+                                            <?while($rowProductNumInfo = mysqli_fetch_array($option2)){?>
+                                                <option value="<?echo $rowProductNumInfo['SIZE']?>"><?echo $rowProductNumInfo['SIZE']?></option>
+                                            <?}?>
+                                        </select>
+                                    </div>
+                                    <div class="number form-inline">
+                                        <span>수량: </span>
+                                        <input id="product_number" type="number" class="form-control" style="margin-left: 20px;" value="1" min="1">
+                                    </div>
+                                    <br><br><br>
+                                    <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?></span><span>원</span></p>
+                                </div>
                                 <p class="text-center buttons"><a href="basket.php" class="btn btn-info"><i class="fa fa-first-order"></i> 바로구매</a><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
                             </div>
                         </div>
                         <!-- 작은이미지 - 클릭 할 때 해당 이미지로 메인 이미지 변경-->
-                        <!--<div class="col-md-6">
-                            <div class="box">
+                        <div class="col-md-6">
+                            <!--<div class="box">
                                 <h1 class="text-center" id="product_name">White  Armani</h1>
                                 <p class="goToDescription"><a href="#details" class="scroll-to">Scroll to product details, material &amp; care and sizing</a></p>
                                 <p class="price" id="price">$124.00</p>
                                 <p class="text-center buttons"><a href="basket.php" class="btn btn-info"><i class="fa fa-first-order"></i> 바로구매</a><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
-                            </div>
+                            </div> -->
+                            <br>
                             <div data-slider-id="1" class="owl-thumbs">
-                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
-                                <button class="owl-thumb-item"><img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></button>
+                                <?while($rowFileInfo = mysqli_fetch_array($resultFileInfo)){?>
+                                    <button class="owl-thumb-item"><img src="<?echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></button>
+                                <?}?>
                             </div>
-                        </div>-->
+                        </div>
                     </div>
                     <div id="details" class="box">
                         <div class="col-lg-12">
@@ -182,23 +186,7 @@ include 'head.php'
                             </ul>
                             <div id="pills-tabContent" class="tab-content">
                                 <div id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" class="tab-pane fade active show">
-                                    <p></p>
-                                    <h4>Product details</h4>
-                                    <p>White lace top, woven, has a round neck, short sleeves, has knitted lining attached</p>
-                                    <h4>Material &amp; care</h4>
-                                    <ul>
-                                        <li>Polyester</li>
-                                        <li>Machine wash</li>
-                                    </ul>
-                                    <h4>Size &amp; Fit</h4>
-                                    <ul>
-                                        <li>Regular fit</li>
-                                        <li>The model (height 5'8" and chest 33") is wearing a size S</li>
-                                    </ul>
-                                    <blockquote>
-                                        <p><em>Define style this season with Armani's new range of trendy tops, crafted with intricate details. Create a chic statement look by teaming this lace number with skinny jeans and pumps.</em><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
-                                    </blockquote>
-                                    <hr>
+                                    <?echo $rowProductInfo['DETAIL_INFO']?>
                                 </div>
                                 <div id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.<br>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
                                 <div id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
@@ -473,47 +461,74 @@ include 'jsfile.php'
                 $('#cat_second').text("바지");
                 $('#cat_third').text("기타 바지");
                 break;
+            case "28":
+                $('#menu_title').text("스니커즈");
+                $('#cat_second').text("신발");
+                $('#cat_third').text("스니커즈");
+                break;
+            case "29":
+                $('#menu_title').text("로퍼&구두");
+                $('#cat_second').text("신발");
+                $('#cat_third').text("로퍼&구두");
+                break;
+            case "30":
+                $('#menu_title').text("슬리퍼&쪼리&샌들");
+                $('#cat_second').text("신발");
+                $('#cat_third').text("슬리퍼&쪼리&샌들");
+                break;
+            case "31":
+                $('#menu_title').text("야구모자");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("야구 모자");
+                break;
+            case "32":
+                $('#menu_title').text("스냅백");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("스냅백");
+                break;
+            case "33":
+                $('#menu_title').text("비니");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("비니");
+                break;
+            case "34":
+                $('#menu_title').text("사파리/벙거지");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("사파리/벙거지");
+                break;
+            case "35":
+                $('#menu_title').text("페도라/증절모");
+                $('#cat_second').text("모자");
+                $('#cat_third').text("페도라/증절모");
+                break;
         }
 
-        productName = null;
-        price = null;
-
-        switch (productNo){
-            // 반팔
-            case "160":
-                productName = '기본 반팔';
-                price = '9,000원';
+        // 메뉴타이틀에 따라 해당하는 메뉴의 클래스에 show를 추가
+        switch ($('#cat_second').text()){
+            case "상의":
+                $('#collapse0').addClass("show");
                 break;
-            // 긴팔
-            case "100":
-                productName = '기본 긴팔';
-                price = '69,000원';
+            case "아우터":
+                $('#collapse1').addClass("show");
                 break;
-            // 민소매
-            case "110":
-                productName = '기본 민소매';
-                price = '7,000원';
+            case "하의":
+                $('#collapse2').addClass("show");
                 break;
-            // 셔츠
-            case "120":
-                productName = '기본 셔츠';
-                price = '23,000원';
+            case "신발":
+                $('#collapse3').addClass("show");
                 break;
-            // 맨투맨
-            case "140":
-                productName = '기본 맨투맨';
-                price = '50,000원';
-                break;
-            // 카라티셔츠
-            case "150":
-                productName = '기본 카라티셔츠';
-                price = '23,000원';
+            case "모자":
+                $('#collapse4').addClass("show");
                 break;
         }
 
-        $('#cat_four').text(productName);
-        $('#product_name').text(productName)
-        $('#price').text(price);
+
+        let origin_price = <?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>
+
+        // 수량이 변경 될 때 마다 총 금액 변경해줌
+        $('#product_number').on("change", function(){
+            $('#total_price').text($('#product_number').val() * parseInt(origin_price));
+        });
     </script>
 </body>
 </html>
