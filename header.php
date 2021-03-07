@@ -104,6 +104,7 @@
                                         <h5>상품</h5>
                                         <ul class="list-unstyled mb-3">
                                             <li class="nav-item"><a href="writeProduct.php" class="nav-link">상품 등록</a></li>
+                                            <li class="nav-item"><a href="orderManage.php" class="nav-link">주문관리</a></li>
                                         </ul>
                                     </div>
                             </li>

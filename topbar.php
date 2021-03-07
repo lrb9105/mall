@@ -18,6 +18,7 @@
                         <li class="list-inline-item" id="login"><a href="#" data-toggle="modal" data-target="#login-modal">로그인</a></li>
                         <li class="list-inline-item"><a href="register.php">회원가입</a></li>
                     <?}?>
+                    <li class="list-inline-item"><a href="mypage.php?mypage_no=1">마이페이지</a></li>
                     <li class="list-inline-item"><a href="contact.php">고객센터</a></li>
                     <li class="list-inline-item"><a href="#">찜한상품</a></li>
                 </ul>
@@ -97,7 +98,7 @@
                 url: '/mall/php/logoutComplete.php',
                 success: function (json) {
                     if (json.result == 'ok') {
-                        location.reload();
+                        location.href='index.php';
                     } else {
                         alert("로그아웃에 실패했습니다.");
                     }

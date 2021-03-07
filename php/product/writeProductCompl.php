@@ -38,6 +38,62 @@ $product_sizeArr = $_REQUEST['product_size'];
 $product_numberArr = $_REQUEST['product_number'];
 // 상세정보
 $contents = $_POST['contents'];
+//모델키
+$model_heightArr = $_REQUEST['model_height'];
+//모델 몸무게
+$model_weightArr = $_REQUEST['model_weight'];
+//모델 착용사이즈
+$model_sizeArr = $_REQUEST['model_size'];
+//치수 넣을 삼품 사이즈
+$sizeArr = $_REQUEST['size'];
+//상의-어깨길이
+$TOP_SHOULDER_SIZEArr = $_REQUEST['TOP_SHOULDER_SIZE'];
+//상의-가슴너비
+$TOP_CHEST_SIZEArr = $_REQUEST['TOP_CHEST_SIZE'];
+//상의-암홀길이
+$TOP_ARMHOLE_SIZEArr = $_REQUEST['TOP_ARMHOLE_SIZE'];
+//상의-팔길이
+$TOP_ARM_SIZEArr = $_REQUEST['TOP_ARM_SIZE'];
+//상의-총길이
+$TOP_TOTAL_LENGTHArr = $_REQUEST['TOP_TOTAL_LENGTH'];
+//아우터-총기장
+$OUTER_TOTAL_LENGTHArr = $_REQUEST['OUTER_TOTAL_LENGTH'];
+//아우터-어깨길이
+$OUTER_SHOULDER_SIZEArr = $_REQUEST['OUTER_SHOULDER_SIZE'];
+//아우터-가슴너비
+$OUTER__CHEST_SIZEArr = $_REQUEST['OUTER__CHEST_SIZE'];
+//아우터-소매길이
+$OUTER_SLEEVE_LENGTHArr = $_REQUEST['OUTER_SLEEVE_LENGTH'];
+//하의-허리단면
+$BOTTOM_WAIST_SIZEArr = $_REQUEST['BOTTOM_WAIST_SIZE'];
+//하의-총기장
+$BOTTOM_TOTAL_LENGTHArr = $_REQUEST['BOTTOM_TOTAL_LENGTH'];
+//하의-허벅지단면
+$BOTTOM_THIGH_SIZEArr = $_REQUEST['BOTTOM_THIGH_SIZE'];
+//하의-밑단단면
+$BOTTOM_HEM_SIZEArr = $_REQUEST['BOTTOM_HEM_SIZE'];
+//하의-밑위
+$BOTTOM_RISEArr = $_REQUEST['BOTTOM_RISE'];
+//모자-둘레
+$HAT_ROUNDArr = $_REQUEST['HAT_ROUND'];
+//모자-챙길이
+$HAT_LENGTHArr = $_REQUEST['HAT_LENGTH'];
+//모자-높이
+$HAT_HEIGHTArr = $_REQUEST['HAT_HEIGHT'];
+//핏
+$fit = $_POST['fit'];
+//두께
+$thickness= $_POST['thickness'];
+//신축성
+$elasticity = $_POST['elasticity'];
+//비침
+$reflection = $_POST['reflection'];
+//촉감
+$touch = $_POST['touch'];
+//계절
+$season = $_POST['season'];
+
+
 
 /* 입력값 출력 */
 /*// 상품명
@@ -75,13 +131,191 @@ for($i = 0; $i < count($product_numberArr); $i++){
 // 상세정보
 echo $contents = $_POST['contents'];*/
 
+/*//모델키
+for($i = 0; $i < count($product_numberArr); $i++){
+    echo $model_heightArr[$i] ."<br>";
+}
+//모델 몸무게
+for($i = 0; $i < count($model_weightArr); $i++){
+    echo $model_weightArr[$i] ."<br>";
+}
+//모델 착용사이즈
+for($i = 0; $i < count($model_sizeArr); $i++){
+    echo $model_sizeArr[$i] ."<br>";
+}
+//치수 넣을 삼품 사이즈
+for($i = 0; $i < count($sizeArr); $i++){
+    echo $sizeArr[$i] ."<br>";
+}
+//상의-어깨길이
+for($i = 0; $i < count($TOP_SHOULDER_SIZEArr); $i++){
+    echo $TOP_SHOULDER_SIZEArr[$i] ."<br>";
+}
+//상의-가슴너비
+for($i = 0; $i < count($TOP_CHEST_SIZEArr); $i++){
+    echo $TOP_CHEST_SIZEArr[$i] ."<br>";
+}
+//상의-암홀길이
+for($i = 0; $i < count($TOP_ARMHOLE_SIZEArr); $i++){
+    echo $TOP_ARMHOLE_SIZEArr[$i] ."<br>";
+}
+//상의-팔길이
+for($i = 0; $i < count(TOP_ARM_SIZE); $i++){
+    echo TOP_ARM_SIZE[$i] ."<br>";
+}
+//상의-총길이
+for($i = 0; $i < count($TOP_TOTAL_LENGTHArr); $i++){
+    echo $TOP_TOTAL_LENGTHArr[$i] ."<br>";
+}
+//아우터-총기장
+for($i = 0; $i < count($OUTER_TOTAL_LENGTHArr); $i++){
+    echo $OUTER_TOTAL_LENGTHArr[$i] ."<br>";
+}
+//아우터-어깨길이
+for($i = 0; $i < count($OUTER_SHOULDER_SIZEArr); $i++){
+    echo $OUTER_SHOULDER_SIZEArr[$i] ."<br>";
+}
+//아우터-가슴너비
+for($i = 0; $i < count($OUTER__CHEST_SIZEArr); $i++){
+    echo $OUTER__CHEST_SIZEArr[$i] ."<br>";
+}
+//아우터-소매길이
+for($i = 0; $i < count($OUTER_SLEEVE_LENGTHArr); $i++){
+    echo $OUTER_SLEEVE_LENGTHArr[$i] ."<br>";
+}
+//하의-허리단면
+for($i = 0; $i < count($BOTTOM_WAIST_SIZEArr); $i++){
+    echo $BOTTOM_WAIST_SIZEArr[$i] ."<br>";
+}
+//하의-총기장
+for($i = 0; $i < count($BOTTOM_TOTAL_LENGTHArr); $i++){
+    echo $BOTTOM_TOTAL_LENGTHArr[$i] ."<br>";
+}
+//하의-허벅지단면
+for($i = 0; $i < count($BOTTOM_THIGH_SIZEArr); $i++){
+    echo $BOTTOM_THIGH_SIZEArr[$i] ."<br>";
+}
+//하의-밑단단면
+for($i = 0; $i < count($BOTTOM_HEM_SIZEArr); $i++){
+    echo $BOTTOM_HEM_SIZEArr[$i] ."<br>";
+}
+//하의-밑위
+for($i = 0; $i < count($BOTTOM_RISEArr); $i++){
+    echo $BOTTOM_RISEArr[$i] ."<br>";
+}
+//모자-둘레
+for($i = 0; $i < count($HAT_ROUNDArr); $i++){
+    echo $HAT_ROUNDArr[$i] ."<br>";
+}
+//모자-챙길이
+for($i = 0; $i < count($HAT_LENGTHArr); $i++){
+    echo $HAT_LENGTHArr[$i] ."<br>";
+}
+//모자-높이
+for($i = 0; $i < count($HAT_HEIGHTArr); $i++){
+    echo $HAT_HEIGHTArr[$i] ."<br>";
+}
+//핏
+echo $fit."<br>";
+//두께
+echo $thickness."<br>";
+//신축성
+echo $elasticity."<br>";
+//비침
+echo $reflection."<br>";
+//촉감
+echo $touch."<br>";
+//계절
+echo $season."<br>";*/
+
+
+
 
 /* 입력값 db 저장 */
 //mysql연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 
 // PRODUCT 테이블
-$sqlInsertProduct = "
+$sqlInsertProduct = null;
+
+if($first_category == '2' || $first_category == '3'){
+    $sqlInsertProduct = "
+    INSERT INTO PRODUCT (
+                FIRST_CATEGORY, 
+                SECOND_CATEGORY,
+                PRODUCT_NAME,
+                PRODUCT_PRICE,
+                PRODUCT_PRICE_SALE,
+                MATERIAL,
+                MANUFACTURER,
+                COUNTRY_OF_MANUFACTURER,
+                CLEANING_METHOD,
+                DETAIL_INFO,
+                CRE_DATETIME,
+                THICKNESS,
+                REFLECTION,
+                ELASTICITY,
+                SEASON,
+                FIT
+    ) VALUES (
+            '$first_category', 
+            '$second_category', 
+            '$product_name',
+            '$product_price', 
+            '$product_price_sale',
+            '$product_material',
+            '$product_manufacture', 
+            '$country_of_manufacture', 
+            '$cleaning_method', 
+            '$contents',
+            NOW(),
+            '$thickness',
+            '$reflection',
+            '$elasticity',
+            '$season',
+            '$fit'
+    )";
+} elseif ($first_category == '4'){
+    $sqlInsertProduct = "
+    INSERT INTO PRODUCT (
+                FIRST_CATEGORY, 
+                SECOND_CATEGORY,
+                PRODUCT_NAME,
+                PRODUCT_PRICE,
+                PRODUCT_PRICE_SALE,
+                MATERIAL,
+                MANUFACTURER,
+                COUNTRY_OF_MANUFACTURER,
+                CLEANING_METHOD,
+                DETAIL_INFO,
+                CRE_DATETIME,
+                THICKNESS,
+                REFLECTION,
+                ELASTICITY,
+                SEASON,
+                TOUCH,
+                FIT
+    ) VALUES (
+            '$first_category', 
+            '$second_category', 
+            '$product_name',
+            '$product_price', 
+            '$product_price_sale',
+            '$product_material',
+            '$product_manufacture', 
+            '$country_of_manufacture', 
+            '$cleaning_method', 
+            '$contents',
+            NOW(),
+            '$thickness',
+            '$reflection',
+            '$elasticity',
+            '$season',
+            '$touch',
+            '$fit'
+    )";
+} else {
+    $sqlInsertProduct = "
     INSERT INTO PRODUCT (
                 FIRST_CATEGORY, 
                 SECOND_CATEGORY,
@@ -107,7 +341,18 @@ $sqlInsertProduct = "
             '$contents',
             NOW()
     )";
+}
+
 $resultInsertProduct = mysqli_query($conn, $sqlInsertProduct);
+
+// 결과값(실패 시 false 들어감)
+$result = $resultInsertProduct;
+
+if($result === false){
+    echo $sqlInsertProduct;
+    echo '<script>alert("실패$resultInsertProduct")</script>';
+    return;
+}
 
 // 결과값(실패 시 false 들어감)
 $result = $resultInsertProduct;
@@ -141,7 +386,122 @@ for($i=0; $i < count($product_colorArr); $i++){
     $result = $resultInsertOption;
 
     if($result === false){
-        echo '<script>alert("실패111")</script>';
+        echo $sqlInsertOption;
+        echo '<script>alert("실패$resultInsertOption")</script>';
+        return;
+    }
+}
+
+//PRODUCT_SIZE 테이블
+for($i=0; $i < count($sizeArr); $i++){
+    $sqlInsertSize = null;
+
+    if($first_category == '2'){
+        $sqlInsertSize = "
+        INSERT INTO PRODUCT_SIZE (
+                  PRODUCT_SEQ 
+                , TOP_SHOULDER_SIZE 
+                , TOP_CHEST_SIZE 
+                , TOP_ARMHOLE_SIZE 
+                , TOP_ARM_SIZE 
+                , TOP_TOTAL_LENGTH 
+                , SIZE
+        ) VALUES(
+                 $seqOfProduct
+                , $TOP_SHOULDER_SIZEArr[$i]
+                , $TOP_CHEST_SIZEArr[$i] 
+                , $TOP_ARMHOLE_SIZEArr[$i] 
+                , $TOP_ARM_SIZEArr[$i]
+                , $TOP_TOTAL_LENGTHArr[$i]
+                , '$sizeArr[$i]'
+        )";
+    } elseif($first_category == '3'){
+        $sqlInsertSize = "
+        INSERT INTO PRODUCT_SIZE (
+                  PRODUCT_SEQ 
+                , OUTER_SHOULDER_SIZE 
+                , OUTER__CHEST_SIZE 
+                , OUTER_SLEEVE_LENGTH 
+                , OUTER_TOTAL_LENGTH 
+                , SIZE
+        ) VALUES(
+                 $seqOfProduct
+                , $OUTER_SHOULDER_SIZEArr[$i] 
+                , $OUTER__CHEST_SIZEArr[$i]
+                , $OUTER_SLEEVE_LENGTHArr[$i] 
+                , $OUTER_TOTAL_LENGTHArr[$i] 
+                , '$sizeArr[$i]'
+        )";
+    } elseif($first_category == '4'){
+        $sqlInsertSize = "
+        INSERT INTO PRODUCT_SIZE (
+                  PRODUCT_SEQ 
+                , BOTTOM_WAIST_SIZE 
+                , BOTTOM_RISE 
+                , BOTTOM_THIGH_SIZE 
+                , BOTTOM_HEM_SIZE 
+                , BOTTOM_TOTAL_LENGTH 
+                , SIZE
+        ) VALUES(
+                 $seqOfProduct
+                , $BOTTOM_WAIST_SIZEArr[$i] 
+                , $BOTTOM_RISEArr[$i] 
+                , $BOTTOM_THIGH_SIZEArr[$i] 
+                , $BOTTOM_HEM_SIZEArr[$i] 
+                , $BOTTOM_TOTAL_LENGTHArr[$i] 
+                , '$sizeArr[$i]'
+        )";
+    } elseif($first_category == '27'){
+        $sqlInsertSize = "
+        INSERT INTO PRODUCT_SIZE (
+                  PRODUCT_SEQ 
+                , HAT_ROUND 
+                , HAT_LENGTH 
+                , HAT_HEIGHT 
+                , SIZE
+        ) VALUES(
+                 $seqOfProduct
+                , $HAT_ROUNDArr[$i] 
+                , $HAT_LENGTHArr[$i] 
+                , $HAT_HEIGHTArr[$i] 
+                , '$sizeArr[$i]'
+        )";
+    }
+
+    $resultInsertSize = mysqli_query($conn, $sqlInsertSize);
+
+    // 결과값(실패 시 false 들어감)
+    $result = $resultInsertSize;
+
+    if($result === false){
+        echo $sqlInsertSize;
+
+        echo '<script>alert("실패$resultInsertSize")</script>';
+        return;
+    }
+}
+//PRODUCT_MODEL_SIZE 테이블
+for($i=0; $i < count($model_heightArr); $i++){
+    $sqlInsertModelSize = "
+        INSERT INTO PRODUCT_MODEL_SIZE (
+                  PRODUCT_SEQ 
+                , MODEL_HEIGHT 
+                , MODEL_WEIGHT 
+                , MODEL_SIZE
+        ) VALUES(
+                $seqOfProduct
+                , $model_heightArr[$i]
+                , $model_weightArr[$i]
+                , '$model_sizeArr[$i]'
+        )";
+    $resultInsertModelSize = mysqli_query($conn, $sqlInsertModelSize);
+
+    // 결과값(실패 시 false 들어감)
+    $result = $resultInsertModelSize;
+
+    if($result === false){
+        echo $sqlInsertModelSize;
+        echo '<script>alert("실패$resultInsertModelSize")</script>';
         return;
     }
 }
@@ -161,8 +521,8 @@ if (isset($_FILES)) {
     $saved_path = null; //저장경로
 
     if ( $error > 0 ) {
-        echo "Error: " . $error . "<br>";
-        return;
+        /*echo "Error: " . $error . "<br>";
+        return;*/
     }
     else {
         $temp = explode(".", $name);
@@ -170,13 +530,13 @@ if (isset($_FILES)) {
         $saved_name = $name."_".date("YmdHis").'.'.$extension;;
 
         if ( ($size/1024/1024) < 5. && in_array($extension, $allowedExts) ) {
-            echo "Upload: " . $name . "<br>";
+            /*echo "Upload: " . $name . "<br>";
             echo "Type: " . $type . "<br>";
             echo "Size: " . ($size / 1024 / 1024) . " Mb<br>";
-            echo "Stored in: " . $tmp_name. "<br>";
+            echo "Stored in: " . $tmp_name. "<br>";*/
             if (file_exists($_SERVER['DOCUMENT_ROOT']."/mall/img/clothes/" . $saved_name)) {
-                echo $name . " already exists. ";
-                return;
+                /*echo $name . " already exists. ";
+                return;*/
             }
             else {
                 if(move_uploaded_file($tmp_name, $_SERVER['DOCUMENT_ROOT']."/mall/img/clothes/" . $saved_name)){
@@ -205,20 +565,20 @@ if (isset($_FILES)) {
                     // 결과값(실패 시 false 들어감)
                     $result = $resultInsertFileRep;
 
-                    echo "Stored in: " . $_SERVER['DOCUMENT_ROOT']."/mall/img/clothes/" . $saved_name;
+                   /* echo "Stored in: " . $_SERVER['DOCUMENT_ROOT']."/mall/img/clothes/" . $saved_name;*/
                 } else{
                     echo "실패". $_SERVER['DOCUMENT_ROOT']."/mall/img/clothes/" . $saved_name;
                 }
             }
         }
         else {
-            echo ($size/1024/1024) . " Mbyte is bigger than 2 Mb ";
-            echo $extension . "format file is not allowed to upload ! ";
+            /*echo ($size/1024/1024) . " Mbyte is bigger than 2 Mb ";
+            echo $extension . "format file is not allowed to upload ! ";*/
         }
     }
 }
 else {
-    echo "File is not selected";
+    /*echo "File is not selected";*/
 }
 
 // 상세이미지 업로드(이미지 경로 저장)
@@ -238,7 +598,6 @@ for($i = 0; $i < count($_FILES['file_detail']['name']); $i++){
 
     if ( $error > 0 ) {
         echo "Error: " . $error . "<br>";
-        return;
     }
     else {
         $temp = explode(".", $name);
@@ -247,8 +606,8 @@ for($i = 0; $i < count($_FILES['file_detail']['name']); $i++){
 
         if ( ($size/1024/1024) < 5. && in_array($extension, $allowedExts) ) {
             if (file_exists($_SERVER['DOCUMENT_ROOT']."/mall/img/clothes/" . $saved_name_detail)) {
-                echo $name . " already exists. ";
-                return;
+                /*echo $name . " already exists. ";
+                return;*/
             }
             else {
                 if(move_uploaded_file($tmp_name, $fileDetail . $saved_name_detail)){
@@ -278,15 +637,15 @@ for($i = 0; $i < count($_FILES['file_detail']['name']); $i++){
                     // 결과값(실패 시 false 들어감)
                     $result = $resultInsertFileRep;
 
-                    echo "Stored in: " . $fileDetail . $saved_name_detail;
+                    /*echo "Stored in: " . $fileDetail . $saved_name_detail;*/
                 } else{
                     echo "실패". $fileDetail . $saved_name_detail;
                 }
             }
         }
         else {
-            echo ($size/1024/1024) . " Mbyte is bigger than 2 Mb ";
-            echo $extension . "format file is not allowed to upload ! ";
+            /*echo ($size/1024/1024) . " Mbyte is bigger than 2 Mb ";
+            echo $extension . "format file is not allowed to upload ! ";*/
         }
 
     }
@@ -299,5 +658,3 @@ if ($result === false) {
     echo '<script>alert("작성 완료했습니다")</script>';
 }
 echo "<script> document.location.href='/mall/category.php?menu_no=$second_category'</script>";
-
-return;

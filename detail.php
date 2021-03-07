@@ -22,7 +22,13 @@ $sqlProductInfo = "SELECT P.PRODUCT_SEQ,
                 P.COUNTRY_OF_MANUFACTURER,
                 P.CLEANING_METHOD,
                 P.DETAIL_INFO,
-                P.CRE_DATETIME
+                P.CRE_DATETIME,
+                P.THICKNESS,
+                P.REFLECTION,
+                P.ELASTICITY,
+                P.SEASON,
+                P.FIT,
+                P.TOUCH
         FROM PRODUCT P
         WHERE P.PRODUCT_SEQ = $product_no
         ";
@@ -38,6 +44,7 @@ $sqlProductNumInfo = "SELECT PO.SEQ,
                           PO.CRE_DATETIME
         FROM PRODUCT_OPTION PO
         WHERE PO.PRODUCT_SEQ = $product_no
+        AND QUANTITY > 0
         ";
 $option1 = mysqli_query($conn, $sqlProductNumInfo);
 $option2 = mysqli_query($conn, $sqlProductNumInfo);;
@@ -51,6 +58,42 @@ $sqlFileInfo = "SELECT F.SEQ,
         ";
 $resultFileInfo = mysqli_query($conn, $sqlFileInfo);
 $rowFileInfo = mysqli_fetch_array($resultFileInfo);
+$repImgSrc = $rowFileInfo['SAVE_PATH'];
+
+// 상품 치수정보
+$sqlSizeInfo = "SELECT PRODUCT_SEQ 
+                , TOP_SHOULDER_SIZE 
+                , TOP_CHEST_SIZE 
+                , TOP_ARMHOLE_SIZE 
+                , TOP_ARM_SIZE 
+                , TOP_TOTAL_LENGTH 
+                , OUTER_SHOULDER_SIZE 
+                , OUTER__CHEST_SIZE 
+                , OUTER_SLEEVE_LENGTH 
+                , OUTER_TOTAL_LENGTH 
+                , BOTTOM_WAIST_SIZE 
+                , BOTTOM_RISE 
+                , BOTTOM_THIGH_SIZE 
+                , BOTTOM_HEM_SIZE 
+                , BOTTOM_TOTAL_LENGTH 
+                , HAT_ROUND 
+                , HAT_LENGTH 
+                , HAT_HEIGHT 
+                , SIZE
+        FROM PRODUCT_SIZE
+        WHERE PRODUCT_SEQ = $product_no
+        ";
+$resultSizeInfo = mysqli_query($conn, $sqlSizeInfo);
+
+// 모델정보
+$sqlModelInfo = "SELECT PRODUCT_SEQ 
+                , MODEL_HEIGHT 
+                , MODEL_WEIGHT 
+                , MODEL_SIZE
+        FROM PRODUCT_MODEL_SIZE
+        WHERE PRODUCT_SEQ = $product_no
+        ";
+$resultModelInfo = mysqli_query($conn, $sqlModelInfo);
 
 ?>
 <script>
@@ -107,7 +150,7 @@ include 'head.php'
                 <div class="col-lg-10 order-1 order-lg-2">
                     <div id="productMain" class="row">
                         <div class="col-md-6">
-                            <div class="item"> <img src="<? echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></div>
+                            <div class="item"> <img id="img_rep" src="<? echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></div>
                             <!--<div data-slider-id="1" class="owl-carousel shop-detail-carousel">
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
@@ -125,41 +168,53 @@ include 'head.php'
                             <!-- /.ribbon-->
                         </div>
                         <div class="col-md-6">
-                            <div class="box">
-                                <h1 class="text-center">상품명: <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
-                                <div class="product-info">
-                                    <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo $rowProductInfo['PRODUCT_PRICE']?>원</del></span></p>
-                                    <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</span>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100?>%할인<em class="color-lightgrey">(-<?echo $rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE']?>원)</em></span>
-                                    </p>
-                                    <hr>
-                                    <div class="option1 form-inline">
-                                        <span>색상: </span>
-                                        <select class="form-control"  name="option1" id="option1" style="width: 85%; margin-left: 20px;">
-                                            <option value="">[선택]</option>
-                                            <?while($rowProductNumInfo = mysqli_fetch_array($option1)){?>
-                                                <option value="<?echo $rowProductNumInfo['COLOR']?>"><?echo $rowProductNumInfo['COLOR']?></option>
-                                            <?}?>
-                                        </select>
+                            <form method="post" action="checkout4.php">
+                                <div class="box">
+                                    <h1 class="text-center">상품명: <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
+                                    <div class="product-info">
+                                        <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo $rowProductInfo['PRODUCT_PRICE']?>원</del></span></p>
+                                        <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</span>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100?>%할인<em class="color-lightgrey">(-<?echo $rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE']?>원)</em></span>
+                                        </p>
+                                        <hr>
+                                        <div class="option1 form-inline">
+                                            <span>색상: </span>
+                                            <select class="form-control"  name="option1" id="option1" style="width: 85%; margin-left: 20px;">
+                                                <option value="">[선택]</option>
+                                                <?while($rowProductNumInfo = mysqli_fetch_array($option1)){?>
+                                                    <option value="<?echo $rowProductNumInfo['COLOR']?>"><?echo $rowProductNumInfo['COLOR']?></option>
+                                                <?}?>
+                                            </select>
+                                        </div>
+                                        <div class="option2 form-inline">
+                                            <span>사이즈: </span>
+                                            <select class="form-control"  name="option2" id="option2" style="width: 85%; margin: 5px;">
+                                                <option value="">[선택]</option>
+                                                <?while($rowProductNumInfo = mysqli_fetch_array($option2)){?>
+                                                    <option value="<?echo $rowProductNumInfo['SIZE']?>"><?echo $rowProductNumInfo['SIZE']?></option>
+                                                <?}?>
+                                            </select>
+                                        </div>
+                                        <div class="number form-inline">
+                                            <span>수량: </span>
+                                            <input id="product_number" name="product_number" type="number" class="form-control" style="margin-left: 20px;" value="1" min="1">
+                                        </div>
+                                        <div class="number form-inline">
+                                            <span>배송비 <br>결제:</span>
+                                            <select class="form-control"  name="delivery_payment" id="delivery_payment" style="width: 70%; margin: 5px;">
+                                                <option value="">[선택]</option>
+                                                <option value="0">결제시 2,500원 함께 선결제</option>
+                                                <option value="1">착불</option>
+                                            </select>
+                                        </div>
+                                        <br><br><br>
+                                        <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?></span><span>원</span></p>
+                                        <input name="product_no" type="number" value="<?echo $product_no?>" hidden>
+                                        <input name="menu_no" type="number" value="<?echo $menu_no?>" hidden>
                                     </div>
-                                    <div class="option2 form-inline">
-                                        <span>사이즈: </span>
-                                        <select class="form-control"  name="option1" id="option1" style="width: 85%; margin: 5px;">
-                                            <option value="">[선택]</option>
-                                            <?while($rowProductNumInfo = mysqli_fetch_array($option2)){?>
-                                                <option value="<?echo $rowProductNumInfo['SIZE']?>"><?echo $rowProductNumInfo['SIZE']?></option>
-                                            <?}?>
-                                        </select>
-                                    </div>
-                                    <div class="number form-inline">
-                                        <span>수량: </span>
-                                        <input id="product_number" type="number" class="form-control" style="margin-left: 20px;" value="1" min="1">
-                                    </div>
-                                    <br><br><br>
-                                    <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?></span><span>원</span></p>
+                                    <p class="text-center buttons"><input type="submit" class="btn btn-info" value="바로구매"><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
                                 </div>
-                                <p class="text-center buttons"><a href="basket.php" class="btn btn-info"><i class="fa fa-first-order"></i> 바로구매</a><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
-                            </div>
+                            </form>
                         </div>
                         <!-- 작은이미지 - 클릭 할 때 해당 이미지로 메인 이미지 변경-->
                         <div class="col-md-6">
@@ -171,8 +226,9 @@ include 'head.php'
                             </div> -->
                             <br>
                             <div data-slider-id="1" class="owl-thumbs">
+                                <button onclick="changeImg('<?echo $repImgSrc?>')" class="owl-thumb-item"><img src="<?echo $repImgSrc?>" alt="" class="img-fluid"></button>
                                 <?while($rowFileInfo = mysqli_fetch_array($resultFileInfo)){?>
-                                    <button class="owl-thumb-item"><img src="<?echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></button>
+                                    <button onclick="changeImg('<?echo $rowFileInfo['SAVE_PATH']?>')" class="owl-thumb-item"><img src="<?echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></button>
                                 <?}?>
                             </div>
                         </div>
@@ -180,19 +236,276 @@ include 'head.php'
                     <div id="details" class="box">
                         <div class="col-lg-12">
                             <ul id="pills-tab" role="tablist" class="nav nav-pills nav-justified">
-                                <li class="nav-item" ><a id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="false" class="nav-link active">상세정보</a></li>
-                                <li class="nav-item" ><a id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false" class="nav-link">후기</a></li>
-                                <li class="nav-item" ><a id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false" class="nav-link">Q&A</a></li>
+                                <li class="nav-item" ><a id="detail-info-tab" data-toggle="pill" href="#detail-info" role="tab" aria-controls="detail-info" aria-selected="false" class="nav-link active">상세정보</a></li>
+                                <li class="nav-item" ><a id="review-tab" data-toggle="pill" href="#review" role="tab" aria-controls="review" aria-selected="false" class="nav-link">후기</a></li>
+                                <li class="nav-item" ><a id="qanda-tab" data-toggle="pill" href="#qanda" role="tab" aria-controls="qanda" aria-selected="false" class="nav-link">Q&A</a></li>
                             </ul>
                             <div id="pills-tabContent" class="tab-content">
-                                <div id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" class="tab-pane fade active show">
-                                    <?echo $rowProductInfo['DETAIL_INFO']?>
+                                <div id="detail-info" role="tabpanel" aria-labelledby="detail-info-tab" class="tab-pane fade active show">
+                                    <div>
+                                        <?echo $rowProductInfo['DETAIL_INFO']?>
+                                    </div>
+                                    <br><br><br><br><br>
+                                    <!-- 사이즈 정보 -->
+                                    <div class="col-lg-12">
+                                        <?if($rowProductInfo['FIRST_CATEGORY'] != '26'){?>
+                                            <div class="table-size" style="text-align: center;">
+                                                <div style="font-size: 17px; padding-bottom: 10px; text-align: left; padding-top: 10px; padding-left: 10px; padding-right: 10px">
+                                                    <strong>사이즈정보</strong>
+                                                </div>
+                                                <table height="120" cellspacing="0" cellpadding="0" width="100%" border="0">
+                                                    <tbody>
+                                                    <tr align="center">
+                                                        <td width="3%" style="border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid">&nbsp;</td>
+                                                        <td height="58" width="10%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">
+                                                            <div style="text-align: left" id="info_title"></div>
+                                                        </td>
+                                                        <!--상의-->
+                                                        <?if($rowProductInfo['FIRST_CATEGORY'] == '2'){?>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">어깨</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">가슴</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">소매</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">암홀</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이</td>
+                                                            <!--아우터-->
+                                                        <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '3'){?>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">어깨</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">가슴</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">소매</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이</td>
+                                                            <!--바지-->
+                                                        <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '4'){?>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">허리단면</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">밑위</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">허벅지단면</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">밑단단면</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이</td>
+                                                            <!--모자-->
+                                                        <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '27'){?>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">둘레</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">높이</td>
+                                                        <?}?>
+                                                    </tr>
+                                                    <!--상의-->
+                                                    <?if($rowProductInfo['FIRST_CATEGORY'] == '2'){?>
+                                                        <?while($rowSizeInfo = mysqli_fetch_array($resultSizeInfo)){?>
+                                                            <tr align="center">
+                                                                <td width="3%" style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">&nbsp;</td>
+                                                                <td style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                                    <div style="text-align: left"><?echo $rowSizeInfo['SIZE'];?></div>
+                                                                </td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['TOP_SHOULDER_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['TOP_CHEST_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['TOP_ARM_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['TOP_ARMHOLE_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['TOP_TOTAL_LENGTH'];?></td>
+                                                            </tr>
+                                                        <?}?>
+                                                        <!--아우터-->
+                                                    <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '3'){?>
+                                                        <?while($rowSizeInfo = mysqli_fetch_array($resultSizeInfo)){?>
+                                                            <tr align="center">
+                                                                <td width="3%" style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">&nbsp;</td>
+                                                                <td style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                                    <div style="text-align: left"><?echo $rowSizeInfo['SIZE'];?></div>
+                                                                </td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['OUTER_SHOULDER_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['OUTER__CHEST_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['OUTER_SLEEVE_LENGTH'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['OUTER_TOTAL_LENGTH'];?></td>
+                                                            </tr>
+                                                        <?}?>
+                                                        <!--바지-->
+                                                    <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '4'){?>
+                                                        <?while($rowSizeInfo = mysqli_fetch_array($resultSizeInfo)){?>
+                                                            <tr align="center">
+                                                                <td width="3%" style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">&nbsp;</td>
+                                                                <td style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                                    <div style="text-align: left"><?echo $rowSizeInfo['SIZE'];?></div>
+                                                                </td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['BOTTOM_WAIST_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['BOTTOM_RISE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['BOTTOM_THIGH_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['BOTTOM_HEM_SIZE'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['BOTTOM_TOTAL_LENGTH'];?></td>
+                                                            </tr>
+                                                        <?}?>
+                                                        <!--모자-->
+                                                    <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '27'){?>
+                                                        <?while($rowSizeInfo = mysqli_fetch_array($resultSizeInfo)){?>
+                                                            <tr align="center">
+                                                                <td width="3%" style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">&nbsp;</td>
+                                                                <td style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                                    <div style="text-align: left"><?echo $rowSizeInfo['SIZE'];?></div>
+                                                                </td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['HAT_ROUND'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['HAT_LENGTH'];?></td>
+                                                                <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowSizeInfo['HAT_HEIGHT'];?></td>
+                                                            </tr>
+                                                        <?}?>
+                                                    <?}?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <?}?>
+                                        <p>&nbsp;</p>
+                                        <p style="margin-bottom: 7px; margin-top: 7px">&nbsp;</p>
+
+                                        <!-- 모델정보-->
+                                        <?if($rowProductInfo['FIRST_CATEGORY'] != '27'){?>
+                                        <div class="table-size" style="text-align: center;">
+                                            <div style="font-size: 17px; padding-bottom: 10px; text-align: left; padding-top: 10px; padding-left: 10px; padding-right: 10px">
+                                                <strong>모델 착용정보</strong>
+                                            </div>
+                                            <table height="120" cellspacing="0" cellpadding="0" width="100%" border="0">
+                                                <tbody>
+                                                <tr align="center">
+                                                    <td width="3%" style="border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid">&nbsp;</td>
+
+                                                    <!--상의-->
+                                                    <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">키(cm)</td>
+                                                    <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">몸무게(kg)</td>
+                                                    <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">착용사이즈</td>
+                                                </tr>
+                                                <?while($rowModelInfo = mysqli_fetch_array($resultModelInfo)){?>
+                                                    <tr align="center">
+                                                        <td width="3%" style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">&nbsp;</td>
+                                                        <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowModelInfo['MODEL_HEIGHT'];?></td>
+                                                        <td style="font-size: 14px; border-bottom: rgb(232,232,232) 1px solid"><?echo $rowModelInfo['MODEL_WEIGHT'];?></td>
+                                                        <td style="font-size: 15px; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                            <div style="text-align: center"><?echo $rowModelInfo['MODEL_SIZE'];?></div>
+                                                        </td>
+                                                    </tr>
+                                                <?}?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <?}?>
+
+                                        <p>&nbsp;</p>
+                                        <p style="margin-bottom: 7px; margin-top: 7px">&nbsp;</p>
+
+                                        <!--상품정보-->
+                                        <div class="table-size">
+                                            <div style="font-size: 17px; padding-bottom: 10px; text-align: left; padding-top: 10px; padding-left: 10px; padding-right: 10px">
+                                                <strong>상품정보</strong></div>
+                                            <table cellspacing="0" cellpadding="0" width="1000" border="0">
+                                                <tbody>
+                                                <tr align="center">
+                                                    <td width="2%"
+                                                        style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td height="58" width="12%"
+                                                        style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                        <div style="text-align: left">소재</div>
+                                                    </td>
+                                                    <td width="2%"
+                                                        style="font-size: 14px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(232,232,232) 1px solid">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td width="84%" align="left"
+                                                        style="font-size: 14px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(232,232,232) 1px solid">
+                                                        <?echo $rowProductInfo['MATERIAL']?>
+                                                    </td>
+                                                </tr>
+                                                <?if($rowProductInfo['FIRST_CATEGORY'] != '26' && $rowProductInfo['FIRST_CATEGORY'] != '27') { ?>
+                                                <tr align="center">
+                                                    <td width="2%"
+                                                        style="font-size: 15px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td height="105"
+                                                        style="font-size: 15px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                        <div style="text-align: left">정보</div>
+                                                    </td>
+                                                    <td width="2%"
+                                                        style="font-size: 14px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td align="left"
+                                                        style="font-size: 14px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; -ms-word-break: keep-all">
+                                                        신축성 : <?echo $rowProductInfo['ELASTICITY']?> / 두께감 : <?echo $rowProductInfo['THICKNESS']?>
+                                                        <div style="text-align: left; -ms-word-break: keep-all">사이즈 : <?echo $rowProductInfo['FIT']?>
+                                                            / 비침여부 : <?echo $rowProductInfo['REFLECTION']?>
+                                                        </div>
+                                                        <?if($rowProductInfo['FIRST_CATEGORY'] == '4'){?>
+                                                            <div style="text-align: left; -ms-word-break: keep-all">촉감 :
+                                                                <?echo $rowProductInfo['TOUCH']?>
+                                                            </div>
+                                                        <?}?>
+                                                    </td>
+                                                </tr>
+                                                <tr align="center">
+                                                    <td width="2%"
+                                                        style="font-size: 15px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td style="font-size: 15px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                        <div style="text-align: left">계절</div>
+                                                    </td>
+                                                    <td width="2%"
+                                                        style="font-size: 14px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td align="left"
+                                                        style="font-size: 14px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; -ms-word-break: keep-all">
+                                                        <?echo $rowProductInfo['SEASON']?>
+                                                    </td>
+                                                </tr>
+                                                <?}?>
+                                                <tr align="center">
+                                                    <td width="2%"
+                                                        style="font-size: 15px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td height="65"
+                                                        style="font-size: 15px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700; -ms-word-break: keep-all">
+                                                        <div style="text-align: left">세탁방법 및</div>
+                                                        <div style="text-align: left; -ms-word-break: keep-all">주의사항
+                                                        </div>
+                                                    </td>
+                                                    <td width="2%"
+                                                        style="font-size: 14px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td align="left"
+                                                        style="font-size: 14px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; -ms-word-break: keep-all">
+                                                        <?echo $rowProductInfo['CLEANING_METHOD']?>
+                                                    </td>
+                                                </tr>
+                                                <tr align="center"></tr>
+                                                <tr align="center">
+                                                    <td width="2%"
+                                                        style="font-size: 15px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td height="65"
+                                                        style="font-size: 15px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid; font-weight: 700; -ms-word-break: keep-all">
+                                                        <div style="text-align: left">제조국 및</div>
+                                                        <div style="text-align: left; -ms-word-break: keep-all">제조자
+                                                        </div>
+                                                    </td>
+                                                    <td width="2%"
+                                                        style="font-size: 14px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td align="left"
+                                                        style="font-size: 14px; vertical-align: middle; border-bottom: rgb(232,232,232) 1px solid">
+                                                        <?echo $rowProductInfo['COUNTRY_OF_MANUFACTURER']?>  / <?echo $rowProductInfo['MANUFACTURER']?>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <p>&nbsp;</p>
+                                        <p style="margin-bottom: 7px; margin-top: 7px">&nbsp;</p>
+                                    </div>
                                 </div>
-                                <div id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.<br>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
-                                <div id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
-                                <div id="pills-marketing" role="tabpanel" aria-labelledby="pills-marketing-tab" class="tab-pane fade ">Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche high life echo park Austin. Cred vinyl keffiyeh DIY salvia PBR, banh mi before they sold out farm-to-table VHS viral locavore cosby sweater. Lomo wolf viral, mustache readymade thundercats keffiyeh craft beer marfa ethical. Wolf salvia freegan, sartorial keffiyeh echo park vegan.<br>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
+                                <div id="review" role="tabpanel" aria-labelledby="review-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.<br>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
+                                <div id="qanda" role="tabpanel" aria-labelledby="qanda-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
                             </div>
-                        </div>
                     </div>
 
 
@@ -338,6 +651,10 @@ include 'jsfile.php'
             }
             console.log(item);
         });
+
+        function changeImg(src){
+            $('#img_rep').attr("src",src);
+        }
 
         switch (menuNo){
             case "2":
@@ -507,18 +824,23 @@ include 'jsfile.php'
         switch ($('#cat_second').text()){
             case "상의":
                 $('#collapse0').addClass("show");
+                $('#info_title').text("상의");
                 break;
             case "아우터":
                 $('#collapse1').addClass("show");
+                $('#info_title').text("아우터");
                 break;
-            case "하의":
+            case "바지":
                 $('#collapse2').addClass("show");
+                $('#info_title').text("바지");
                 break;
             case "신발":
                 $('#collapse3').addClass("show");
+                $('#info_title').text("신발");
                 break;
             case "모자":
                 $('#collapse4').addClass("show");
+                $('#info_title').text("모자");
                 break;
         }
 
