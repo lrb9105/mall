@@ -21,6 +21,7 @@
                     <li class="list-inline-item"><a href="mypage.php?mypage_no=1">마이페이지</a></li>
                     <li class="list-inline-item"><a href="contact.php">고객센터</a></li>
                     <li class="list-inline-item"><a href="#">찜한상품</a></li>
+                    <li class="list-inline-item"><a href="viewRecent.php">최근본상품</a></li>
                 </ul>
             </div>
         </div>
@@ -45,6 +46,10 @@
                         <p class="text-center">
                             <button id="btn_login" class="btn btn-primary"><i class="fa fa-sign-in"></i> 로그인</button>
                         </p>
+                        <!-- 로그인 상태 유지-->
+                        <div class="form-group">
+                            <input name="auto_login" id="auto_login" type="checkbox" > <label for="auto_login">로그인 상태 유지</label></p>
+                        </div>
                     </div>
                     <p class="text-center text-muted">아직 회원이 아니신가요?</p>
                     <p class="text-center text-muted"><a href="register.php"><strong>회원가입 하러가기</strong></a></p>
@@ -62,12 +67,17 @@
             dataType: 'json',
             url: '/mall/php/loginComplete.php',
             data: {
-                login_id: $('#email-modal').val()
+                  login_id: $('#email-modal').val()
                 , password: $('#password-modal').val()
+                , checked: $('#auto_login').is(":checked")
             },
 
             success: function (json) {
                 if (json.result == 'ok') {
+                    // 자동로그인 체크박스 클릭 되어있다면 id, pw 쿠키에 저장하기
+                    if($('#auto_login').is(":checked")){
+
+                    }
                     alert("로그인에 성공했습니다.");
                     // 로그인 -> 로그아웃으로 변경
                     location.reload();

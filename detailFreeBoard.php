@@ -1,5 +1,9 @@
 <?php
-//자유게시판 상세페이지
+session_start();
+
+$login_id = $_SESSION['LOGIN_ID'];
+
+//자유게시판 상세페이지번호
 $seq = $_GET['seq'];
 
 $server = $_SERVER['DOCUMENT_ROOT'];
@@ -7,9 +11,27 @@ $server = $_SERVER['DOCUMENT_ROOT'];
 // mysql커넥션 연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 
-//조회수 없데이트
-$sql2 = "UPDATE FREE_BOARD SET CNT =  IFNULL(CNT,0) + 1 WHERE SEQ = '$seq'";
-$result_comment = mysqli_query($conn, $sql2);
+$viewRecentList = $_COOKIE['FREE_BOARD_'.$login_id];
+
+// 쿠키가 있다면
+if($viewRecentList != null && $viewRecentList != ''){
+    // 해당 게시글이 쿠키에 없다면
+    if(strpos($viewRecentList, $seq.',') === false){
+        $viewRecentList = $viewRecentList.$seq.',';
+        setcookie('FREE_BOARD_'.$login_id, $viewRecentList, time() + 3600*24, '/');
+
+        //조회수 없데이트
+        $sql2 = "UPDATE FREE_BOARD SET CNT =  IFNULL(CNT,0) + 1 WHERE SEQ = '$seq'";
+        $result_comment = mysqli_query($conn, $sql2);
+    }
+} else{ //쿠키가 없다면
+    // 쿠키에 추가
+    setcookie('FREE_BOARD_'.$login_id, $seq.',', time() + 3600*24, '/');
+
+    //조회수 없데이트
+    $sql2 = "UPDATE FREE_BOARD SET CNT =  IFNULL(CNT,0) + 1 WHERE SEQ = '$seq'";
+    $result_comment = mysqli_query($conn, $sql2);
+}
 
 // 데이터 가져오기 - 자유게시판
 $sql = "SELECT FB.TITLE ,

@@ -1,9 +1,13 @@
 <?php
 // 메뉴에 따라 카테고리, 메뉴명, active(클릭된 상태) 변경해주기
-$menu_no = $_GET['menu_no'];
 $referer = $_SERVER['HTTP_REFERER'];
 
-// menu_no에 해당하는 모든 상품 가져오기
+//쿠키에 값이 있다면 조회
+$viewRecentList = $_COOKIE['VIEW_RECENT_LIST'];
+if($viewRecentList != null && $viewRecentList != ''){
+    $viewRecentList = substr($viewRecentList,0, strlen($viewRecentList) -1);
+}
+
 // mysql커넥션 연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 
@@ -23,7 +27,7 @@ $sql = "SELECT P.PRODUCT_SEQ,
                 F.SAVE_PATH
         FROM PRODUCT P
         INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
-        WHERE P.SECOND_CATEGORY = $menu_no
+        WHERE P.PRODUCT_SEQ IN ($viewRecentList)
         AND F.TYPE = 0
         ";
 // 쿼리를 통해 가져온 결과
@@ -73,10 +77,9 @@ include 'head.php'
                     <!-- breadcrumb-->
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#">품목</a></li>
+                            <li class="breadcrumb-item"><a href="#">홈</a></li>
                             <!--카테고리(cat_no)-->
-                            <li class="breadcrumb-item" id="cat_second">상의</li>
-                            <li aria-current="page" class="breadcrumb-item active" id="cat_third">반팔</li>
+                            <li class="breadcrumb-item" id="cat_second">최근본상품</li>
                         </ol>
                     </nav>
                 </div>
@@ -86,21 +89,11 @@ include 'head.php'
 
                 <div class="col-lg-10">
                     <div class="box">
-                        <h1 id="menu_title"></h1>
+                        <h1 id="menu_title">최근본상품</h1>
                     </div>
                     <div class="box info-bar">
                         <div class="row">
-                            <div class="col-md-12 col-lg-3 products-showing">전체 <strong><?echo $count?>개</strong> 상품</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 text-left text-lg-left">
-                                <ul class="menu list-inline mb-0">
-                                    <li class="list-inline-item" ><a href="#">인기순</a></li>
-                                    <li class="list-inline-item" ><a href="#">신상품순</a></li>
-                                    <li class="list-inline-item" ><a href="#">가격높은순</a></li>
-                                    <li class="list-inline-item" ><a href="#">가격낮은순</a></li>
-                                </ul>
-                            </div>
+                            <div class="col-md-12 col-lg-3 products-showing">전체 <strong>1개</strong> 상품</div>
                         </div>
                     </div>
                     <div class="row products">
@@ -111,7 +104,7 @@ include 'head.php'
                             <div class="product">
                                 <div class="flip-container">
                                     <div class="flipper">
-                                        <div class="front"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><img id='front' src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a></div>
+                                        <div class="front"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a></div>
                                     </div>
                                 </div><a href="detail.html?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>" class="invisible"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a>
                                 <div class="text">
@@ -188,9 +181,6 @@ include 'copyright.php'
 include 'jsfile.php'
 ?>
     <script>
-        // menu_no에 따라 menu_title, cat_second, cat_third 변경하기
-        menuNo = '<?echo $menu_no?>';
-
         // 선택된 카테고리 active
         // href$="val" : href의 속성값이 val로 끝나는 요소
         $('.category-menu li a[href$='+ menuNo +']').each(function (index, item){

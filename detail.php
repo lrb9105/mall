@@ -3,6 +3,20 @@
 $menu_no = $_GET['menu_no'];
 $product_no = $_GET['product_no'];
 
+$viewRecentList = $_COOKIE['VIEW_RECENT_LIST'];
+
+// 쿠키에 값이 있다면
+if($viewRecentList != null && $viewRecentList != ''){
+    // 해당 상품이 쿠키에 없다면
+    if(strpos($viewRecentList, $product_no.',') === false){
+        $viewRecentList = $viewRecentList.$product_no.',';
+        setcookie("VIEW_RECENT_LIST", $viewRecentList, time() + 3600*24, '/');
+    }
+} else{
+    // 쿠키에 추가
+    setcookie("VIEW_RECENT_LIST", $product_no.',', time() + 3600*24, '/');
+}
+
 $referer = $_SERVER['HTTP_REFERER'];
 
 // product_no에 해당하는 상품 정보 가져오기
@@ -35,19 +49,21 @@ $sqlProductInfo = "SELECT P.PRODUCT_SEQ,
 $resultProductInfo = mysqli_query($conn, $sqlProductInfo);
 $rowProductInfo = mysqli_fetch_array($resultProductInfo);
 
-// 상품 수량 정보
-$sqlProductNumInfo = "SELECT PO.SEQ,
-                          PO.PRODUCT_SEQ,
-                          PO.COLOR,
-                          PO.SIZE,
-                          PO.QUANTITY,
-                          PO.CRE_DATETIME
+// 상품 사이즈 정보
+$sqlProductSizeInfo = "SELECT DISTINCT PO.SIZE
         FROM PRODUCT_OPTION PO
         WHERE PO.PRODUCT_SEQ = $product_no
         AND QUANTITY > 0
         ";
-$option1 = mysqli_query($conn, $sqlProductNumInfo);
-$option2 = mysqli_query($conn, $sqlProductNumInfo);;
+
+// 상품 색상 정보
+$sqlProductColorInfo = "SELECT DISTINCT PO.COLOR
+        FROM PRODUCT_OPTION PO
+        WHERE PO.PRODUCT_SEQ = $product_no
+        AND QUANTITY > 0
+        ";
+$option1 = mysqli_query($conn, $sqlProductColorInfo);
+$option2 = mysqli_query($conn, $sqlProductSizeInfo);;
 
 // 상품 이미지 정보
 $sqlFileInfo = "SELECT F.SEQ,
@@ -199,20 +215,24 @@ include 'head.php'
                                             <span>수량: </span>
                                             <input id="product_number" name="product_number" type="number" class="form-control" style="margin-left: 20px;" value="1" min="1">
                                         </div>
-                                        <div class="number form-inline">
+                                        <!--<div class="number form-inline">
                                             <span>배송비 <br>결제:</span>
                                             <select class="form-control"  name="delivery_payment" id="delivery_payment" style="width: 70%; margin: 5px;">
                                                 <option value="">[선택]</option>
                                                 <option value="0">결제시 2,500원 함께 선결제</option>
                                                 <option value="1">착불</option>
                                             </select>
+                                        </div>-->
+                                        <hr>
+                                        <div class="number form-inline">
+                                            <span>배송유형: &nbsp;&nbsp;&nbsp; 무료배송</span>
                                         </div>
                                         <br><br><br>
                                         <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?></span><span>원</span></p>
                                         <input name="product_no" type="number" value="<?echo $product_no?>" hidden>
                                         <input name="menu_no" type="number" value="<?echo $menu_no?>" hidden>
                                     </div>
-                                    <p class="text-center buttons"><input type="submit" class="btn btn-info" value="바로구매"><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
+                                    <p class="text-center buttons"><input type="submit" class="btn btn-info" value="바로구매"><a href="javascript:addCart(<?echo $product_no?>);" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
                                 </div>
                             </form>
                         </div>
@@ -850,6 +870,70 @@ include 'jsfile.php'
         // 수량이 변경 될 때 마다 총 금액 변경해줌
         $('#product_number').on("change", function(){
             $('#total_price').text($('#product_number').val() * parseInt(origin_price));
+        });
+
+
+        // 장바구니 추가
+        function addCart(product_no){
+            /*console.log(product_no);
+            console.log($('#option1').val());
+            console.log($('#option2').val());
+            console.log($('#product_number').val());*/
+
+            if(confirm("장바구니에 추가하시겠습니까?")){
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: '/mall/php/cart/writeCartCompl.php',
+                    data: {
+                        product_no: product_no,
+                        color: $('#option1').val(),
+                        size: $('#option2').val(),
+                        quantity: $('#product_number').val()
+                    },
+
+                    success: function (json) {
+                        if (json.result == 'ok') {
+                            alert("장바구니에 추가했습니다.");
+                        } else if(json.result == 'duplicate'){
+                            alert("이미 장바구니에 추가되어있습니다.");
+                        } else{
+                            alert("추가 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("에러가 발생했습니다.");
+                    }
+                });
+            }
+        }
+
+        // 선택하는 생상에 따라 사이즈 다르게 하기
+        $('#option1').on("change", function(){
+            /*$.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/cart/writeCartCompl.php',
+                data: {
+                    product_no: product_no,
+                    color: $('#option1').val(),
+                    size: $('#option2').val(),
+                    quantity: $('#product_number').val()
+                },
+
+                success: function (json) {
+                    if (json.result == 'ok') {
+                        alert("장바구니에 추가했습니다.");
+                    } else if(json.result == 'duplicate'){
+                        alert("이미 장바구니에 추가되어있습니다.");
+                    } else{
+                        alert("추가 실패했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("에러가 발생했습니다.");
+                }
+            });*/
         });
     </script>
 </body>

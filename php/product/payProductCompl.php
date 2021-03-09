@@ -94,7 +94,7 @@ $resultInsertOrderList = mysqli_query($conn, $sqlInsertOrderList);
 // 실패 시 sql출력
 if($resultInsertOrderList === false){
     $result = false;
-    //echo $sqlInsertOrderList;
+    echo $sqlInsertOrderList;
     echo '<script>alert("실패$sqlInsertOrderList")</script>';
     return;
 }
@@ -110,6 +110,7 @@ for($i = 0; $i < count($paymentInfoArr); $i++){
     $product_delivery_fee = $paymentInfoArr[$i]->product_delivery_fee;
     $product_order_price = $paymentInfoArr[$i]->product_order_price;
     $src = $paymentInfoArr[$i]->src;
+    $cart_no = $paymentInfoArr[$i]->cart_no;
 
     $sqlInsertOrderProductList = "
         INSERT INTO ORDER_PRODUCT_LIST(
@@ -140,9 +141,23 @@ for($i = 0; $i < count($paymentInfoArr); $i++){
     // 실패 시 sql출력
     if($resultInsertOrderProductList === false){
         $result = false;
-        //echo $i.'번째: <br>'.$sqlInsertOrderProductList;
+        echo $i.'번째: <br>'.$sqlInsertOrderProductList;
         echo '<script>alert("실패$sqlInsertOrderProductList")</script>';
         return;
+    }
+
+    // 장바구니에서 구매를 한거라면 장바구니 항목 삭제
+    if($cart_no != '' || $cart_no != null){
+        $sqlDeleteCart = "DELETE FROM CART WHERE SEQ = $cart_no";
+        $resultDeleteCart = mysqli_query($conn, $sqlDeleteCart);
+
+        // 실패 시 sql출력
+        if($resultDeleteCart === false){
+            $result = false;
+            echo $i.'번째: <br>'.$sqlInsertOrderProductList;
+            echo '<script>alert("실패$resultDeleteCart")</script>';
+            return;
+        }
     }
 }
 // 결제테이블에 저장
@@ -201,6 +216,9 @@ for($i = 0; $i < count($paymentInfoArr); $i++){
         return;
     }
 }
+
+//장바구니에서 삭제
+
 
 
 // insert가 실패했다면 false, 성공이라면 ok

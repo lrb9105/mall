@@ -88,7 +88,7 @@ include 'head.php'
                     <div class="col-lg-2">
                         <div class="card sidebar-menu mb-4">
                             <div class="card-header">
-                                <h3 class="h4 card-title">커뮤니티</h3>
+                                <h3 class="h4 card-title">마이페이지</h3>
                             </div>
                             <div class="card-body" id="side-bar">
                                 <ul class="nav nav-pills flex-column category-menu" >

@@ -143,7 +143,7 @@ include 'head.php'
                                             <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['COLOR']?></span> 사이즈: <span class="product_size"><?echo $rowProductInfo['SIZE']?></span></td>
                                             <td class="product_number"><?echo $rowProductInfo['PRODUCT_NUMBER']?></td>
                                             <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></td>
-                                            <td class="product_delivery_fee"><?echo $rowProductInfo['PRODUCT_DELIVERY_FEE']?></td>
+                                            <td class="product_delivery_fee">0원</td>
                                             <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></span></td>
                                             <?if($rowOrderInfo['ORDER_STATE'] == '배송중' || $rowOrderInfo['ORDER_STATE'] == '배송완료') {?>
                                             <td class="invoice_number"><?echo $rowOrderInfo['INVOICE_NUMBER']?></td>

@@ -1,5 +1,8 @@
 <?php
 session_start();
+/*error_reporting(E_ALL);
+ini_set("display_errors", 1);*/
+
 // 상세페이지에서 받아온 하나의 product_no, option1(색상), option2(사이즈), 수량
 $product_no = $_POST['product_no'];
 $option1 = $_POST['option1'];
@@ -7,6 +10,7 @@ $option2 = $_POST['option2'];
 $product_number = $_POST['product_number'];
 $menu_no = $_POST['menu_no'];
 $delivery_payment = $_POST['delivery_payment']; //배송비 결제방식 0: 선결제, 1:착불
+$cart_no = $_POST['cart_no']; //장바구니 번호 => 있고 결제 했다면 장바구니에서 삭제.
 
 // 총 결제금액
 $total_price = 0;
@@ -35,10 +39,6 @@ $rowUserInfo = mysqli_fetch_array($resultUserInfo);
 
 /* 상품정보 */
 
-// 장바구니 - 상품 여러개인 경우 모든 상품번호를 붙인 문자열을 넘겨 줌($product_no = "1 AND 2 AND 3")
-if($product_no != null || $product_no != '' ){
-}
-
 $sqlProductInfo = "SELECT P.PRODUCT_SEQ,
                 P.FIRST_CATEGORY, 
                 P.SECOND_CATEGORY,
@@ -53,12 +53,34 @@ $sqlProductInfo = "SELECT P.PRODUCT_SEQ,
                 P.CRE_DATETIME,
                 F.SAVE_PATH
         FROM PRODUCT P
-        INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
-        WHERE P.PRODUCT_SEQ = '$product_no'
-        AND F.TYPE = 0
-        ";
+        INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ";
+
+// 장바구니의 선택상품구매, 전체구매 시 상품번호 연결해 줌
+if(gettype($product_no) == 'array'){
+    $length = count($product_no);
+    $product_no_list = '';
+    for($i = 0; $i < $length; $i++){
+        if($i != 0) {
+            $product_no_list = $product_no_list . ',' . $product_no[$i];
+        }else{
+            $product_no_list = ''.$product_no[$i];
+        }
+    }
+    $sqlMiddle = " 
+                    INNER JOIN CART C ON P.PRODUCT_SEQ = C.PRODUCT_SEQ
+                    WHERE P.PRODUCT_SEQ IN ($product_no_list)
+                    AND C.REGISTER_ID = '$login_id'
+                    AND F.TYPE = 0";
+    $sqlBottom = " ORDER BY C.CRE_DATETIME ASC";
+} else{ //개별 상품구매 시
+    $sqlMiddle = " WHERE P.PRODUCT_SEQ = $product_no";
+    $sqlBottom = " AND F.TYPE = 0";
+}
+
+$sqlProductInfo = $sqlProductInfo.$sqlMiddle.$sqlBottom;
 $resultProductInfo = mysqli_query($conn, $sqlProductInfo);
 $countProductInfo = mysqli_num_rows($resultProductInfo);
+
 
 //$rowProductInfo = mysqli_fetch_array($resultProductInfo);
 $product_name = '';
@@ -112,7 +134,7 @@ include 'head.php'
                     <div class="box">
                         <h1>주문결제</h1><br><br>
                         <h3>결제상품</h3>
-                        <!--<div class="nav flex-column flex-sm-row nav-pills"><a href="checkout1.php" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-map-marker">                  </i>Address</a><a href="checkout2.php" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-truck">                       </i>Delivery Method</a><a href="checkout3.php" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-money">                      </i>Payment Method</a><a href="#" class="nav-link flex-sm-fill text-sm-center active"> <i class="fa fa-eye">                     </i>Order Review</a></div>-->
+                        <!--<div class="nav flex-column flex-sm-row nav-pills"><a href="chkeckout1.php" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-map-marker">                  </i>Address</a><a href="checkout2.php" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-truck">                       </i>Delivery Method</a><a href="checkout3.php" class="nav-link flex-sm-fill text-sm-center"> <i class="fa fa-money">                      </i>Payment Method</a><a href="#" class="nav-link flex-sm-fill text-sm-center active"> <i class="fa fa-eye">                     </i>Order Review</a></div>-->
                         <div class="content">
                             <div class="table-responsive">
                                 <table class="table">
@@ -121,31 +143,56 @@ include 'head.php'
                                         <th colspan="2" style="text-align: center;">상품정보</th>
                                         <th>수량</th>
                                         <th>판매금액</th>
-                                        <th>배송비</th>
+                                        <th>배송비용</th>
                                         <th>주문금액</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <?while($rowProductInfo = mysqli_fetch_array($resultProductInfo)) {
-                                        $current_price = $rowProductInfo['PRODUCT_PRICE_SALE'] * $product_number;
-                                        $total_price += $current_price;
-                                        $current_product_name = $rowProductInfo['PRODUCT_NAME'];
-                                        $product_name += $current_product_name + ' ';
+                                    <?if(gettype($product_no) != 'array'){?>
+                                        <?while($rowProductInfo = mysqli_fetch_array($resultProductInfo)) {
+                                            $current_price = $rowProductInfo['PRODUCT_PRICE_SALE'] * $product_number;
+                                            $total_price += $current_price;
+                                            $current_product_name = $rowProductInfo['PRODUCT_NAME'];
+                                            $product_name += $current_product_name + ' ';
+                                            ?>
+                                            <tr class="product_info">
+                                                <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><img class="product_img" src="<?echo $rowProductInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
+                                                <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1?></span> 사이즈: <span class="product_size"><?echo $option2?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
+                                                <td class="product_number"><?echo $product_number?></td>
+                                                <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</td>
+                                                <?if($delivery_payment =='0'){?>
+                                                    <td class="product_delivery_fee">2,500원</td>
+                                                <?} else {?>
+                                                    <td class="product_delivery_fee">0원</td>
+                                                <?}?>
+                                                <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo $current_price?>원</span><input class="cart_no" hidden value="<?echo $cart_no?>"></td>
+                                            </tr>
+                                        <?}?>
+                                    <?} else {
+                                        $cnt=0; ?>
+                                        <?while($rowProductInfo = mysqli_fetch_array($resultProductInfo)) {
+                                            $current_price = $rowProductInfo['PRODUCT_PRICE_SALE'] * $product_number[$cnt];
+                                            $total_price += $current_price;
+                                            $current_product_name = $rowProductInfo['PRODUCT_NAME'];
+                                            $product_name += $current_product_name + ' ';
+                                            ?>
+                                            <tr class="product_info">
+                                                <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $menu_no[$cnt]?>&product_no=<?echo $product_no[$cnt]?>"><img class="product_img" src="<?echo $rowProductInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
+                                                <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1[$cnt]?></span> 사이즈: <span class="product_size"><?echo $option2[$cnt]?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
+                                                <td class="product_number"><?echo $product_number[$cnt]?></td>
+                                                <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</td>
+                                                <?if($delivery_payment =='0'){?>
+                                                    <td class="product_delivery_fee">2,500원</td>
+                                                <?} else {?>
+                                                    <td class="product_delivery_fee">0원</td>
+                                                <?}?>
+                                                <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo $current_price?>원</span><input class="cart_no" value="<?echo $cart_no[$cnt]?>" hidden></td>
+                                            </tr>
+                                        <?
+                                            $cnt++;
+                                        }
                                         ?>
-                                        <tr class="product_info">
-                                            <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><img class="product_img" src="<?echo $rowProductInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
-                                            <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1?></span> 사이즈: <span class="product_size"><?echo $option2?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
-                                            <td class="product_number"><?echo $product_number?></td>
-                                            <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</td>
-                                            <?if($delivery_payment =='0'){?>
-                                                <td class="product_delivery_fee">2,500원</td>
-                                            <?} else {?>
-                                                <td class="product_delivery_fee">0원</td>
-                                            <?}?>
-                                            <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo $current_price?>원</span></td>
-                                        </tr>
                                     <?}?>
-
                                     </tbody>
                                 </table>
                             </div>
@@ -289,8 +336,106 @@ include 'jsfile.php'
         });
 
         $('#btn_payment').on("click", function(){
+            // 결제상품정보 생성
             let paymentInfoArr = new Array();
             let paymentInfoJson = null;
+
+            /*$('.product_info').each(function(index, item){
+                $(this).children('td').each(function(index, item){
+                    console.log(index);
+
+                    if(index == 0){
+                        paymentInfoJson = new Object();
+                        paymentInfoJson.src = $(item).find('a img').attr("src");
+
+                        //console.log($(item).find('a img').attr("src"));
+                    } else if(index == 1){
+                        paymentInfoJson.product_name = $(item).children('.product_name').text();
+                        paymentInfoJson.product_color = $(item).find('.product_color').text();
+                        paymentInfoJson.product_size = $(item).find('.product_size').text();
+                        paymentInfoJson.product_no = $(item).find('.product_no').val();
+
+                        //console.log($(item).children('.product_name').text());
+                        //console.log($(item).find('.product_color').text());
+                        //console.log($(item).find('.product_size').text());
+                    } else if(index == 2){
+                        paymentInfoJson.product_number = $(item).text();
+
+                        //console.log($(item).text());
+                    } else if(index == 3){
+                        paymentInfoJson.product_price = $(item).text();
+
+                        //console.log($(item).text());
+                    } else if(index == 4){
+                        paymentInfoJson.product_delivery_fee = $(item).text();
+
+                        //console.log($(item).text());
+                    } else if(index == 5){
+                        paymentInfoJson.product_order_price = $(item).text();
+                        paymentInfoJson.cart_no = $(item).children('.cart_no').val();
+                        //console.log($(item).text());
+                        paymentInfoJson = JSON.stringify(paymentInfoJson);
+                        paymentInfoArr.push(JSON.parse(paymentInfoJson));
+                    }
+                });
+            });
+
+            console.log(paymentInfoArr);
+
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    // 결제상품정보
+                    total_price : $('#total_price').text(),
+                    paymentInfoArr : JSON.stringify(paymentInfoArr),
+
+                    // 주문자 정보
+                    order_person : $('#order_person').val(),
+                    order_phone_num : $('#order_phone_num1').val() + $('#order_phone_num2').val() +$('#order_phone_num3').val(),
+                    email : $('#email_front').val() + '@'+$('#email_back').val(),
+
+                    //배송정보
+                    recipient : $('#recipient').val(),
+                    phone_num : $('#phone_num1').val() + '-' + $('#phone_num2').val() + '-' + $('#phone_num3').val(),
+                    zip_code : $('#zip_code').val(),
+                    address : $('#address_basic').val() + ' ' + $('#address_detail').val(),
+                    deliver_msg : $('#deliver_msg').val(),
+
+                    //결제정보
+                    payment_id : rsp.imp_uid,
+                    merchant_uid : rsp.merchant_uid,
+                    paid_amount : rsp.paid_amount,
+                    apply_num : rsp.apply_num,
+                    pay_method: rsp.pay_method*!/
+
+
+                    /!*'고유ID : ' + rsp.imp_uid;
+                    '상점 거래ID : ' + rsp.merchant_uid;
+                    '결제 금액 : ' + rsp.paid_amount;
+                    '카드 승인번호 : ' + rsp.apply_num;*!/
+
+                },
+                url: '/mall/php/product/payProductCompl.php',
+
+                success: function (json) {
+                    if (json.result == 'ok') { // 주문내역 및 결제내역을 DB에 저장 후 돌아오면 주문내역 페이지로 이동시켜준다.
+                        var msg = '결제가 완료되었습니다.';
+                        alert(msg);
+                        document.location.href = 'paymentCompl.php?order_no='+json.order_no
+                    } else {
+                        var msg = '결제에 실패하였습니다.';
+                        msg += '에러내용 : ' + 1111
+                        alert(msg);
+                    }
+                },
+                error: function () {
+                    var msg = '결제에 실패하였습니다.';
+                    msg += '에러내용 : ' + 2222;
+                    alert(msg);
+                }
+            });
+            return;*/
 
            if(confirm("결제를 진행하시겠습니까?")){
                let IMP = window.IMP; // 생략가능
@@ -320,39 +465,42 @@ include 'jsfile.php'
                        let paymentInfoArr = new Array();
                        let paymentInfoJson = null;
 
-                       $('.product_info td').each(function(index, item){
-                           if(index == 0){
-                               paymentInfoJson = new Object();
-                               paymentInfoJson.src = $(item).find('a img').attr("src");
+                       $('.product_info').each(function(index, item){
+                           $(this).children('td').each(function(index, item){
+                               if(index == 0){
+                                   paymentInfoJson = new Object();
+                                   paymentInfoJson.src = $(item).find('a img').attr("src");
 
-                               //console.log($(item).find('a img').attr("src"));
-                           } else if(index == 1){
-                               paymentInfoJson.product_name = $(item).children('.product_name').text();
-                               paymentInfoJson.product_color = $(item).find('.product_color').text();
-                               paymentInfoJson.product_size = $(item).find('.product_size').text();
-                               paymentInfoJson.product_no = $(item).find('.product_no').val();
+                                   //console.log($(item).find('a img').attr("src"));
+                               } else if(index == 1){
+                                   paymentInfoJson.product_name = $(item).children('.product_name').text();
+                                   paymentInfoJson.product_color = $(item).find('.product_color').text();
+                                   paymentInfoJson.product_size = $(item).find('.product_size').text();
+                                   paymentInfoJson.product_no = $(item).find('.product_no').val();
 
-                               //console.log($(item).children('.product_name').text());
-                               //console.log($(item).find('.product_color').text());
-                               //console.log($(item).find('.product_size').text());
-                           } else if(index == 2){
-                               paymentInfoJson.product_number = $(item).text();
+                                   //console.log($(item).children('.product_name').text());
+                                   //console.log($(item).find('.product_color').text());
+                                   //console.log($(item).find('.product_size').text());
+                               } else if(index == 2){
+                                   paymentInfoJson.product_number = $(item).text();
 
-                               //console.log($(item).text());
-                           } else if(index == 3){
-                               paymentInfoJson.product_price = $(item).text();
+                                   //console.log($(item).text());
+                               } else if(index == 3){
+                                   paymentInfoJson.product_price = $(item).text();
 
-                               //console.log($(item).text());
-                           } else if(index == 4){
-                               paymentInfoJson.product_delivery_fee = $(item).text();
+                                   //console.log($(item).text());
+                               } else if(index == 4){
+                                   paymentInfoJson.product_delivery_fee = $(item).text();
 
-                               //console.log($(item).text());
-                           } else if(index == 5){
-                               paymentInfoJson.product_order_price = $(item).text();
-                               //console.log($(item).text());
-                               paymentInfoJson = JSON.stringify(paymentInfoJson);
-                               paymentInfoArr.push(JSON.parse(paymentInfoJson));
-                           }
+                                   //console.log($(item).text());
+                               } else if(index == 5){
+                                   paymentInfoJson.product_order_price = $(item).text();
+                                   paymentInfoJson.cart_no = $(item).children('.cart_no').val();
+                                   //console.log($(item).text());
+                                   paymentInfoJson = JSON.stringify(paymentInfoJson);
+                                   paymentInfoArr.push(JSON.parse(paymentInfoJson));
+                               }
+                           });
                        });
 
                        console.log(paymentInfoArr);

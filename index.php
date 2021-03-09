@@ -1,3 +1,36 @@
+<?php
+session_start();
+
+$login_id_cookie = $_COOKIE['LOGIN_ID'];
+$login_pw_cookie = $_COOKIE['PW'];
+$login_id = $_SESSION['LOGIN_ID'];
+
+if($login_id_cookie != '' && $login_pw_cookie != '' && $login_id ==''){
+    //mysql연결
+    $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
+
+    $sql = "SELECT LOGIN_ID, NAME, USER_TYPE
+        FROM USER 
+        WHERE LOGIN_ID='$login_id_cookie' 
+        AND PASSWORD='$login_pw_cookie'
+        ";
+
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_array($result);
+
+    if($row == null){
+        // 해당하는 값이 없다면 세션 삭제
+        session_unset();
+    } else if($row[0] != null){
+        $_SESSION['LOGIN_ID'] = $row[0];
+        $_SESSION['NAME'] = $row[1];
+        $_SESSION['USER_TYPE'] = $row[2];
+    } else{
+        // 해당하는 값이 없다면 세션 삭제
+        session_unset();
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 <?php
@@ -321,5 +354,7 @@ include 'head.php'
     <?php
     include 'jsfile.php'
     ?>
+    <script>
+    </script>
 </body>
 </html>

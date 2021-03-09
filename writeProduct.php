@@ -297,12 +297,18 @@ include 'head.php'
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="item_title" colspan="6">제품이미지<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="img_add" class="btn btn-dark">상세이미지 추가</button></span></td>
+                                                        <td class="item_title" colspan="6">제품이미지<!--<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="img_add" class="btn btn-dark">상세이미지 추가</button></span>--></td>
                                                     </tr>
                                                     <tr id="tr_img">
                                                         <td class="item_title">대표 이미지</td>
                                                         <td colspan="5">
                                                             <input type="file" class="form-control" name="file_represent">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="item_title">상세 이미지</td>
+                                                        <td colspan="5">
+                                                            <input type="file" class="form-control" name="file_detail[]" multiple>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -531,7 +537,7 @@ include 'head.php'
             });
 
             //상세이미지 추가
-            $('#img_add').on("click", function(){
+            /*$('#img_add').on("click", function(){
                 let tr =  '<tr>'
                             + '<td class="item_title">상세 이미지</td>'
                             + '<td colspan="5">'
@@ -539,7 +545,7 @@ include 'head.php'
                             + '</td>'
                         + '</tr>'
                 $('#tr_img').after(tr);
-            });
+            });*/
 
             // 2차 카테고리 선택 시 1차카테고리에 따라 치수정보 추가하기
             $('#second_category').change(function(){

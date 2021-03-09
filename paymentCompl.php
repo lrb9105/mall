@@ -110,7 +110,7 @@ include 'head.php'
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="#">홈</a></li>
-                            <li aria-current="page" class="breadcrumb-item active">주문하기</li>
+                            <li aria-current="page" class="breadcrumb-item active">주문완료</li>
                         </ol>
                     </nav>
                 </div>
