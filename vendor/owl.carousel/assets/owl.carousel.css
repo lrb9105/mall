@@ -101,7 +101,7 @@
  *  Owl Carousel - Animate Plugin
  */
 .owl-carousel .animated {
-  animation-duration: 1000ms;
+  animation-duration: 100ms;
   animation-fill-mode: both; }
 
 .owl-carousel .owl-animated-in {
@@ -177,7 +177,7 @@
   background-position: center center;
   background-repeat: no-repeat;
   background-size: contain;
-  transition: opacity 400ms ease; }
+  transition: opacity 100ms ease; }
 
 .owl-carousel .owl-video-frame {
   position: relative;

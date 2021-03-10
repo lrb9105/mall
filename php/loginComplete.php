@@ -24,7 +24,7 @@ $sql = "SELECT LOGIN_ID, NAME, USER_TYPE
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_array($result);
 
-if($isChecked == true) {
+if($isChecked == 'true') {
     setcookie("LOGIN_ID", $login_id, time() + 3600 * 7 * 24, '/');
     setcookie("PW", $password, time() + 3600 * 7 * 24, '/');
 }

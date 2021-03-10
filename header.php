@@ -8,7 +8,7 @@
             <div id="navigation" class="collapse navbar-collapse">
                 <ul class="navbar-nav mr-auto">
                     <!-- DEPTH가 1인 메뉴-->
-                    <li class="nav-item dropdown menu-large"><a href="#" data-toggle="dropdown" data-hover="dropdown" data-delay="200" class="dropdown-toggle nav-link">품목<b class="caret"></b></a>
+                    <li class="nav-item dropdown menu-large"><a href="#" data-toggle="dropdown" data-hover="dropdown" data-delay="200" class="dropdown-toggle nav-link">상의<b class="caret"></b></a>
                         <ul class="dropdown-menu megamenu">
                             <li>
                                 <div class="row">
@@ -28,6 +28,13 @@
                                             <li class="nav-item"><a href="category.php?menu_no=13" class="nav-link">기타 상의</a></li>
                                         </ul>
                                     </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown menu-large"><a href="#" data-toggle="dropdown" data-hover="dropdown" data-delay="200" class="dropdown-toggle nav-link">아우터<b class="caret"></b></a>
+                        <ul class="dropdown-menu megamenu">
+                            <li>
+                                <div class="row">
                                     <div class="col-md-6 col-lg-3">
                                         <h5>아우터</h5>
                                         <ul class="list-unstyled mb-3">
@@ -40,6 +47,13 @@
                                             <li class="nav-item"><a href="category.php?menu_no=20" class="nav-link">기타 아우터</a></li>
                                         </ul>
                                     </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown menu-large"><a href="#" data-toggle="dropdown" data-hover="dropdown" data-delay="200" class="dropdown-toggle nav-link">바지<b class="caret"></b></a>
+                        <ul class="dropdown-menu megamenu">
+                            <li>
+                                <div class="row">
                                     <div class="col-md-6 col-lg-3">
                                         <h5>바지</h5>
                                         <ul class="list-unstyled mb-3">
@@ -50,6 +64,13 @@
                                             <li class="nav-item"><a href="category.php?menu_no=25" class="nav-link">기타 바지</a></li>
                                         </ul>
                                     </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown menu-large"><a href="#" data-toggle="dropdown" data-hover="dropdown" data-delay="200" class="dropdown-toggle nav-link">신발<b class="caret"></b></a>
+                        <ul class="dropdown-menu megamenu">
+                            <li>
+                                <div class="row">
                                     <div class="col-md-6 col-lg-3">
                                         <h5>신발</h5>
                                         <ul class="list-unstyled mb-3">
@@ -58,6 +79,13 @@
                                             <li class="nav-item"><a href="category.php?menu_no=30" class="nav-link">슬리퍼&쪼리&샌들</a></li>
                                         </ul>
                                     </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown menu-large"><a href="#" data-toggle="dropdown" data-hover="dropdown" data-delay="200" class="dropdown-toggle nav-link">모자<b class="caret"></b></a>
+                        <ul class="dropdown-menu megamenu">
+                            <li>
+                                <div class="row">
                                     <div class="col-md-6 col-lg-3">
                                         <h5>모자</h5>
                                         <ul class="list-unstyled mb-3">
