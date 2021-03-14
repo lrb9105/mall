@@ -208,6 +208,9 @@ for($i = 0; $i < count($paymentInfoArr); $i++){
         UPDATE PRODUCT_OPTION SET QUANTITY = QUANTITY - $product_number WHERE PRODUCT_SEQ = $product_no AND COLOR = '$product_color' AND SIZE = '$product_size'";
     $resultUpdateProductOption = mysqli_query($conn, $sqlUpdateProductOption);
 
+    $sqlUpdateProductNumber = "UPDATE PRODUCT SET NUM_OF_SELL = NUM_OF_SELL + $product_number WHERE PRODUCT_SEQ = $product_no ";
+    $resultUpdateProductNumber = mysqli_query($conn, $sqlUpdateProductNumber);
+
     // 실패 시 sql출력
     if($resultUpdateProductOption === false){
         $result = false;

@@ -1,3 +1,21 @@
+<?php
+// DB연결
+$conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
+// 첫번째 카테고리 카운트
+$sqlFirstCatCnt = "SELECT MENU_NAME
+                        , MENU_ID
+                        , P.PRODUCT_SEQ
+                        , COUNT(*)
+                    FROM MENU M 
+                    LEFT JOIN PRODUCT P ON M.MENU_ID = P.SECOND_CATEGORY 
+                    WHERE M.MENU_PARENT_ID = '2' 
+                    GROUP BY M.MENU_NAME, M.MENU_ID,P.PRODUCT_SEQ
+            ";
+$resultFirstCatCnt = mysqli_query($conn, $sqlFirstCatCnt);
+$rowFirstCatCnt = mysqli_fetch_array($resultFirstCatCnt);
+
+?>
+
 <div class="col-lg-2">
     <!--
     *** MENUS AND FILTERS ***
@@ -22,7 +40,7 @@
                         <li><a href="category.php?menu_no=13" class="nav-link">기타 상의</a></li>
                     </ul>
                 </li>
-                <li><a href="#" data-toggle="collapse" data-target="#collapse1" class="nav-link outer">아우터 <span class="badge badge-light">0</span></a>
+                <li><a href="#" data-toggle="collapse" data-target="#collapse1" class="nav-link outer">아우터 <span class="badge badge-secondary">0</span></a>
                     <ul id="collapse1" class="list-unstyled outer_ul collapse ">
                         <li><a href="category.php?menu_no=14" class="nav-link">후드 집업</a></li>
                         <li><a href="category.php?menu_no=15" class="nav-link">라이더 자켓</a></li>

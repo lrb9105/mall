@@ -2,12 +2,13 @@
 // 메뉴에 따라 카테고리, 메뉴명, active(클릭된 상태) 변경해주기
 $menu_no = $_GET['menu_no'];
 $referer = $_SERVER['HTTP_REFERER'];
+$type = $_GET['type'];
 
 // menu_no에 해당하는 모든 상품 가져오기
 // mysql커넥션 연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 
-// 데이터 가져오기 - 자유게시판
+// 상품갯수 가져오기
 $sql = "SELECT P.PRODUCT_SEQ,
                 P.FIRST_CATEGORY, 
                 P.SECOND_CATEGORY,
@@ -26,6 +27,104 @@ $sql = "SELECT P.PRODUCT_SEQ,
         WHERE P.SECOND_CATEGORY = $menu_no
         AND F.TYPE = 0
         ";
+// 쿼리를 통해 가져온 결과
+$result = mysqli_query($conn, $sql);
+
+// 현재 페이지번호
+if(!isset($_GET['page_no'])){
+    $page_no = 1;
+} else{
+    $page_no = $_GET['page_no'];
+}
+
+// 총 게시물 개수
+$total_count_of_post = mysqli_num_rows($result);
+// 한 페이지당 보여줄 게시물 개수
+$count_of_post_per_page = 1;
+// 총 페이지 개수(나머지가 있다면 1추가)
+//$total_count_of_page = $total_count_of_post / $count_of_post_per_page + ($total_count_of_post % $count_of_post_per_page > 0 ? 1 : 0);
+$total_count_of_page = ceil($total_count_of_post / $count_of_post_per_page);
+// 한 페이지에서 보여줄 블록 개수
+$count_of_block_per_page = 2;
+// 총 블록그룹 개수(총 페이지 / 페이지 당 블록 수) + 1(나머지 있다면, 없다면 0)
+//$total_count_of_block = $total_count_of_page / $count_of_block_per_page + ($total_count_of_page % $count_of_block_per_page > 0 ? 1 : 0);
+$total_count_of_block = ceil($total_count_of_page / $count_of_block_per_page);
+// 현재 블록그룹 번호
+if($page_no != 1){
+    $current_num_of_block = ceil($page_no/$count_of_block_per_page);
+} else{
+    $current_num_of_block = 1;
+}
+// 블록의 시작페이지 번호
+$start_page_num_of_block = $current_num_of_block * $count_of_block_per_page - ($count_of_block_per_page - 1);
+// 블록의 종료페이지 번호
+$end_page_num_of_block = $current_num_of_block * $count_of_block_per_page;
+if($end_page_num_of_block > $total_count_of_page){
+    $end_page_num_of_block = $total_count_of_page;
+}
+
+// 조회 해야할 데이터 시작번호
+$s_point = ($page_no-1) * $count_of_post_per_page;
+
+// 필터링
+$order_type = '';
+
+if($type != ''){
+    if($type == 'popularity'){
+        $order_type = " ORDER BY NUM_OF_SELL DESC";
+    } elseif($type == 'new_product'){
+        $order_type = " ORDER BY CRE_DATETIME DESC";
+    } elseif($type == 'higher_price'){
+        $order_type = " ORDER BY CAST(PRODUCT_PRICE_SALE AS UNSIGNED) DESC";
+    } elseif($type == 'lower_price'){
+        $order_type = " ORDER BY CAST(PRODUCT_PRICE_SALE AS UNSIGNED) ASC";
+    }
+}
+
+
+// 실제 데이터 조회
+$sql = "SELECT P.PRODUCT_SEQ,
+                P.FIRST_CATEGORY, 
+                P.SECOND_CATEGORY,
+                P.PRODUCT_NAME,
+                P.PRODUCT_PRICE,
+                P.PRODUCT_PRICE_SALE,
+                P.MATERIAL,
+                P.MANUFACTURER,
+                P.COUNTRY_OF_MANUFACTURER,
+                P.CLEANING_METHOD,
+                P.DETAIL_INFO,
+                P.CRE_DATETIME,
+                F.SAVE_PATH
+        FROM PRODUCT P
+        INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
+        WHERE P.SECOND_CATEGORY = $menu_no
+        AND F.TYPE = 0
+        LIMIT $s_point,$count_of_post_per_page
+        ";
+
+if($order_type != ''){
+    $sql = "SELECT P.PRODUCT_SEQ,
+                P.FIRST_CATEGORY, 
+                P.SECOND_CATEGORY,
+                P.PRODUCT_NAME,
+                P.PRODUCT_PRICE,
+                P.PRODUCT_PRICE_SALE,
+                P.MATERIAL,
+                P.MANUFACTURER,
+                P.COUNTRY_OF_MANUFACTURER,
+                P.CLEANING_METHOD,
+                P.DETAIL_INFO,
+                P.CRE_DATETIME,
+                F.SAVE_PATH
+        FROM PRODUCT P
+        INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
+        WHERE P.SECOND_CATEGORY = $menu_no
+        AND F.TYPE = 0";
+
+    $sql = $sql.$order_type." LIMIT $s_point,$count_of_post_per_page";
+}
+
 // 쿼리를 통해 가져온 결과
 $result = mysqli_query($conn, $sql);
 $count = mysqli_num_rows($result);
@@ -95,10 +194,10 @@ include 'head.php'
                         <div class="row">
                             <div class="col-lg-12 col-md-12 text-left text-lg-left">
                                 <ul class="menu list-inline mb-0">
-                                    <li class="list-inline-item" ><a href="#">인기순</a></li>
-                                    <li class="list-inline-item" ><a href="#">신상품순</a></li>
-                                    <li class="list-inline-item" ><a href="#">가격높은순</a></li>
-                                    <li class="list-inline-item" ><a href="#">가격낮은순</a></li>
+                                    <li class="list-inline-item" ><a href="category.php?menu_no=<?echo $menu_no?>&type=popularity">인기순</a></li>
+                                    <li class="list-inline-item" ><a href="category.php?menu_no=<?echo $menu_no?>&type=new_product">신상품순</a></li>
+                                    <li class="list-inline-item" ><a href="category.php?menu_no=<?echo $menu_no?>&type=higher_price"">가격높은순</a></li>
+                                    <li class="list-inline-item" ><a href="category.php?menu_no=<?echo $menu_no?>&type=lower_price">가격낮은순</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -143,20 +242,30 @@ include 'head.php'
                         <?} ?>
                         <!-- /.products-->
                     </div>
-                    <!--<div class="pages">-->
-                        <!--<p class="loadMore"><a href="#" class="btn btn-primary btn-lg"><i class="fa fa-chevron-down"></i> Load more</a></p>-->
-                        <!--<nav aria-label="Page navigation example" class="d-flex justify-content-center">
+                    <div class="pages">
+                        <nav aria-label="Page navigation example" class="d-flex justify-content-center">
                             <ul class="pagination">
-                                <li class="page-item"><a href="#" aria-label="Previous" class="page-link"><span aria-hidden="true">«</span><span class="sr-only">Previous</span></a></li>
-                                <li class="page-item active"><a href="#" class="page-link">1</a></li>
-                                <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                <li class="page-item"><a href="#" class="page-link">4</a></li>
-                                <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                <li class="page-item"><a href="#" aria-label="Next" class="page-link"><span aria-hidden="true">»</span><span class="sr-only">Next</span></a></li>
+                                <?if($current_num_of_block != 1){ ?>
+                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Previous" class="page-link"><span aria-hidden="true">시작</span><span class="sr-only">Previous</span></a></li>
+                                <?}?>
+                                <?if($current_num_of_block != 1){ ?>
+                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $start_page_num_of_block - 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Previous" class="page-link"><span aria-hidden="true">«</span><span class="sr-only">Previous</span></a></li>
+                                <?}?>
+                                <?for($i = $start_page_num_of_block; $i <= $end_page_num_of_block; $i++) {
+                                    if($page_no != $i){ ?>
+                                        <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $i?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" class="page-link"><?= $i?></a></li>
+                                    <?} else{ ?>
+                                        <li class="page-item active"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $i?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" class="page-link"><?= $i?></a></li><?}?>
+                                <?}?>
+                                <?if($current_num_of_block != $total_count_of_block){?>
+                                <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $end_page_num_of_block + 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Next" class="page-link"><span aria-hidden="true">»</span><span class="sr-only">Next</span></a></li>
+                                <?}?>
+                                <?if($current_num_of_block != $total_count_of_block){?>
+                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $total_count_of_page?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Next" class="page-link"><span aria-hidden="true">끝</span><span class="sr-only">Next</span></a></li>
+                                <?}?>
                             </ul>
                         </nav>
-                    </div>-->
+                    </div>
                 </div>
                 <!-- /.col-lg-9-->
             </div>

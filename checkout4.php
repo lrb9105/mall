@@ -157,7 +157,7 @@ include 'head.php'
                                             ?>
                                             <tr class="product_info">
                                                 <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><img class="product_img" src="<?echo $rowProductInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
-                                                <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1?></span> 사이즈: <span class="product_size"><?echo $option2?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
+                                                <td><span class="product_name"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1?></span> 사이즈: <span class="product_size"><?echo $option2?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
                                                 <td class="product_number"><?echo $product_number?></td>
                                                 <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</td>
                                                 <?if($delivery_payment =='0'){?>
@@ -241,7 +241,6 @@ include 'head.php'
                                     </tr>
                                 </table>
                             </div>
-
                             <br><br><br>
                             <h3>배송 정보</h3>
                             <div class="table-responsive">
@@ -264,7 +263,7 @@ include 'head.php'
                                     <tr >
                                         <th style="text-align: center;">주소</th>
                                         <td>
-                                            <input name="zip_code" class="text-left delivery" id="zip_code" style="width: 25%;" type="text"  placeholder="우편번호"value="<?echo $rowUserInfo['ZIP_CODE']?>" readonly>&nbsp;&nbsp;<span><button class="btn btn-info">주소찾기</button></span><br>
+                                            <input name="zip_code" class="text-left delivery" id="zip_code" style="width: 25%;" type="text"  placeholder="우편번호"value="<?echo $rowUserInfo['ZIP_CODE']?>" readonly>&nbsp;&nbsp;<span><button onclick="getPostcode();" class="btn btn-info">주소찾기</button></span><br>
                                             <input name="address_basic" class="text-left delivery" id="address_basic" style="width: 50%;"type="text" placeholder="주소" value="<?echo $rowUserInfo['ADDRESS_BASIC']?>" readonly><br>
                                             <input name="address_detail" class="text-left delivery" id="address_detail"style="width: 50%;"type="text" placeholder="상세주소" value="<?echo $rowUserInfo['ADDRESS_DETAIL']?>">
                                         </td>
@@ -275,7 +274,6 @@ include 'head.php'
                                     </tr>
                                 </table>
                             </div>
-
                             <br><br><br>
                             <h3>결제 하기</h3>
                             <div>
@@ -319,6 +317,8 @@ include 'copyright.php'
 include 'jsfile.php'
 ?>
     <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
     <script>
         $('.address').on("click", function(){
             // 새주소지
@@ -335,7 +335,39 @@ include 'jsfile.php'
             }
         });
 
+        // 결제하기
         $('#btn_payment').on("click", function(){
+            // 유효성 검증
+            if($('#order_person').val() == ''){
+                alert("주문자를 입력해주세요.");
+                return;
+            }
+
+            if($('#order_phone_num1').val() == '' || $('#order_phone_num2').val() == '' || $('#order_phone_num3').val() == ''){
+                alert("주문자 휴대폰번호를 입력해주세요.");
+                return;
+            }
+
+            if($('#email_front').val() == '' || $('#email_back').val() == '' ){
+                alert("주문자 이메일을 입력해주세요.");
+                return;
+            }
+
+            if($('#recipient').val() == ''){
+                alert("수령인은 입력해주세요.");
+                return;
+            }
+
+            if($('#phone_num1').val() == '' || $('#phone_num3').val() == '' || $('#phone_num3').val() == ''){
+                alert("수령인 휴대폰번호를 입력해주세요.");
+                return;
+            }
+
+            if($('#zip_code').val() == ''){
+                alert("주소를 입력해주세요.");
+                return;
+            }
+
             // 결제상품정보 생성
             let paymentInfoArr = new Array();
             let paymentInfoJson = null;
@@ -566,6 +598,45 @@ include 'jsfile.php'
                });
            }
         });
+
+        // 우편주소 받기
+        function getPostcode() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                    // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
+                    // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                    var roadAddr = data.roadAddress; // 도로명 주소 변수
+                    var extraRoadAddr = ''; // 참고 항목 변수
+
+                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraRoadAddr += data.bname;
+                    }
+                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    if(extraRoadAddr !== ''){
+                        extraRoadAddr = ' (' + extraRoadAddr + ')';
+                    }
+
+                    // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                    $('#zip_code').val(data.zonecode);
+                    if(roadAddr != ''){
+                        $('#address_basic').val(roadAddr);
+                    } else{
+                        $('#address_basic').val(data.jibunAddress);
+                    }
+
+                    // 상세주소 삭제
+                    $('#address_detail').val('');
+                }
+            }).open();
+        }
     </script>
 </body>
 </html>

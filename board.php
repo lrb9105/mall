@@ -1,6 +1,12 @@
 <?php
     $board_no = $_GET['board_no'];
     $board_name = null;
+    // 페이지 번호
+    if(isset($_GET['page_no'])){
+        $page_no = $_GET['page_no'];
+    }else {
+        $page_no = 0;
+    }
 
     // mysql커넥션 연결
     $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
@@ -41,10 +47,10 @@
 $referer = $_SERVER['HTTP_REFERER']
 ?>
 <script>
-    if('<?echo $referer?>' == ''){
+    /*if('<?echo $referer?>' == ''){
         alert('잘못된 접근입니다.');
         location.href = 'index.php';
-    }
+    }*/
 </script>
 
 <!DOCTYPE html>
@@ -190,13 +196,13 @@ include 'head.php'
                                     <?}?>
                                     <nav aria-label="Page navigation">
                                         <ul class="pagination" style="justify-content: center;">
-                                            <li class="page-item"><a href="#" class="page-link">«</a></li>
+                                            <!--<li class="page-item"><a href="#" class="page-link">«</a></li>
                                             <li class="page-item active"><a href="#" class="page-link">1</a></li>
                                             <li class="page-item"><a href="#" class="page-link">2</a></li>
                                             <li class="page-item"><a href="#" class="page-link">3</a></li>
                                             <li class="page-item"><a href="#" class="page-link">4</a></li>
                                             <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                            <li class="page-item"><a href="#" class="page-link">»</a></li>
+                                            <li class="page-item"><a href="#" class="page-link">»</a></li>-->
                                         </ul>
                                     </nav>
 
@@ -257,13 +263,20 @@ include 'head.php'
 
         //게시물 검색
         function search(searchSelect, searchText){
+            let page_no = ((<?echo $page_no?> == 0)? 1: <?echo $page_no?>);
+
+            if(searchText != ''){
+                page_no = 1;
+            }
+
             $.ajax({
                 type: 'post',
                 dataType: 'json',
                 url: '/mall/php/selectFreeBoardCompl.php',
                 data: {
                     searchSelect: searchSelect,
-                    searchText: searchText
+                    searchText: searchText,
+                    page_no: page_no
                 },
 
                 success: function (json) {
@@ -273,11 +286,38 @@ include 'head.php'
                         if(json.seq.length != 0){
                             //모든 행 삭제
                             $('#free_board_post_tb > tbody > tr').remove();
+                            // 페이징 삭제
+                            $('.pagination > li').remove();
                         } else{
                             alert("검색결과가 없습니다.");
                             return;
                         }
 
+                        /* 전체 데이터 뿌리기
+                        for(let i = 0; i < json.seq.length; i++){
+                            let space = '';
+
+                            for(let j= 0; j < (json.depth[i] - 1) * 3; j++){
+                                space += '&nbsp';
+                            }
+                            if(space != ''){
+                                space += '┖';
+                            }
+                            $('#free_board_post_tb > tbody:last').append(
+                                '<tr style="cursor: pointer;" onclick="location.href=\'detailFreeBoard.php?board_no=3&seq=' + json.seq[i] + '\'">'
+                                +    '<td>'+json.seq[i]+'</td>'
+                                +    '<td style="text-align: left;">'
+                                +         '<a href="detailFreeBoard.php?board_no=3&seq='+json.seq[i]+'">'
+                                +             space + '<u>' + json.title[i] + '</u>'
+                                +         '</a>' + ' [' + json.commentCnt[i] + ']'
+                                +     '</td>'
+                                +     '<td>'+ json.name[i] +'</td>'
+                                +     '<td>'+ json.creDatetime[i].substring(0,10) +'</td>'
+                                +     '<td>'+ json.cnt[i] +'</td>'
+                                + '</tr>');
+                        }*/
+
+                        // 페이징 적용
                         for(let i = 0; i < json.seq.length; i++){
                             let space = '';
 
@@ -300,6 +340,32 @@ include 'head.php'
                                 +     '<td>'+ json.cnt[i] +'</td>'
                                 + '</tr>');
                         }
+
+                        /* 페이징 시작 */
+                        if(parseInt(json.current_num_of_block) != 1){
+                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no=1 "class="page-link">' + '처음' + '</a></li>');
+                        }
+
+                        if(parseInt(json.current_num_of_block) != 1){
+                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ (parseInt(json.start_page_num_of_block) - 1) + '"class="page-link">' + '«' + '</a></li>');
+                        }
+
+                        for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
+                            if(page_no != i){
+                                $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+i + '"class="page-link">' + i + '</a></li>');
+                            } else{
+                                $('.pagination').append('<li class="page-item active"><a href="board.php?board_no=3&page_no='+i + '"class="page-link">' + i + '</a></li>');
+                            }
+                        }
+
+                        if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
+                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ (parseInt(json.end_page_num_of_block) + 1) + '"class="page-link">' + '»' + '</a></li>');
+                        }
+
+                        if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
+                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ parseInt(json.total_count_of_page) + '"class="page-link">' + '끝' + '</a></li>');
+                        }
+                        /* 페이징 종료 */
                     } else {
                         alert("조회에 실패했습니다!");
                     }

@@ -1,4 +1,7 @@
 <?php
+session_start();
+$login_id = $_SESSION['LOGIN_ID'];
+
 // 메뉴에 따라 카테고리, 메뉴명, active(클릭된 상태) 변경해주기
 $menu_no = $_GET['menu_no'];
 $product_no = $_GET['product_no'];
@@ -184,13 +187,13 @@ include 'head.php'
                             <!-- /.ribbon-->
                         </div>
                         <div class="col-md-6">
-                            <form method="post" action="checkout4.php">
+                            <form id="form_purchase" method="post" action="checkout4.php" onsubmit="return verifyBeforePurchase();">
                                 <div class="box">
                                     <h1 class="text-center">상품명: <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
                                     <div class="product-info">
                                         <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo $rowProductInfo['PRODUCT_PRICE']?>원</del></span></p>
                                         <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</span>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100?>%할인<em class="color-lightgrey">(-<?echo $rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE']?>원)</em></span>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ceil(($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100)?>%할인<em class="color-lightgrey">(-<?echo $rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE']?>원)</em></span>
                                         </p>
                                         <hr>
                                         <div class="option1 form-inline">
@@ -232,7 +235,7 @@ include 'head.php'
                                         <input name="product_no" type="number" value="<?echo $product_no?>" hidden>
                                         <input name="menu_no" type="number" value="<?echo $menu_no?>" hidden>
                                     </div>
-                                    <p class="text-center buttons"><input type="submit" class="btn btn-info" value="바로구매"><a href="javascript:addCart(<?echo $product_no?>);" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
+                                    <p class="text-center buttons"><input id="btn_purchase" type="submit" class="btn btn-info" value="바로구매"><a href="javascript:addCart(<?echo $product_no?>);" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
                                 </div>
                             </form>
                         </div>
@@ -935,6 +938,36 @@ include 'jsfile.php'
                 }
             });*/
         });
+
+        // 바로구매 버튼 클릭 시 유효성 검증
+        function verifyBeforePurchase(){
+            let loginId = '<?echo $login_id?>';
+
+            // 색상 선택
+            if(loginId == ''){
+                alert("상품구매를 위해 로그인해주세요!");
+                return false;
+            }
+
+            // 색상 선택
+            if($('#option1').val() == ''){
+                alert("색상을 선택해주세요.");
+                return false;
+            }
+
+            // 사이즈 선택
+            if($('#option2').val() == ''){
+                alert("사이즈를 선택해주세요.");
+                return false;
+            }
+
+            // 수량 선택
+            if($('#product_number').val() < 1){
+                alert("수량은 1개이상 선택해주셔야 합니다.");
+                return false;
+            }
+            return confirm("해당 상품을 구매하시겠습니까?");
+        }
     </script>
 </body>
 </html>

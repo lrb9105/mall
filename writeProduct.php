@@ -933,6 +933,7 @@ include 'head.php'
                                 + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
+                                + '<td><input class="chk_added_info" type="checkbox"></td>'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">둘레</td>'
                                 + '<td class="item_title_inner upper" style="border-top: 1px solid black;">챙길이</td>'
@@ -962,6 +963,7 @@ include 'head.php'
                                 + '<input class="form-control " type="text" name="HAT_HEIGHT[]" id="HAT_HEIGHT  ">'
                                 + '</td>'
                                 + '</tr>';
+                                + '</table>';
 
                             $('.tr_model_info').remove();
                         }

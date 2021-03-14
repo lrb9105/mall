@@ -55,7 +55,7 @@ include 'head.php'
                         <hr>
                         <div id="register">
                             <div class="form-group">
-                                <label class="register_form" for="zip_code"><span>* </span>아이디</label>
+                                <label class="register_form" for="login_id"><span>* </span>아이디</label>
                                 <div class="form-inline">
                                     <input id="login_id" name="login_id" type="text" class="form-control" style="width: 80%; margin-right: 5px;">
                                     <button class="btn btn-primary" id="btn_check_dupl">중복체크</button>
@@ -81,49 +81,38 @@ include 'head.php'
                             <div class="form-group">
                                 <label class="register_form" for="zip_code"><span>* </span>주소</label>
                                 <div class="form-inline">
-                                    <input id="zip_code" name="zip_code" type="number" placeholder="우편 번호" class="form-control" style="width: 100px; margin-right: 5px;">
-                                    <button class="btn btn-primary">찾기</button>
+                                    <input readonly id="zip_code" name="zip_code" type="number" placeholder="우편 번호" class="form-control" style="width: 100px; margin-right: 5px;">
+                                    <button onclick="getPostcode();" class="btn btn-primary">주소찾기</button>
                                 </div>
-                                <input id="address_basic" name="address_basic" type="text" placeholder="기본 주소" class="form-control" style="margin-top: 5px; margin-bottom: 5px;">
+                                <input readonly id="address_basic" name="address_basic" type="text" placeholder="기본 주소" class="form-control" style="margin-top: 5px; margin-bottom: 5px;">
                                 <input id="address_detail" name="address_detail" type="text" placeholder="상세 주소" class="form-control">
-                            </div>
+                            </div><br>
+                            <div id="agreementDivArea" class="agreement" style="width: 70%;">
+                                <div>
+                                    <input type="checkbox" class="n-check" id="checkAll">
+                                    <label for="checkAll" class="all">약관 전체동의</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" class="n-check agree-item required-agree-item" id="agreeCheckbox" name="agreeCheckbox">
+                                    <label for="agreeCheckbox">개인정보 수집 이용동의(필수)</label>
+                                    <a href="javascript:privacyAgreeUsagePop();" style="text-align: right;"><u>약관보기</u></a>
+                                </div>
+                                <div>
+                                    <input type="checkbox" class="n-check agree-item required-agree-item" id="useTermsCheckbox" name="useTermsCheckbox">
+                                    <label for="useTermsCheckbox">MallForMan 이용약관(필수)</label>
+                                    <a href="javascript:serviceAgreementPop();" style="text-align: right;"><u>약관보기</u></a>
+                                </div>
+
+                                <div>
+                                    <input type="checkbox" class="n-check agree-item optional-agree-item" id="marketingReceiveAgreeYn" name="marketingReceiveAgreeYn">
+                                    <label for="marketingReceiveAgreeYn">마케팅 활용 및 광고성 정보 수신 동의(선택)</label>
+                                    <a href="javascript:marketingAgreementPop();" style="text-align: right;"><u>약관보기</u></a>
+                                </div>
+                            </div><br><br>
                             <div class="text-center">
                                 <button type="submit" id="btn_register" class="btn btn-primary"><i class="fa fa-user-md"></i> 회원가입 완료</button>
                             </div>
                         </div>
-
-
-                        <!-- test.php로 이동-->
-                        <!--<form action="php/test.php" method="post">
-                            <div class="form-group">
-                                <label for="login_id">아이디</label>
-                                <input id="login_id" name="login_id" type="text" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="password">비밀번호</label>
-                                <input id="password" name="password" type="text" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="name">이름</label>
-                                <input id="name" name="name" type="text" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="email">이메일</label>
-                                <input id="email" name="email" type="text" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="zip_code">주소</label>
-                                <div class="form-inline">
-                                    <input id="zip_code" name="zip_code" type="text" placeholder="우편 번호" class="form-control" style="width: 100px; margin-right: 5px;" readonly>
-                                    <button class="btn btn-primary">찾기</button>
-                                </div>
-                                <input id="address_basic" name="address_basic" type="text" placeholder="기본 주소" class="form-control" style="margin-top: 5px; margin-bottom: 5px;">
-                                <input id="address_detail" name="address_detail" type="text" placeholder="상세 주소" class="form-control">
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary"><i class="fa fa-user-md"></i> 회원가입 완료</button>
-                            </div>
-                        </form>-->
                     </div>
                 </div>
             </div>
@@ -154,6 +143,7 @@ include 'copyright.php'
 <?php
 include 'jsfile.php'
 ?>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script>
         let idCheckComplete = false;
 
@@ -248,6 +238,18 @@ include 'jsfile.php'
 
             if($('#zip_code').val() == ''){
                 alert("주소를 입력해주세요.");
+
+                return;
+            }
+
+
+            if(!$('#agreeCheckbox').is(":checked")){
+                alert("개인정보 수집 이용을 동의해주세요.");
+                return;
+            }
+
+            if(!$('#useTermsCheckbox').is(":checked")){
+                alert("MallForMan 이용약관을 동의해주세요.");
                 return;
             }
 
@@ -282,6 +284,71 @@ include 'jsfile.php'
                 });
             }
         });
+
+        // 우편주소 받기
+        function getPostcode() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                    // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
+                    // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                    var roadAddr = data.roadAddress; // 도로명 주소 변수
+                    var extraRoadAddr = ''; // 참고 항목 변수
+
+                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraRoadAddr += data.bname;
+                    }
+                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    if(extraRoadAddr !== ''){
+                        extraRoadAddr = ' (' + extraRoadAddr + ')';
+                    }
+
+                    // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                    $('#zip_code').val(data.zonecode);
+                    if(roadAddr != ''){
+                        $('#address_basic').val(roadAddr);
+                    } else{
+                        $('#address_basic').val(data.jibunAddress);
+                    }
+
+                    // 상세주소 삭제
+                    $('#address_detail').val('');
+                }
+            }).open();
+        }
+
+        // 전체약관 동의 체크박스 클릭 시 모든 체크박스 체크
+        $('#checkAll').on("click", function(){
+            // 체크되어있다면
+            if($(this).is(":checked")){
+                $('.agree-item').prop("checked",true);
+            } else{ //아니라면
+                $('.agree-item').prop("checked",false);
+            }
+        });
+
+        //개인정보 수집 이용동의(필수)
+        function privacyAgreeUsagePop(){
+            window.open("/mall/php/terms/privacyAgreeUsagePop.html","개인정보 수집 이용동의약관","width=500px;,height=700px;");
+        }
+
+        //MallForMal이용약관(필수)
+        function serviceAgreementPop(){
+            window.open("/mall/php/terms/serviceAgreementPop.html","MallForMal이용약관","width=500px;,height=700px;");
+        }
+
+        //마케팅 활용 및 광고성 정보 수신 동의(선택)
+        function marketingAgreementPop(){
+            window.open("/mall/php/terms/marketingAgreementPop.html","마케팅 활용 및 광고성 정보 수신 동의(","width=500px;,height=700px;");
+        }
+
     </script>
 </body>
 </html>
