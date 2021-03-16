@@ -302,13 +302,17 @@ include 'head.php'
                                                     <tr id="tr_img">
                                                         <td class="item_title">대표 이미지</td>
                                                         <td colspan="5">
-                                                            <input type="file" class="form-control" name="file_represent">
+                                                            <input type="file" class="form-control" name="file_represent" id="file_represent">
+                                                            <div style="margin-top: 10px;">
+                                                                <img id="img_represent" width="200px;">
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="item_title">상세 이미지</td>
                                                         <td colspan="5">
-                                                            <input type="file" class="form-control" name="file_detail[]" multiple>
+                                                            <input type="file" class="form-control" name="file_detail[]" id="file_detail" multiple>
+                                                            <div id="img_detail" style="margin-top: 10px;"></div>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1156,6 +1160,52 @@ include 'head.php'
                 }
 
                 $('#tr_size_info').after(tr);
+            });
+
+            // 대표이미지 미리보기
+            $('#file_represent').on("change", function(e){
+                let files = e.target.files;
+                let fileArr = Array.prototype.slice.call(files);
+
+                fileArr.forEach(function(file){
+                   if(!file.type.match("image.*")) {
+                       alert("확장자는 이미지 확장자만 가능합니다.");
+                       return;
+                   }
+
+                   let reader = new FileReader();
+
+                   reader.onload = function(e) {
+                       $('#img_represent').attr("src", e.target.result);
+                   }
+                   reader.readAsDataURL(file);
+
+                });
+            });
+
+            // 싱세이미지 미리보기
+            $('#file_detail').on("change", function(e){
+                let files = e.target.files;
+                let fileArr = Array.prototype.slice.call(files);
+                let sel_files = [];
+
+                $('.img_detail').remove();
+
+                fileArr.forEach(function(file){
+                    if(!file.type.match("image.*")) {
+                        alert("확장자는 이미지 확장자만 가능합니다.");
+                        return;
+                    }
+
+                    let reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        $('#img_detail').append('<img class="img_detail" src=\"' + e.target.result + '\" width="200px;" style="float: left;"/>');
+                    }
+
+                    reader.readAsDataURL(file);
+
+                });
             });
         </script>
 </body>

@@ -40,12 +40,12 @@ if(!isset($_GET['page_no'])){
 // 총 게시물 개수
 $total_count_of_post = mysqli_num_rows($result);
 // 한 페이지당 보여줄 게시물 개수
-$count_of_post_per_page = 1;
+$count_of_post_per_page = 10;
 // 총 페이지 개수(나머지가 있다면 1추가)
 //$total_count_of_page = $total_count_of_post / $count_of_post_per_page + ($total_count_of_post % $count_of_post_per_page > 0 ? 1 : 0);
 $total_count_of_page = ceil($total_count_of_post / $count_of_post_per_page);
 // 한 페이지에서 보여줄 블록 개수
-$count_of_block_per_page = 2;
+$count_of_block_per_page = 10;
 // 총 블록그룹 개수(총 페이지 / 페이지 당 블록 수) + 1(나머지 있다면, 없다면 0)
 //$total_count_of_block = $total_count_of_page / $count_of_block_per_page + ($total_count_of_page % $count_of_block_per_page > 0 ? 1 : 0);
 $total_count_of_block = ceil($total_count_of_page / $count_of_block_per_page);

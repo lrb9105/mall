@@ -78,7 +78,7 @@
                     if($('#auto_login').is(":checked")){
 
                     }
-                    alert("로그인에 성공했습니다.");
+                    //alert("로그인에 성공했습니다.");
                     // 로그인 -> 로그아웃으로 변경
                     location.reload();
                     // 모달창 종료

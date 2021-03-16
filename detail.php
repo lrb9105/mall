@@ -74,6 +74,7 @@ $sqlFileInfo = "SELECT F.SEQ,
                        F.SAVE_PATH
         FROM FILE F
         WHERE F.REF_SEQ = $product_no
+        AND (F.TYPE = 0 OR F.TYPE = 1)
         ";
 $resultFileInfo = mysqli_query($conn, $sqlFileInfo);
 $rowFileInfo = mysqli_fetch_array($resultFileInfo);
@@ -113,6 +114,33 @@ $sqlModelInfo = "SELECT PRODUCT_SEQ
         WHERE PRODUCT_SEQ = $product_no
         ";
 $resultModelInfo = mysqli_query($conn, $sqlModelInfo);
+
+// 로그인한 사용자가 해당 물품의 구매자인지 확인(상품번호가 동일한 배송완료 상태의 상품을 가지고 있는지 확인)
+$sqlOrderInfo = "SELECT 1
+                 FROM ORDER_LIST OL
+                 INNER JOIN ORDER_PRODUCT_LIST OPL ON OL.ORDER_NO = OPL.ORDER_NO
+                 WHERE OPL.PRODUCT_SEQ = $product_no
+                 AND OL.ORDER_PERSON_ID = '$login_id'
+                 AND OPL.REVIEW_YN = '0'
+                 AND ORDER_STATE = '배송완료';
+        ";
+$resultOrderInfo = mysqli_query($conn, $sqlOrderInfo);
+$rowOrderInfo = mysqli_fetch_array($resultOrderInfo);
+
+// 로그인한 사용자의 해당 상품 구매내역(순번, 컬러, 사이즈)
+$sqlOrderListInfo = " SELECT SEQ
+                        , PRODUCT_COLOR
+                        , PRODUCT_SIZE
+                        FROM ORDER_PRODUCT_LIST OPL
+                        INNER JOIN ORDER_LIST OL ON OPL.ORDER_NO = OL.ORDER_NO
+                        WHERE OPL.PRODUCT_SEQ = $product_no
+                        AND OL.ORDER_PERSON_ID = '$login_id'
+                        AND OPL.REVIEW_YN = '0'
+                        AND ORDER_STATE = '배송완료'
+        ";
+$resultOrderListInfo = mysqli_query($conn, $sqlOrderListInfo);
+
+// Q&A
 
 ?>
 <script>
@@ -526,11 +554,310 @@ include 'head.php'
                                         <p style="margin-bottom: 7px; margin-top: 7px">&nbsp;</p>
                                     </div>
                                 </div>
-                                <div id="review" role="tabpanel" aria-labelledby="review-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.<br>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
-                                <div id="qanda" role="tabpanel" aria-labelledby="qanda-tab" class="tab-pane fade">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
+                                <div id="review" role="tabpanel" aria-labelledby="review-tab" class="tab-pane fade">
+                                    <div id="board" class="col-lg-12">
+                                        <div id="contact" class="box">
+                                            <div id="header_photo_review" class="d-flex justify-content-between">
+                                                <h3>포토후기</h3>
+                                                <?if($rowOrderInfo[0] != null) {?>
+                                                <button id="btn_review" class="btn btn-info" data-toggle="modal" data-target="#photo-review-modal">후기 작성</button>
+                                                <?}?>
+                                            </div>
+                                            <div id="photo-review-modal" tabindex="-1" role="dialog" aria-labelledby="Photo-Reivew" aria-hidden="true" class="modal fade">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title">후기 작성</h4>
+                                                            <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <table class="table">
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td bgcolor="white">
+                                                                        <table class="table">
+                                                                            <tbody>
+                                                                            <tr>
+                                                                                <td>상품 선택</td>
+                                                                                <td>
+                                                                                    <select class="form-control"  name="photo_review_selected_product" id="photo_review_selected_product">
+                                                                                        <?while($rowOrderListInfo = mysqli_fetch_array($resultOrderListInfo)){?>
+                                                                                        <option value="<?=$rowOrderListInfo['SEQ']?>"><?=$rowOrderListInfo['PRODUCT_COLOR'].'/'.$rowOrderListInfo['PRODUCT_SIZE']?></option>
+                                                                                        <?}?>
+                                                                                    </select>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>제목</td>
+                                                                                <td><input class="form-control py-4" type="text" name="photo_review_title" id="photo_review_title" maxlength="1000" value=""></td>
+                                                                            </tr>
+
+                                                                            <tr>
+                                                                                <td>내용</td>
+                                                                                <td>
+                                                                                    <textarea name="photo_review_contents" id="photo_review_contents" class="nse_content" style="width: 100%; height: 100px;"></textarea>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>평가</td>
+                                                                                <td>
+                                                                                    <table style="width: 100%;">
+                                                                                        <tr>
+                                                                                            <td>사이즈</td>
+                                                                                            <td>밝기</td>
+                                                                                            <td>색감</td>
+                                                                                            <?if($rowProductInfo['FIRST_CATEGORY'] != 26 && $rowProductInfo['FIRST_CATEGORY'] != 27){?>
+                                                                                                <td>무게감</td>
+                                                                                            <?}?>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <select class="form-control"  name="photo_review_evaluation_size" id="photo_review_evaluation_size">
+                                                                                                    <option value="작아요">작아요</option>
+                                                                                                    <option value="보통이에요" selected>보통이에요</option>
+                                                                                                    <option value="커요">커요</option>
+                                                                                                </select>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <select class="form-control"  name="photo_review_evaluation_lightness" id="photo_review_evaluation_lightness">
+                                                                                                    <option value="어두워요">어두워요</option>
+                                                                                                    <option value="보통이에요"selected>보통이에요</option>
+                                                                                                    <option value="밝아요">밝아요</option>
+                                                                                                </select>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <select class="form-control"  name="photo_review_evaluation_color" id="photo_review_evaluation_color">
+                                                                                                    <option value="흐려요">흐려요</option>
+                                                                                                    <option value="보통이에요" selected>보통이에요</option>
+                                                                                                    <option value="선명해요">선명해요</option>
+                                                                                                </select>
+                                                                                            </td>
+                                                                                            <!--상의, 아우터, 하의일 경우에만 나오기-->
+                                                                                            <?if($rowProductInfo['FIRST_CATEGORY'] != 26 && $rowProductInfo['FIRST_CATEGORY'] != 27){?>
+                                                                                                <td>
+                                                                                                    <select class="form-control"  name="photo_review_evaluation_thickness" id="photo_review_evaluation_thickness">
+                                                                                                        <option value="얇아요">얇아요</option>
+                                                                                                        <option value="보통이에요" selected>보통이에요</option>
+                                                                                                        <option value="두꺼워요">두꺼워요</option>
+                                                                                                    </select>
+                                                                                                </td>
+                                                                                            <?}?>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>별점</td>
+                                                                                <td>
+                                                                                    <div id="photo_review_raty"></div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>상품이미지</td>
+                                                                                <td>
+                                                                                    <input type="file" class="form-control" name="photo_review_file_photo_review" id="photo_review_file_photo_review">
+                                                                                    <div style="margin-top: 10px;">
+                                                                                        <img id="img_photo_review" width="300px;">
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <button id="btn_write_photo_review_compl" class="btn btn-info" style="float: right;">작성완료</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div id="accordion">
+                                                <?/*
+                                                $i = 0;
+                                                while($rowPhotoReviewInfo = mysqli_fetch_array($resultPhotoReviewInfo)){*/?><!--
+                                                    <div id="photo_review_<?/*=$i*/?>"" class="card border-primary mb-3">
+                                                        <div id="heading<?/*=$i*/?>" class="card-header p-0 border-0" style="color: white">
+                                                            <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse<?/*=$i*/?>" aria-expanded="false" aria-controls="collapse<?/*=$i*/?>" class="btn btn-light d-block text-left rounded-0">
+                                                                    <span class="raty" id="raty_<?/*=$i*/?>" style="margin-right: 50px;"><input id="star_score_<?/*=$i*/?>"hidden value="<?/*=$rowPhotoReviewInfo['STAR_SCORE']*/?>"></span>
+                                                                    <span><?/*=$rowPhotoReviewInfo['TITLE']*/?></span>
+                                                                    <span style="float: right; color: darkgrey" ><?/*=$rowPhotoReviewInfo['WRITER']*/?></span>
+                                                                </a>
+                                                            </h4>
+                                                        </div>
+                                                        <div id="collapse<?/*=$i*/?>" aria-labelledby="heading<?/*=$i*/?> data-parent=#accordion" class="collapse show" >
+                                                            <div class="card-body">
+                                                                <p><?/*=$rowPhotoReviewInfo['CONTENTS']*/?></p>
+                                                                <img style="text-align: center; align:center;" width="300px;" src="<?/*=$rowPhotoReviewInfo['SAVE_PATH']*/?>">
+                                                                <p style="color: darkgrey"><?/*=$rowPhotoReviewInfo['PRODUCT_COLOR']*/?>색상/<?/*=$rowPhotoReviewInfo['PRODUCT_SIZE']*/?>사이즈 구매</p>
+                                                                <div>
+                                                                    <table class="table">
+                                                                        <tr>
+                                                                            <td>사이즈: <span><?/*=$rowPhotoReviewInfo['EVAL_SIZE']*/?></span></td>
+                                                                            <td>밝기: <span><?/*=$rowPhotoReviewInfo['EVAL_LIGHTNESS']*/?></span></td>
+                                                                            <td>색감: <span><?/*=$rowPhotoReviewInfo['EVAL_COLOR']*/?></span></td>
+                                                                            <?/*if($rowProductInfo['FIRST_CATEGORY'] != 26 && $rowProductInfo['FIRST_CATEGORY'] != 27){*/?>
+                                                                            <td>무게감: <span><?/*=$rowPhotoReviewInfo['EVAL_THICKNESS']*/?></span></td>
+                                                                            <?/*}*/?>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                            <div class="navbar-buttons" align="right" style="display: flex;">
+                                                                <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>
+                                                                <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                --><?/*
+                                                    $i++;
+                                                }*/?>
+                                            </div>
+                                            <!-- /.accordion-->
+                                            <nav aria-label="Page navigation">
+                                                <ul class="pagination pagination_photo_review" style="justify-content: center;">
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+
+                                    <div id="board" class="col-lg-12">
+                                        <div id="contact" class="box">
+                                            <div id="header_review" class="d-flex justify-content-between">
+                                                <h3>일반후기</h3>
+                                            </div>
+                                            <hr>
+                                            <div id="accordion_review">
+                                                <!--<div class="card border-primary mb-3">
+                                                    <div id="heading1" class="card-header p-0 border-0" style="color: white">
+                                                        <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse1" aria-expanded="false" aria-controls="collapse1" class="btn btn-light d-block text-left rounded-0">
+                                                                <span id="raty_1" style="margin-right: 50px;"></span>
+                                                                <span>111111</span>
+                                                                <span style="float: right; color: darkgrey" >test</span>
+                                                            </a>
+                                                        </h4>
+                                                    </div>
+                                                    <div id="collapse1" aria-labelledby="heading0 data-parent=#accordion_review" class="collapse" >
+                                                        <div class="card-body">
+                                                            <p>매우 정말 만족합니다. <br> ㄴㅇㄹㄴㅇㄹ<br> ㄴㅇㄹㄴㅇㄹ<br> ㄴㅇㄹㄴㅇㄹ</p>
+                                                            <p style="color: darkgrey">화이트색상/M사이즈 구매</p>
+                                                            <div>
+                                                                <table class="table">
+                                                                    <tr>
+                                                                        <td>사이즈: <span>좋아요</span></td>
+                                                                        <td>밝기: <span>좋아요</span></td>
+                                                                        <td>색감: <span>좋아요</span></td>
+                                                                        <td>무게감: <span>좋아요</span></td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="navbar-buttons" align="right" style="display: flex;">
+                                                            <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>
+                                                            <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card border-primary mb-3">
+                                                    <div id="heading2" class="card-header p-0 border-0" style="color: white">
+                                                        <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2" class="btn btn-light d-block text-left rounded-0">
+                                                                <span id="raty_2" style="margin-right: 50px;"></span>
+                                                                <span>111111</span>
+                                                                <span style="float: right; color: darkgrey" >test</span>
+                                                            </a>
+                                                        </h4>
+                                                    </div>
+                                                    <div id="collapse2" aria-labelledby="heading0 data-parent=#accordion_review" class="collapse" >
+                                                        <div class="card-body">
+                                                            <p>매우 정말 만족합니다. <br> ㄴㅇㄹㄴㅇㄹ<br> ㄴㅇㄹㄴㅇㄹ<br> ㄴㅇㄹㄴㅇㄹ</p>
+                                                            <p style="color: darkgrey">화이트색상/M사이즈 구매</p>
+                                                            <div>
+                                                                <table class="table">
+                                                                    <tr>
+                                                                        <td>사이즈: <span>좋아요</span></td>
+                                                                        <td>밝기: <span>좋아요</span></td>
+                                                                        <td>색감: <span>좋아요</span></td>
+                                                                        <td>무게감: <span>좋아요</span></td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="navbar-buttons" align="right" style="display: flex;">
+                                                            <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=2" class="btn btn-primary navbar-btn">수정</a></div>
+                                                            <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>
+                                                        </div>
+                                                    </div>
+                                                </div>-->
+                                            </div>
+                                            <!-- /.accordion-->
+                                            <nav aria-label="Page navigation">
+                                                <ul class="pagination pagination_review" style="justify-content: center;">
+                                                    <!--<li class="page-item"><a href="#" class="page-link">«</a></li>
+                                                    <li class="page-item active"><a href="#" class="page-link">1</a></li>
+                                                    <li class="page-item"><a href="#" class="page-link">2</a></li>
+                                                    <li class="page-item"><a href="#" class="page-link">3</a></li>
+                                                    <li class="page-item"><a href="#" class="page-link">4</a></li>
+                                                    <li class="page-item"><a href="#" class="page-link">5</a></li>
+                                                    <li class="page-item"><a href="#" class="page-link">»</a></li>-->
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="qanda" role="tabpanel" aria-labelledby="qanda-tab" class="tab-pane fade">
+                                    <div id="board" class="col-lg-12">
+                                        <div class="container">
+                                            <div id="contact" class="box">
+                                                <div id="header_review" class="d-flex justify-content-between">
+                                                    <h3>Q&A</h3>
+                                                    <button class="btn btn-info">Q&A 작성</button>
+                                                </div>
+                                                <hr>
+                                                <div id="accordion">
+                                                    <div class="card border-primary mb-3">
+                                                        <div id="heading0" class="card-header p-0 border-0">
+                                                            <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse0" aria-expanded="false" aria-controls="collapse0" class="btn btn-toolbar d-block text-left rounded-0"
+                                                                <span>답변중</span>
+                                                                <span style="margin-left: 100px;">111111</span>
+                                                                <span style="float: right;">test</span></a></h4>
+                                                        </div>
+                                                        <div id="collapse0" aria-labelledby="heading0 data-parent=#accordion" class="collapse" >
+                                                            <div class="card-body reply" style=" margin-left: 150px;" >
+                                                                11
+                                                            </div>
+                                                            <div class="card-body reply" style="background-color: lightgrey;">
+                                                                <div style="margin-left: 150px;">
+                                                                    2222222<br><br><br><br><br><br>
+                                                                </div>
+                                                            </div>
+                                                            <div class="navbar-buttons" align="right" style="display: flex;">
+                                                                <!-- /.nav-collapse-->
+                                                                <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>
+                                                                <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- /.accordion-->
+                                                <nav aria-label="Page navigation">
+                                                    <ul class="pagination" style="justify-content: center;">
+                                                        <li class="page-item"><a href="#" class="page-link">«</a></li>
+                                                        <li class="page-item active"><a href="#" class="page-link">1</a></li>
+                                                        <li class="page-item"><a href="#" class="page-link">2</a></li>
+                                                        <li class="page-item"><a href="#" class="page-link">3</a></li>
+                                                        <li class="page-item"><a href="#" class="page-link">4</a></li>
+                                                        <li class="page-item"><a href="#" class="page-link">5</a></li>
+                                                        <li class="page-item"><a href="#" class="page-link">»</a></li>
+                                                    </ul>
+                                                </nav>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                     </div>
-
 
                     <!--<div class="row same-height-row">
                         <div class="col-md-3 col-sm-6">
@@ -662,6 +989,12 @@ include 'jsfile.php'
 ?>
 
     <script>
+        $(document).ready(function(){
+            // 모든 자원 다운로드 시 포토후기 가져오기
+            searchPhotoReview(1);
+            searchReview(1);
+        });
+
         // menu_no에 따라 menu_title, cat_second, cat_third 변경하기
         menuNo = '<?echo $menu_no?>';
         productNo = '<?echo $product_no?>';
@@ -967,6 +1300,412 @@ include 'jsfile.php'
                 return false;
             }
             return confirm("해당 상품을 구매하시겠습니까?");
+        }
+
+        // 포토상품평 별점 매기기
+        let cntPhotoReview;
+        let cntReview;
+
+        /*for(let i = 0; i < cntPhotoReview; i++){
+            $('#raty_'+i).raty({half : true, readOnly: true, score: $('#star_score_'+i).val()});
+        }*/
+
+        $('#photo_review_raty').raty({half : true, readOnly: false});
+        $('#raty_photo_review').raty({half : true, readOnly: false});
+        $('#raty_review').raty({half : true, readOnly: false});
+
+        // 상품이미지
+        $('#file_photo_review').on("change", function(e){
+            let files = e.target.files;
+            let fileArr = Array.prototype.slice.call(files);
+
+            fileArr.forEach(function(file){
+                if(!file.type.match("image.*")) {
+                    alert("확장자는 이미지 확장자만 가능합니다.");
+                    return;
+                }
+
+                let reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#img_photo_review').attr("src", e.target.result);
+                }
+                reader.readAsDataURL(file);
+
+            });
+        });
+
+        // 리뷰 작성완료
+        $('#btn_write_photo_review_compl').on("click", function(){
+
+            /*console.log($('#photo_review_title').val());
+            console.log($('#photo_review_contents').val());
+            console.log($('#photo_review_evaluation_size').val());
+            console.log($('#photo_review_evaluation_color').val());
+            console.log($('#photo_review_evaluation_lightness').val());
+            console.log($("#photo_review_raty").children('input').val());
+            console.log($('#photo_review_file_photo_review')[0].files[0]);*/
+
+            let formData = new FormData();
+            if($('#photo_review_file_photo_review').val() != ''){
+                formData.append("type", "0"); // 포토후기
+            } else{
+                formData.append("type", "1"); // 일반후기
+            }
+            formData.append("photo_review_selected_product", $('#photo_review_selected_product').val());
+            formData.append("product_no", <?echo $product_no?>);
+            formData.append("photo_review_title", $("#photo_review_title").val());
+            formData.append("photo_review_contents", $("#photo_review_contents").val());
+            formData.append("photo_review_evaluation_size", $("#photo_review_evaluation_size").val());
+            formData.append("photo_review_evaluation_color", $("#photo_review_evaluation_color").val());
+            formData.append("photo_review_evaluation_lightness", $("#photo_review_evaluation_lightness").val());
+            formData.append("photo_review_evaluation_thickness", $("#photo_review_evaluation_thickness").val());
+            formData.append("photo_review_raty", $("#photo_review_raty").children('input').val());
+            formData.append("photo_review_file", $('#photo_review_file_photo_review')[0].files[0]);
+
+
+            // 리뷰 작성완료
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/product/review/writeReviewCompl.php',
+                processData: false, // 필수
+                contentType: false, // 필수
+                data: formData,
+                success: function (json) {
+                    if(json.result == 'ok'){
+                        $('#photo-review-modal').modal("hide");
+                        // 포토리뷰
+                        if($('#photo_review_file_photo_review').val() != ''){
+                            let photoReview =
+                                '<div id="photo_review_'+cntPhotoReview+'" class="card border-primary mb-3 photo-review">'
+                                +'<div id="heading_photo_review'+cntPhotoReview+'" class="card-header p-0 border-0" style="color: white">'
+                                +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_photo_review'+cntPhotoReview+'" aria-expanded="false" aria-controls="collapse_photo_review'+cntPhotoReview+'" class="btn btn-light d-block text-left rounded-0">'
+                                +'<span class="raty" id="raty_'+cntPhotoReview+'" style="margin-right: 50px;"><input id="star_score_'+cntPhotoReview+'"hidden value="'+$("#photo_review_raty").children('input').val()+'"></span>'
+                                +'<span>'+$("#photo_review_title").val()+'</span>'
+                                +'<span style="float: right; color: darkgrey" ><?=$login_id?></span>'
+                                +'</a>'
+                                +'</h4>'
+                                +'</div>'
+                                +'<div id="collapse_photo_review'+cntPhotoReview+'" aria-labelledby="heading_photo_review'+cntPhotoReview+' data-parent=#accordion" class="collapse show" >'
+                                +'<div class="card-body">'
+                                +'<p>'+$("#photo_review_contents").val()+'</p>'
+                                +'<img style="text-align: center; align:center;" width="300px;" src="'+json.save_path+'">'
+                                +'<p style="color: darkgrey">'+json.color+'색상/'+json.size+'사이즈 구매</p>'
+                                +'<div>'
+                                +'<table class="table">'
+                                +'<tr>'
+                                +'<td>사이즈: <span>'+$("#photo_review_evaluation_size").val()+'</span></td>'
+                                +'<td>밝기: <span>'+$("#photo_review_evaluation_lightness").val()+'</span></td>'
+                                +'<td>색감: <span>'+$("#photo_review_evaluation_color").val()+'</span></td>';
+                            if(<?=$rowProductInfo['FIRST_CATEGORY']?> != 26 && <?=$rowProductInfo['FIRST_CATEGORY']?> != 27 ){
+                                photoReview += '<td>무게감: <span>'+$("#photo_review_evaluation_thickness").val()+'</span></td>';
+                            }
+                            photoReview += '</tr>'
+                                +'</table>'
+                                +'</div>'
+                                +'</div>'
+                                +'<div class="navbar-buttons" align="right" style="display: flex;">'
+                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
+                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                +'</div>'
+                                +'</div>'
+                                +'</div>';
+
+                            $('#photo_review_0').before(photoReview);
+
+                            $('#raty_'+cntPhotoReview).raty({half : true, readOnly: true, score: $("#photo_review_raty").children('input').val()});
+
+                            cntPhotoReview++;
+                        } else{ //리뷰
+                            let review =
+                                '<div id="review_'+cntReview+'"class="card border-primary mb-3 photo-review">'
+                                +'<div id="heading_review'+cntReview+'" class="card-header p-0 border-0" style="color: white">'
+                                +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_review'+cntReview+'" aria-expanded="false" aria-controls="collapse_review'+cntReview+'" class="btn btn-light d-block text-left rounded-0">'
+                                +'<span class="raty" id="raty_review_'+cntReview+'" style="margin-right: 50px;"><input id="star_score_'+cntReview+'"hidden value="'+$("#photo_review_raty").children('input').val()+'"></span>'
+                                +'<span>'+$("#photo_review_title").val()+'</span>'
+                                +'<span style="float: right; color: darkgrey" ><?=$login_id?></span>'
+                                +'</a>'
+                                +'</h4>'
+                                +'</div>'
+                                +'<div id="collapse_review'+cntReview+'" aria-labelledby="heading_review'+cntReview+' data-parent=#accordion" class="collapse show" >'
+                                +'<div class="card-body">'
+                                +'<p>'+$("#photo_review_contents").val()+'</p>'
+                                +'<p style="color: darkgrey">'+json.color+'색상/'+json.size+'사이즈 구매</p>'
+                                +'<div>'
+                                +'<table class="table">'
+                                +'<tr>'
+                                +'<td>사이즈: <span>'+$("#photo_review_evaluation_size").val()+'</span></td>'
+                                +'<td>밝기: <span>'+$("#photo_review_evaluation_lightness").val()+'</span></td>'
+                                +'<td>색감: <span>'+$("#photo_review_evaluation_color").val()+'</span></td>';
+                            if(<?=$rowProductInfo['FIRST_CATEGORY']?> != 26 && <?=$rowProductInfo['FIRST_CATEGORY']?> != 27 ){
+                                review += '<td>무게감: <span>'+$("#photo_review_evaluation_thickness").val()+'</span></td>';
+                            }
+                            review += '</tr>'
+                                +'</table>'
+                                +'</div>'
+                                +'</div>'
+                                +'<div class="navbar-buttons" align="right" style="display: flex;">'
+                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
+                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                +'</div>'
+                                +'</div>'
+                                +'</div>';
+
+                            $('#review_0').before(review);
+
+                            console.log(cntReview);
+                            console.log($("#photo_review_raty").children('input').val());
+
+                            $('#raty_review_'+cntReview).raty({half : true, readOnly: true, score: $("#photo_review_raty").children('input').val()});
+
+                            cntPhotoReview++;
+                        }
+                    }
+                    // 리뷰 작성 후 남은 리뷰가능상품의 갯수가 없다면 후기 작성 버튼을 숨긴다.
+                    if(<?=$rowOrderInfo[0]?> - 1 == 0){
+                        $('#btn_review').hide();
+                    }
+                },
+                error: function () {
+                }
+            });
+        });
+
+
+        // 포토리뷰 가져오기
+        function searchPhotoReview(pageNo){
+            let page_no = pageNo;
+
+            if(page_no == '' || page_no == null || page_no == undefined){
+                page_no = 1;
+            }
+
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/product/review/selectPhotoReviewCompl.php',
+                data: {
+                    page_no: page_no,
+                    product_no: <?=$product_no?>
+                },
+
+                success: function (json) {
+                    if (json.result == 'ok') {
+                        //alert("조회를 완료헀습니다.");
+                        // 가져온 데이터가 있다면 모든 행 삭제.
+                        if(json.seq.length != 0){
+                            //모든 행 삭제
+                            $('#accordion > .photo-review').remove();
+                            // 페이징 삭제
+                            $('.pagination_photo_review > li').remove();
+                        }
+
+                        /* 전체 데이터 뿌리기
+                        for(let i = 0; i < json.seq.length; i++){
+                            let space = '';
+
+                            for(let j= 0; j < (json.depth[i] - 1) * 3; j++){
+                                space += '&nbsp';
+                            }
+                            if(space != ''){
+                                space += '┖';
+                            }
+                            $('#free_board_post_tb > tbody:last').append(
+                                '<tr style="cursor: pointer;" onclick="location.href=\'detailFreeBoard.php?board_no=3&seq=' + json.seq[i] + '\'">'
+                                +    '<td>'+json.seq[i]+'</td>'
+                                +    '<td style="text-align: left;">'
+                                +         '<a href="detailFreeBoard.php?board_no=3&seq='+json.seq[i]+'">'
+                                +             space + '<u>' + json.title[i] + '</u>'
+                                +         '</a>' + ' [' + json.commentCnt[i] + ']'
+                                +     '</td>'
+                                +     '<td>'+ json.name[i] +'</td>'
+                                +     '<td>'+ json.creDatetime[i].substring(0,10) +'</td>'
+                                +     '<td>'+ json.cnt[i] +'</td>'
+                                + '</tr>');
+                        }*/
+
+                        // 포토리뷰 갯수
+                        cntPhotoReview = json.seq.length;
+
+                        // 페이징 적용
+                        for(let i = 0; i < json.seq.length; i++){
+                            let photoReview =
+                                '<div id="photo_review_'+i+'" class="card border-primary mb-3 photo-review">'
+                                    +'<div id="heading_photo_review'+i+'" class="card-header p-0 border-0" style="color: white">'
+                                        +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_photo_review'+i+'" aria-expanded="false" aria-controls="collapse_photo_review'+i+'" class="btn btn-light d-block text-left rounded-0">'
+                                            +'<span class="raty" id="raty_'+i+'" style="margin-right: 50px;"><input id="star_score_'+i+'"hidden value="'+json.starScore[i]+'"></span>'
+                                            +'<span>'+json.title[i]+'</span>'
+                                            +'<span style="float: right; color: darkgrey" >'+json.writer[i]+'</span>'
+                                        +'</a>'
+                                        +'</h4>'
+                                    +'</div>'
+                                    +'<div id="collapse_photo_review'+i+'" aria-labelledby="heading_photo_review'+i+' data-parent=#accordion" class="collapse show" >'
+                                        +'<div class="card-body">'
+                                            +'<p>'+json.contents[i]+'</p>'
+                                            +'<img style="text-align: center; align:center;" width="300px;" src="'+json.savePath[i]+'">'
+                                            +'<p style="color: darkgrey">'+json.productColor[i]+'색상/'+json.productSize[i]+'사이즈 구매</p>'
+                                            +'<div>'
+                                                +'<table class="table">'
+                                                    +'<tr>'
+                                                        +'<td>사이즈: <span>'+json.evalSize[i]+'</span></td>'
+                                                        +'<td>밝기: <span>'+json.evalLightness[i]+'</span></td>'
+                                                        +'<td>색감: <span>'+json.evalColor[i]+'</span></td>';
+                                                        if(<?=$rowProductInfo['FIRST_CATEGORY']?> != 26 && <?=$rowProductInfo['FIRST_CATEGORY']?> != 27 ){
+                                                            photoReview += '<td>무게감: <span>'+json.evalThickness[i]+'</span></td>';
+                                                        }
+                                            photoReview += '</tr>'
+                                                +'</table>'
+                                            +'</div>'
+                                        +'</div>'
+                                        +'<div class="navbar-buttons" align="right" style="display: flex;">'
+                                            +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
+                                            +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                        +'</div>'
+                                    +'</div>'
+                                +'</div>';
+                            $('#accordion').append(photoReview);
+                            $('#raty_'+i).raty({half : true, readOnly: true, score: json.starScore[i]});
+                        }
+
+                        /* 페이징 시작 */
+                        if(parseInt(json.current_num_of_block) != 1){
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview(1)"class="page-link">' + '처음' + '</a></li>');
+                        }
+
+                        if(parseInt(json.current_num_of_block) != 1){
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '«' + '</a></li>');
+                        }
+
+                        for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
+                            if(page_no != i){
+                                $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+i + ')" class="page-link">' + i + '</a></li>');
+                            } else{
+                                $('.pagination_photo_review').append('<li class="page-item active"><a href="javascript:searchPhotoReview('+i + ')" class="page-link">' + i + '</a></li>');
+                            }
+                        }
+
+                        if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '»' + '</a></li>');
+                        }
+
+                        if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '끝' + '</a></li>');
+                        }
+                        /* 페이징 종료 */
+                    } else {
+                        alert("조회에 실패했습니다!");
+                    }
+                },
+                error: function () {
+                    alert("에러가 발생했습니다.");
+                }
+            });
+        }
+
+        // 일반 리뷰 가져오기
+        function searchReview(pageNo){
+            let page_no = pageNo;
+
+            if(page_no == '' || page_no == null || page_no == undefined){
+                page_no = 1;
+            }
+
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/product/review/selectReviewCompl.php',
+                data: {
+                    page_no: page_no,
+                    product_no: <?=$product_no?>
+                },
+
+                success: function (json) {
+                    if (json.result == 'ok') {
+                        //alert("조회를 완료헀습니다.");
+                        // 가져온 데이터가 있다면 모든 행 삭제.
+                        if(json.seq.length != 0){
+                            //모든 행 삭제
+                            $('#accordion_review > .review').remove();
+                            // 페이징 삭제
+                            $('.pagination_review > li').remove();
+                        }
+
+                        // 리뷰 갯수
+                        cntReview = json.seq.length;
+
+                        // 페이징 적용
+                        for(let i = 0; i < json.seq.length; i++){
+                            let review =
+                                '<div id="review_'+i+'" class="card border-primary mb-3 review">'
+                                +'<div id="heading_review'+i+'" class="card-header p-0 border-0" style="color: white">'
+                                +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_review'+i+'" aria-expanded="false" aria-controls="collapse_review'+i+'" class="btn btn-light d-block text-left rounded-0">'
+                                +'<span class="raty" id="raty_review_'+i+'" style="margin-right: 50px;"><input id="star_score_'+i+'"hidden value="'+json.starScore[i]+'"></span>'
+                                +'<span>'+json.title[i]+'</span>'
+                                +'<span style="float: right; color: darkgrey" >'+json.writer[i]+'</span>'
+                                +'</a>'
+                                +'</h4>'
+                                +'</div>'
+                                +'<div id="collapse_review'+i+'" aria-labelledby="heading_review'+i+' data-parent=#accordion_review" class="collapse" >'
+                                +'<div class="card-body">'
+                                +'<p>'+json.contents[i]+'</p>'
+                                +'<p style="color: darkgrey">'+json.productColor[i]+'색상/'+json.productSize[i]+'사이즈 구매</p>'
+                                +'<div>'
+                                +'<table class="table">'
+                                +'<tr>'
+                                +'<td>사이즈: <span>'+json.evalSize[i]+'</span></td>'
+                                +'<td>밝기: <span>'+json.evalLightness[i]+'</span></td>'
+                                +'<td>색감: <span>'+json.evalColor[i]+'</span></td>';
+                            if(<?=$rowProductInfo['FIRST_CATEGORY']?> != 26 && <?=$rowProductInfo['FIRST_CATEGORY']?> != 27 ){
+                                review += '<td>무게감: <span>'+json.evalThickness[i]+'</span></td>';
+                            }
+                            review += '</tr>'
+                                +'</table>'
+                                +'</div>'
+                                +'</div>'
+                                +'<div class="navbar-buttons" align="right" style="display: flex;">'
+                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
+                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                +'</div>'
+                                +'</div>'
+                                +'</div>';
+                            $('#accordion_review').append(review);
+                            $('#raty_review_'+i).raty({half : true, readOnly: true, score: json.starScore[i]});
+                        }
+
+                        /* 페이징 시작 */
+                        if(parseInt(json.current_num_of_block) != 1){
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview(1)"class="page-link">' + '처음' + '</a></li>');
+                        }
+
+                        if(parseInt(json.current_num_of_block) != 1){
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '«' + '</a></li>');
+                        }
+
+                        for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
+                            if(page_no != i){
+                                $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+i + ')" class="page-link">' + i + '</a></li>');
+                            } else{
+                                $('.pagination_review').append('<li class="page-item active"><a href="javascript:searchReview('+i + ')" class="page-link">' + i + '</a></li>');
+                            }
+                        }
+
+                        if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '»' + '</a></li>');
+                        }
+
+                        if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '끝' + '</a></li>');
+                        }
+                        /* 페이징 종료 */
+                    } else {
+                        alert("조회에 실패했습니다!");
+                    }
+                },
+                error: function () {
+                    alert("에러가 발생했습니다.");
+                }
+            });
         }
     </script>
 </body>

@@ -30,6 +30,36 @@ if($login_id_cookie != '' && $login_pw_cookie != '' && $login_id ==''){
         session_unset();
     }
 }
+
+// menu_no에 해당하는 모든 상품 가져오기
+// mysql커넥션 연결
+$conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
+
+// 실제 데이터 조회
+$sql = "SELECT P.PRODUCT_SEQ,
+                P.FIRST_CATEGORY, 
+                P.SECOND_CATEGORY,
+                P.PRODUCT_NAME,
+                P.PRODUCT_PRICE,
+                P.PRODUCT_PRICE_SALE,
+                P.MATERIAL,
+                P.MANUFACTURER,
+                P.COUNTRY_OF_MANUFACTURER,
+                P.CLEANING_METHOD,
+                P.DETAIL_INFO,
+                P.CRE_DATETIME,
+                F.SAVE_PATH
+        FROM PRODUCT P
+        INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
+        WHERE F.TYPE = 0
+        ORDER BY P.NUM_OF_SELL
+        LIMIT 0,16
+        ";
+
+// 쿼리를 통해 가져온 결과
+$result = mysqli_query($conn, $sql);
+$count = mysqli_num_rows($result);
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -37,6 +67,10 @@ if($login_id_cookie != '' && $login_pw_cookie != '' && $login_id ==''){
 include 'head.php'
 ?>
 <link id="new-stylesheet" rel="stylesheet">
+<!-- JavaScript files-->
+<?php
+include 'jsfile.php'
+?>
 <body>
 <!-- navbar-->
 <header class="header mb-5">
@@ -64,9 +98,9 @@ include 'head.php'
                     <div class="col-md-12">
                         <div id="main-slider" class="owl-carousel owl-theme">
                             <div class="item"><img src="img/main-slider1.jpg" alt="" class="img-fluid"></div>
-                            <div class="item"><img src="img/main-slider2.jpg" alt="" class="img-fluid"></div>
+                            <!--<div class="item"><img src="img/main-slider2.jpg" alt="" class="img-fluid"></div>
                             <div class="item"><img src="img/main-slider3.jpg" alt="" class="img-fluid"></div>
-                            <div class="item"><img src="img/main-slider4.jpg" alt="" class="img-fluid"></div>
+                            <div class="item"><img src="img/main-slider4.jpg" alt="" class="img-fluid"></div>-->
                         </div>
                         <!-- /#main-slider-->
                     </div>
@@ -76,7 +110,7 @@ include 'head.php'
             *** ADVANTAGES HOMEPAGE ***
             _________________________________________________________
             -->
-            <div id="advantages">
+            <!--<div id="advantages">
                 <div class="container">
                     <div class="row mb-4">
                         <div class="col-md-4">
@@ -101,10 +135,8 @@ include 'head.php'
                             </div>
                         </div>
                     </div>
-                    <!-- /.row-->
                 </div>
-                <!-- /.container-->
-            </div>
+            </div>-->
             <!-- /#advantages-->
             <!-- *** ADVANTAGES END ***-->
             <!--
@@ -327,6 +359,61 @@ include 'head.php'
                     <!-- /.container-->
                 </div>
                 <!-- /#hot-->
+                <div id="hot">
+                    <div class="box py-4">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2 class="mb-0">BEST SELLER</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row products">
+                        <?for($i=0; $i < $count; $i++){
+                            $row = mysqli_fetch_array($result)
+                            ?>
+                            <div class="col-lg-3 col-md-6" style="margin-bottom: 30px;">
+                                <div class="product">
+                                    <div class="flip-container">
+                                        <div class="flipper">
+                                            <div class="front"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><img id='front' src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a></div>
+                                        </div>
+                                    </div><a href="detail.html?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>" class="invisible"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a>
+                                    <div class="text">
+                                        <h3><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><?echo $row['PRODUCT_NAME']?></a></h3>
+                                        <p class="price">
+                                            <del><?echo $row['PRODUCT_PRICE']?>원</del><?echo $row['PRODUCT_PRICE_SALE']?>원
+                                        </p>
+                                        <!--                                    <p class="buttons"><a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
+                                        -->                                </div>
+                                    <!-- /.text-->
+                                    <div class="ribbon sale">
+                                        <div class="theribbon">SALE</div>
+                                        <div class="ribbon-background"></div>
+                                    </div>
+                                    <!-- /.ribbon-->
+                                    <div class="ribbon new">
+                                        <div class="theribbon">NEW</div>
+                                        <div class="ribbon-background"></div>
+                                    </div>
+                                    <!-- /.ribbon-->
+                                    <div class="ribbon gift">
+                                        <div class="theribbon">GIFT</div>
+                                        <div class="ribbon-background"></div>
+                                    </div>
+                                    <!-- /.ribbon-->
+                                </div>
+                                <!-- /.product            -->
+                            </div>
+                        <?} ?>
+                        <!-- /.products-->
+                        </div>
+                    </div>
+                    <!-- /#hot-->
+                    <!-- *** HOT END ***-->
+                </div>
                 <!-- *** HOT END ***-->
             </div>
         </div>
@@ -349,11 +436,6 @@ include 'head.php'
     include 'copyright.php'
     ?>
     <!-- *** COPYRIGHT END ***-->
-
-    <!-- JavaScript files-->
-    <?php
-    include 'jsfile.php'
-    ?>
     <script>
     </script>
 </body>
