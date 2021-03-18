@@ -24,10 +24,12 @@ $sqlPhotoReviewInfo = "SELECT   R.SEQ,
                                 R.CRE_DATETIME,
                                 F.SAVE_PATH,
                                 OPL.PRODUCT_SIZE,
-                                OPL.PRODUCT_COLOR
+                                OPL.PRODUCT_COLOR,
+                                U.NAME
                  FROM REVIEW R
                  INNER JOIN FILE F ON R.SEQ = F.REVIEW_SEQ
                  INNER JOIN ORDER_PRODUCT_LIST OPL ON R.PRODUCT_SEQ = OPL.PRODUCT_SEQ
+                 INNER JOIN USER  U ON U.LOGIN_ID = R.WRITER
                  WHERE R.PRODUCT_SEQ = $product_no
                  AND OPL.REVIEW_YN = '1'
                  AND OPL.REVIEW_SEQ = R.SEQ
@@ -83,10 +85,12 @@ $sqlPhotoReviewInfo = "SELECT   R.SEQ,
                                 R.CRE_DATETIME,
                                 F.SAVE_PATH,
                                 OPL.PRODUCT_SIZE,
-                                OPL.PRODUCT_COLOR
+                                OPL.PRODUCT_COLOR,
+                                U.NAME
                  FROM REVIEW R
+                 INNER JOIN FILE F ON R.SEQ = F.REVIEW_SEQ
                  INNER JOIN ORDER_PRODUCT_LIST OPL ON R.PRODUCT_SEQ = OPL.PRODUCT_SEQ
-                 LEFT JOIN FILE F ON R.SEQ = F.REVIEW_SEQ
+                 INNER JOIN USER  U ON U.LOGIN_ID = R.WRITER
                  WHERE R.PRODUCT_SEQ = $product_no
                  AND OPL.REVIEW_YN = '1'
                  AND OPL.REVIEW_SEQ = R.SEQ
@@ -109,6 +113,7 @@ $dbEvalThickness = array();
 $dbSavePath = array();
 $dbProductSize = array();
 $dbProductColor = array();
+$dbName = array();
 
 // iconv: 한글이 깨지지 않게 하기위해 인코딩
 while($rowPhotoReviewInfo = mysqli_fetch_array($resultPhotoReviewInfo)) {
@@ -124,6 +129,7 @@ while($rowPhotoReviewInfo = mysqli_fetch_array($resultPhotoReviewInfo)) {
     array_push($dbSavePath, $rowPhotoReviewInfo['SAVE_PATH']);
     array_push($dbProductSize, $rowPhotoReviewInfo['PRODUCT_SIZE']);
     array_push($dbProductColor, $rowPhotoReviewInfo['PRODUCT_COLOR']);
+    array_push($dbName, $rowPhotoReviewInfo['NAME']);
 }
 
 // insert가 실패했다면 false, 성공이라면 ok
@@ -143,6 +149,7 @@ if ($resultPhotoReviewInfo === false) {
         , 'savePath'=> $dbSavePath
         , 'productSize'=> $dbProductSize
         , 'productColor'=> $dbProductColor
+        , 'name'=> $dbName
         , 'total_count_of_post' => $total_count_of_post
         , 'count_of_post_per_page' => $count_of_post_per_page
         , 'total_count_of_page' => $total_count_of_page

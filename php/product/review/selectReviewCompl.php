@@ -23,9 +23,11 @@ $sqlReviewInfo = "SELECT   R.SEQ,
                                 R.EVAL_THICKNESS,
                                 R.CRE_DATETIME,
                                 OPL.PRODUCT_SIZE,
-                                OPL.PRODUCT_COLOR
+                                OPL.PRODUCT_COLOR,
+                                U.NAME
                  FROM REVIEW R
                  INNER JOIN ORDER_PRODUCT_LIST OPL ON R.PRODUCT_SEQ = OPL.PRODUCT_SEQ
+                 INNER JOIN USER  U ON U.LOGIN_ID = R.WRITER
                  WHERE R.PRODUCT_SEQ = $product_no
                  AND OPL.REVIEW_YN = '1'
                  AND R.TYPE = 1
@@ -80,9 +82,11 @@ $sqlReviewInfo = "SELECT   R.SEQ,
                                 R.EVAL_THICKNESS,
                                 R.CRE_DATETIME,
                                 OPL.PRODUCT_SIZE,
-                                OPL.PRODUCT_COLOR
+                                OPL.PRODUCT_COLOR,
+                                U.NAME
                  FROM REVIEW R
                  INNER JOIN ORDER_PRODUCT_LIST OPL ON R.PRODUCT_SEQ = OPL.PRODUCT_SEQ
+                 INNER JOIN USER  U ON U.LOGIN_ID = R.WRITER
                  WHERE R.PRODUCT_SEQ = $product_no
                  AND OPL.REVIEW_YN = '1'
                  AND OPL.REVIEW_SEQ = R.SEQ
@@ -105,6 +109,7 @@ $dbEvalThickness = array();
 $dbSavePath = array();
 $dbProductSize = array();
 $dbProductColor = array();
+$dbName = array();
 
 // iconv: 한글이 깨지지 않게 하기위해 인코딩
 while($rowReviewInfo = mysqli_fetch_array($resultReviewInfo)) {
@@ -119,6 +124,7 @@ while($rowReviewInfo = mysqli_fetch_array($resultReviewInfo)) {
     array_push($dbEvalThickness, $rowReviewInfo['EVAL_THICKNESS']);
     array_push($dbProductSize, $rowReviewInfo['PRODUCT_SIZE']);
     array_push($dbProductColor, $rowReviewInfo['PRODUCT_COLOR']);
+    array_push($dbName, $rowReviewInfo['NAME']);
 }
 
 // select가 실패했다면 false, 성공이라면 ok
@@ -137,6 +143,7 @@ if ($resultReviewInfo === false) {
         , 'evalThickness'=> $dbEvalThickness
         , 'productSize'=> $dbProductSize
         , 'productColor'=> $dbProductColor
+        , 'name'=> $dbName
         , 'total_count_of_post' => $total_count_of_post
         , 'count_of_post_per_page' => $count_of_post_per_page
         , 'total_count_of_page' => $total_count_of_page

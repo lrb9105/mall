@@ -27,6 +27,7 @@
                       ,  OL.ORDER_STATE
                       ,  P.FIRST_CATEGORY 
                       ,  OL.INVOICE_NUMBER
+                      ,  OPL.REVIEW_YN
         FROM ORDER_PRODUCT_LIST OPL 
         INNER JOIN PRODUCT P ON OPL.PRODUCT_SEQ = P.PRODUCT_SEQ
         INNER JOIN ORDER_LIST OL ON OPL.ORDER_NO = OL.ORDER_NO
@@ -93,6 +94,7 @@ include 'head.php'
                             <div class="card-body" id="side-bar">
                                 <ul class="nav nav-pills flex-column category-menu" >
                                     <li><a href="mypage.php?mypage_no=1" class="nav-link" style="color: #555555;">주문/배송</a></li>
+                                    <li><a href="updateUserInfo.php" class="nav-link" style="color: #555555;">내정보</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -126,6 +128,7 @@ include 'head.php'
                                         <th>주문금액</th>
                                         <th>송장번호</th>
                                         <th>주문상태</th>
+                                        <!--<th>상품평작성</th>-->
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -139,7 +142,6 @@ include 'head.php'
                                             <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></td>
                                             <td class="invoice_number"><?echo $rowProductInfo['INVOICE_NUMBER']?></td>
                                             <td class="product_price"><?echo $rowProductInfo['ORDER_STATE']?><?if($rowProductInfo['ORDER_STATE'] == '배송중'){?><br><button onclick="purcharseCompl(<?echo $rowProductInfo['ORDER_NO']?>)" id="btn_purchase_compl" class="btn btn-info">구매확정</button> <?}?></td>
-                                            
                                         </tr>
                                     <?}?>
 
@@ -227,6 +229,77 @@ include 'head.php'
             }
         }
 
+        // 리뷰 작성완료
+        function writeReview(product_no){
+            /*console.log($('#photo_review_title').val());
+            console.log($('#photo_review_contents').val());
+            console.log($('#photo_review_evaluation_size').val());
+            console.log($('#photo_review_evaluation_color').val());
+            console.log($('#photo_review_evaluation_lightness').val());
+            console.log($("#photo_review_raty").children('input').val());
+            console.log($('#photo_review_file_photo_review')[0].files[0]);*/
+
+            let formData = new FormData();
+            if($('#photo_review_file_photo_review').val() != ''){
+                formData.append("type", "0"); // 포토후기
+            } else{
+                formData.append("type", "1"); // 일반후기
+            }
+            formData.append("photo_review_selected_product", $('#photo_review_selected_product').val());
+            formData.append("product_no", product_no);
+            formData.append("photo_review_title", $("#photo_review_title").val());
+            formData.append("photo_review_contents", $("#photo_review_contents").val());
+            formData.append("photo_review_evaluation_size", $("#photo_review_evaluation_size").val());
+            formData.append("photo_review_evaluation_color", $("#photo_review_evaluation_color").val());
+            formData.append("photo_review_evaluation_lightness", $("#photo_review_evaluation_lightness").val());
+            formData.append("photo_review_evaluation_thickness", $("#photo_review_evaluation_thickness").val());
+            formData.append("photo_review_raty", $("#photo_review_raty").children('input').val());
+            formData.append("photo_review_file", $('#photo_review_file_photo_review')[0].files[0]);
+
+
+            // 리뷰 작성완료
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/product/review/writeReviewCompl.php',
+                processData: false, // 필수
+                contentType: false, // 필수
+                data: formData,
+                success: function (json) {
+                    if(json.result == 'ok'){
+                        // 모달 창 닫기
+                        $('#photo-review-modal').modal("hide");
+                        location.reload();
+                    }
+                },
+                error: function () {
+                }
+            });
+        }
+
+        // 상품이미지
+        $('#file_photo_review').on("change", function(e){
+            alert('11');
+            let files = e.target.files;
+            let fileArr = Array.prototype.slice.call(files);
+
+            fileArr.forEach(function(file){
+                if(!file.type.match("image.*")) {
+                    alert("확장자는 이미지 확장자만 가능합니다.");
+                    return;
+                }
+
+                let reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#img_photo_review').attr("src", e.target.result);
+                }
+                reader.readAsDataURL(file);
+
+            });
+        });
+
+        $('#photo_review_raty').raty({half : true, readOnly: false});
     </script>
 </body>
 </html>

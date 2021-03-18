@@ -1,27 +1,7 @@
 <?php
 session_start();
 $login_id = $_SESSION['LOGIN_ID'];
-$user_name = $_SESSION['NAME'];
-
-// 메뉴에 따라 카테고리, 메뉴명, active(클릭된 상태) 변경해주기
-$menu_no = $_GET['menu_no'];
 $product_no = $_GET['product_no'];
-
-$viewRecentList = $_COOKIE['VIEW_RECENT_LIST'];
-
-// 쿠키에 값이 있다면
-if($viewRecentList != null && $viewRecentList != ''){
-    // 해당 상품이 쿠키에 없다면
-    if(strpos($viewRecentList, $product_no.',') === false){
-        $viewRecentList = $viewRecentList.$product_no.',';
-        setcookie("VIEW_RECENT_LIST", $viewRecentList, time() + 3600*24, '/');
-    }
-} else{
-    // 쿠키에 추가
-    setcookie("VIEW_RECENT_LIST", $product_no.',', time() + 3600*24, '/');
-}
-
-$referer = $_SERVER['HTTP_REFERER'];
 
 // product_no에 해당하는 상품 정보 가져오기
 // mysql커넥션 연결
@@ -144,12 +124,6 @@ $resultOrderListInfo = mysqli_query($conn, $sqlOrderListInfo);
 // Q&A
 
 ?>
-<script>
-    if('<?echo $referer?>' == ''){
-        alert('잘못된 접근입니다.');
-        location.href = 'index.php';
-    }
-</script>
 
 <!DOCTYPE html>
 <html>
@@ -159,43 +133,11 @@ include 'head.php'
 <body>
 <!-- navbar-->
 <header class="header mb-5">
-    <!--
-    *** TOPBAR ***
-    _________________________________________________________
-    -->
-    <?php
-    include 'topbar.php'
-    ?>
-    <!-- *** TOP BAR END ***-->
-
-    <!--
-    *** HEADER ***
-    _________________________________________________________
-    -->
-    <?php
-    include 'header.php'
-    ?>
-    <!-- *** HEADER END ***-->
-
 <div id="all">
     <div id="content">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <!-- breadcrumb-->
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#">품목</a></li>
-                            <li class="breadcrumb-item" id="cat_second"><a href="#"></a></li>
-                            <li class="breadcrumb-item" id="cat_third"><a href="#"></a></li>
-                            <li aria-current="page" class="breadcrumb-item" id="cat_four"></li>
-                        </ol>
-                    </nav>
-                </div>
-                <?php
-                include 'sidebar.php'
-                ?>
-                <div class="col-lg-10 order-1 order-lg-2">
                     <div id="productMain" class="row">
                         <div class="col-md-6">
                             <div class="item"> <img id="img_rep" src="<? echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></div>
@@ -262,14 +204,7 @@ include 'head.php'
                                         <br><br><br>
                                         <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?></span><span>원</span></p>
                                         <input name="product_no" type="number" value="<?echo $product_no?>" hidden>
-                                        <input name="menu_no" type="number" value="<?echo $menu_no?>" hidden>
                                     </div>
-                                    <? //일반사용자
-                                    if($_SESSION['USER_TYPE'] == 1){?>
-                                        <p class="text-center buttons"><input id="btn_purchase" type="submit" class="btn btn-info" value="바로구매"><a href="javascript:addCart(<?echo $product_no?>);" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a></p>
-                                    <?} else{ //관리자?>
-                                        <p class="text-center buttons"><button type="button" id="btn_product_modify" class="btn btn-info" onclick="location.href='updateProduct.php?product_no=<?=$product_no?>'">상품수정</button> &nbsp; <button type="button" id="btn_product_delete" class="btn btn-warning">상품삭제</button></p>
-                                    <?}?>
                                     <!--<a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a>-->
                                 </div>
                             </form>
@@ -295,8 +230,6 @@ include 'head.php'
                         <div class="col-lg-12">
                             <ul id="pills-tab" role="tablist" class="nav nav-pills nav-justified">
                                 <li class="nav-item" ><a id="detail-info-tab" data-toggle="pill" href="#detail-info" role="tab" aria-controls="detail-info" aria-selected="false" class="nav-link active">상세정보</a></li>
-                                <li class="nav-item" ><a id="review-tab" data-toggle="pill" href="#review" role="tab" aria-controls="review" aria-selected="false" class="nav-link">후기</a></li>
-                                <li class="nav-item" ><a id="qanda-tab" data-toggle="pill" href="#qanda" role="tab" aria-controls="qanda" aria-selected="false" class="nav-link">Q&A</a></li>
                             </ul>
                             <div id="pills-tabContent" class="tab-content">
                                 <div id="detail-info" role="tabpanel" aria-labelledby="detail-info-tab" class="tab-pane fade active show">
@@ -993,46 +926,14 @@ include 'head.php'
 *** FOOTER ***
 _________________________________________________________
 -->
-<?php
-include 'footer.php'
-?>
-<!-- *** FOOTER END ***-->
-
-
-<!--
-*** COPYRIGHT ***
-_________________________________________________________
--->
-<?php
-include 'copyright.php'
-?>
-<!-- *** COPYRIGHT END ***-->
-
 <!-- JavaScript files-->
 <?php
 include 'jsfile.php'
 ?>
 
     <script>
-        $(document).ready(function(){
-            // 모든 자원 다운로드 시 포토후기 가져오기
-            searchPhotoReview(1);
-            searchReview(1);
-            searchQandA(1);
-        });
-
         // menu_no에 따라 menu_title, cat_second, cat_third 변경하기
-        menuNo = '<?echo $menu_no?>';
         productNo = '<?echo $product_no?>';
-
-        // 선택된 카테고리 active
-        // href$="val" : href의 속성값이 val로 끝나는 요소
-        $('.category-menu li a[href$='+ menuNo +']').each(function (index, item){
-            if(index == 0) {
-                $(item).addClass("active");
-            }
-            console.log(item);
-        });
 
         function changeImg(src){
             $('#img_rep').attr("src",src);
@@ -1411,7 +1312,7 @@ include 'jsfile.php'
                                 +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_photo_review'+cntPhotoReview+'" aria-expanded="false" aria-controls="collapse_photo_review'+cntPhotoReview+'" class="btn btn-light d-block text-left rounded-0">'
                                 +'<span class="raty" id="raty_'+cntPhotoReview+'" style="margin-right: 50px;"><input id="star_score_'+cntPhotoReview+'"hidden value="'+$("#photo_review_raty").children('input').val()+'"></span>'
                                 +'<span>'+$("#photo_review_title").val()+'</span>'
-                                +'<span style="float: right; color: darkgrey" ><?=$user_name?></span>'
+                                +'<span style="float: right; color: darkgrey" ><?=$login_id?></span>'
                                 +'</a>'
                                 +'</h4>'
                                 +'</div>'
@@ -1440,12 +1341,7 @@ include 'jsfile.php'
                                 +'</div>'
                                 +'</div>';
 
-                            // 첫구매라면
-                            if(cntPhotoReview == 0){
-                                $('#accordion').append(photoReview);
-                            } else{
-                                $('#photo_review_0').before(photoReview);
-                            }
+                            $('#photo_review_0').before(photoReview);
 
                             $('#raty_'+cntPhotoReview).raty({half : true, readOnly: true, score: $("#photo_review_raty").children('input').val()});
 
@@ -1457,7 +1353,7 @@ include 'jsfile.php'
                                 +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_review'+cntReview+'" aria-expanded="false" aria-controls="collapse_review'+cntReview+'" class="btn btn-light d-block text-left rounded-0">'
                                 +'<span class="raty" id="raty_review_'+cntReview+'" style="margin-right: 50px;"><input id="star_score_'+cntReview+'"hidden value="'+$("#photo_review_raty").children('input').val()+'"></span>'
                                 +'<span>'+$("#photo_review_title").val()+'</span>'
-                                +'<span style="float: right; color: darkgrey" ><?=$user_name?></span>'
+                                +'<span style="float: right; color: darkgrey" ><?=$login_id?></span>'
                                 +'</a>'
                                 +'</h4>'
                                 +'</div>'
@@ -1485,12 +1381,7 @@ include 'jsfile.php'
                                 +'</div>'
                                 +'</div>';
 
-                            // 첫구매라면
-                            if(cntReview == 0){
-                                $('#accordion_review').append(review);
-                            } else{
-                                $('#review_0').before(review);
-                            }
+                            $('#review_0').before(review);
 
                             console.log(cntReview);
                             console.log($("#photo_review_raty").children('input').val());
@@ -1507,7 +1398,7 @@ include 'jsfile.php'
                             $('#photo_review_evaluation_thickness').val('');
                             $('#photo_review_file_photo_review').val('');
 
-                            cntReview++;
+                            cntPhotoReview++;
                         }
                     }
                     // 리뷰 작성 후 남은 리뷰가능상품의 갯수가 없다면 후기 작성 버튼을 숨긴다.
@@ -1584,7 +1475,7 @@ include 'jsfile.php'
                                         +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_photo_review'+i+'" aria-expanded="false" aria-controls="collapse_photo_review'+i+'" class="btn btn-light d-block text-left rounded-0">'
                                             +'<span class="raty" id="raty_'+i+'" style="margin-right: 50px;"><input id="star_score_'+i+'"hidden value="'+json.starScore[i]+'"></span>'
                                             +'<span>'+json.title[i]+'</span>'
-                                            +'<span style="float: right; color: darkgrey" >'+json.name[i]+'</span>'
+                                            +'<span style="float: right; color: darkgrey" >'+json.writer[i]+'</span>'
                                         +'</a>'
                                         +'</h4>'
                                     +'</div>'
@@ -1690,7 +1581,7 @@ include 'jsfile.php'
                                 +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_review'+i+'" aria-expanded="false" aria-controls="collapse_review'+i+'" class="btn btn-light d-block text-left rounded-0">'
                                 +'<span class="raty" id="raty_review_'+i+'" style="margin-right: 50px;"><input id="star_score_'+i+'"hidden value="'+json.starScore[i]+'"></span>'
                                 +'<span>'+json.title[i]+'</span>'
-                                +'<span style="float: right; color: darkgrey" >'+json.name[i]+'</span>'
+                                +'<span style="float: right; color: darkgrey" >'+json.writer[i]+'</span>'
                                 +'</a>'
                                 +'</h4>'
                                 +'</div>'
@@ -1791,43 +1682,20 @@ include 'jsfile.php'
                         for(let i = 0; i < json.seq.length; i++){
                             let qanda =
                                 '<div id="qanda'+i+'" class="card border-primary mb-3 qanda">'
-                                    + '<div id="heading_qanda'+i+'" class="card-header p-0 border-0">';
-                                if(json.secretYn[i] == 1){
-                                    if(json.writer[i] == '<?=$login_id?>'){ //작성자가 로그인한 사용자인 경우
-                                        qanda +='<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+i+'" aria-expanded="false" aria-controls="collapse_qanda'+i+'" class="btn btn-toolbar d-block text-left rounded-0"'
-                                    } else{
-                                        qanda +='<h4 class="mb-0" onclick="alert(\'비밀글입니다.\');"><a class="btn btn-toolbar d-block text-left rounded-0"'
-                                    }
-                                } else{
-                                    qanda +='<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+i+'" aria-expanded="false" aria-controls="collapse_qanda'+i+'" class="btn btn-toolbar d-block text-left rounded-0"'
-                                }
-                                qanda += '<span>'+json.answerState[i]+'</span>';
-                                        // 비밀글인 경우
-                                        if(json.secretYn[i] == 1){
-                                            if(json.answerYn[i] == 0){ //답변중
-                                                qanda += '<span style="margin-left: 94px;">'+json.title[i]+'<i class="fa fa-lock"></i></span>'
-                                            } else{ //답변완료
-                                                qanda += '<span style="margin-left: 80px;">'+json.title[i]+'<i class="fa fa-lock"></i></span>'
-                                            }
-                                        } else{ //일반글인 겨우
-                                            if(json.answerYn[i] == 0){ //답변중
-                                                qanda += '<span style="margin-left: 94px;">'+json.title[i]+'</span>'
-                                            } else{ //답변완료
-                                                qanda += '<span style="margin-left: 80px;">'+json.title[i]+'</span>'
-                                            }
-                                        }
-
-                                        qanda += '<span style="float: right;">'+json.name[i]+'</span></a></h4>'
+                                    + '<div id="heading'+i+'" class="card-header p-0 border-0">'
+                                    + '<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse'+i+'" aria-expanded="false" aria-controls="collapse'+i+'" class="btn btn-toolbar d-block text-left rounded-0"'
+                                        + '<span>'+json.answerState[i]+'</span>'
+                                        + '<span style="margin-left: 100px;">'+json.title[i]+'</span>'
+                                        + '<span style="float: right;">'+json.writer[i]+'</span></a></h4>'
                                     + '</div>'
-                                    + '<div id="collapse_qanda'+i+'" aria-labelledby="heading_qanda'+i+' data-parent=#accordion_qanda" class="collapse" >'
-                                        + '<div class="card-body contents" style=" margin-left: 130px;" >'
+                                    + '<div id="collapse'+i+'" aria-labelledby="heading'+i+' data-parent=#accordion_qanda" class="collapse" >'
+                                        + '<div class="card-body contents" style=" margin-left: 150px;" >'
                                         + json.contents[i]
                                         + '</div>';
                                     // 답변 상태에 따라 나올지 안나올지 결정
                                     if(json.answerState[i] == '답변완료'){
                                         qanda += '<div class="card-body reply" style="background-color: lightgrey;">'
-                                                + '<div style="margin-left: 130px;">'
-                                                + '<span style="font-weight: bold;">답변</span><br><br>'
+                                                + '<div style="margin-left: 150px;">'
                                                 + json.answer[i]+'<br><br><br><br><br><br>'
                                                 + '</div>'
                                              + '</div>';
@@ -1912,14 +1780,14 @@ include 'jsfile.php'
                             // 동적으로 추가
                             let qanda =
                                 '<div id="qanda'+cntQandA+'" class="card border-primary mb-3">'
-                                + '<div id="heading_qanda'+cntQandA+'" class="card-header p-0 border-0">'
-                                + '<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+cntQandA+'" aria-expanded="false" aria-controls="collapse_qanda'+cntQandA+'" class="btn btn-toolbar d-block text-left rounded-0"'
+                                + '<div id="heading'+cntQandA+'" class="card-header p-0 border-0">'
+                                + '<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse'+cntQandA+'" aria-expanded="false" aria-controls="collapse'+cntQandA+'" class="btn btn-toolbar d-block text-left rounded-0"'
                                 + '<span>답변중</span>'
-                                + '<span style="margin-left: 94px;">'+$('#qanda_title').val()+'</span>'
-                                + '<span style="float: right;"><?=$user_name?></span></a></h4>'
+                                + '<span style="margin-left: 100px;">'+$('#qanda_title').val()+'</span>'
+                                + '<span style="float: right;"><?=$login_id?></span></a></h4>'
                                 + '</div>'
-                                + '<div id="collapse_qanda'+cntQandA+'" aria-labelledby="heading_qanda'+cntQandA+' data-parent=#accordion_qanda" class="collapse" >'
-                                + '<div class="card-body contents" style=" margin-left: 130px;" >'
+                                + '<div id="collapse'+cntQandA+'" aria-labelledby="heading'+cntQandA+' data-parent=#accordion_qanda" class="collapse" >'
+                                + '<div class="card-body contents" style=" margin-left: 150px;" >'
                                 + $('#qanda_contents').val()
                                 + '</div>'
                                 + '<div class="navbar-buttons" align="right" style="display: flex;">'
@@ -1931,13 +1799,7 @@ include 'jsfile.php'
 
                             console.log(qanda);
 
-                            // 첫 Q&A라면
-                            if(cntQandA == 0 ){
-                                $('#accordion_qanda').append(qanda);
-                            } else{
-                                $('#qanda0').before(qanda);
-                            }
-
+                            $('#qanda0').before(qanda);
 
                             // 모달에 작성한 데이터 제거
                             $('#qanda_title').val('');

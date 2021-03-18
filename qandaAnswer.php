@@ -1,56 +1,26 @@
 <?php
-    $board_no = $_GET['board_no'];
-    $board_name = null;
-    // 페이지 번호
-    if(isset($_GET['page_no'])){
-        $page_no = $_GET['page_no'];
-    }else {
-        $page_no = 0;
-    }
+// 페이지 번호
+if(isset($_GET['page_no'])){
+    $page_no = $_GET['page_no'];
+}else {
+    $page_no = 0;
+}
 
-    // mysql커넥션 연결
-    $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
-    $sql = null;
-    $result = null;
-    $count = null;
+// mysql커넥션 연결
+$conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
+$sql = null;
+$result = null;
+$count = null;
 
-    // 데이터 가져오기(자주묻는 질문, 공지사항)
-    if($board_no != '3'){
-        $sql = "SELECT TITLE, CONTENTS, SEQ, TYPE, CRE_DATETIME
-            FROM NOTICE_AND_FAQ
-            WHERE TYPE = '$board_no'
-            ORDER BY SEQ DESC
-            ";
+$board_name = 'Q&A 답변';
 
-        if($board_no == '1'){
-            $board_name = '공지사항';
-        } elseif ($board_no == '2'){
-            $board_name = '자주묻는질문';
-        }
-        // 쿼리를 통해 가져온 결과
-        $result = mysqli_query($conn, $sql);
-
-        //가져온 행의 갯수
-        $count = mysqli_num_rows($result);
-    } else{// 데이터 가져오기(자유게시판)
-        /*$sql = "SELECT SEQ
-                     , TITLE
-                     , WRITER
-                     , CRE_DATETIME
-                     , CNT
-                     , DEPTH
-            FROM FREE_BOARD
-            ORDER BY GROUP_NO DESC, GROUP_ORDER ASC
-            ";*/
-        $board_name = '자유게시판';
-    }
 $referer = $_SERVER['HTTP_REFERER']
 ?>
 <script>
-    /*if('<?echo $referer?>' == ''){
+    if('<?echo $referer?>' == ''){
         alert('잘못된 접근입니다.');
         location.href = 'index.php';
-    }*/
+    }
 </script>
 
 <!DOCTYPE html>
@@ -87,7 +57,7 @@ include 'head.php'
                         <!-- breadcrumb-->
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="#">커뮤니티</a></li>
+                                <li class="breadcrumb-item"><a href="#">관리자</a></li>
                                 <li aria-current="page" class="breadcrumb-item active"><? echo $board_name?></li>
                             </ol>
                         </nav>
@@ -96,13 +66,12 @@ include 'head.php'
                     <div class="col-lg-2">
                         <div class="card sidebar-menu mb-4">
                             <div class="card-header">
-                                <h3 class="h4 card-title">커뮤니티</h3>
+                                <h3 class="h4 card-title">관리자</h3>
                             </div>
                             <div class="card-body" id="side-bar">
                                 <ul class="nav nav-pills flex-column category-menu" >
-                                    <li><a href="board.php?board_no=1" class="nav-link" style="color: #555555;">공지사항</a></li>
-                                    <li><a href="board.php?board_no=2" class="nav-link" style="color: #555555;">자주묻는 질문</a></li>
-                                    <li><a href="board.php?board_no=3" class="nav-link" style="color: #555555;">자유게시판</a></li>
+                                    <li><a href="writeNoticeOrFaq.php" class="nav-link" style="color: #555555;">공지사항 | 자주묻는질문 작성</a></li>
+                                    <li><a href="qandaAnswer.php" class="nav-link active" style="color: #555555;">Q&A 답변하기</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -110,57 +79,7 @@ include 'head.php'
                     <!--사이드바 종료-->
                     <div id="board" class="col-lg-10">
                         <div class="box">
-                            <!-- 공지사항, 자주묻는 질문-->
-                            <?if($board_no != '3'){?>
-                            <div id="contact" class="box">
-                                <?
-                                    if($board_no == '1'){
-                                        echo "<h1>공지사항</h1>";
-                                        echo "<p class='lead'>사이트의 공지사항 입니다.</p>";
-                                    } elseif ($board_no == '2'){
-                                        echo "<h1>자주묻는 질문</h1>";
-                                        echo "<p class='lead'>고객님들께서 자주 묻는 질문에 대한 답변입니다.</p>";
-                                    }
-                                ?>
-                                <hr>
-                                <hr>
-                                <div id="accordion">
-                                    <?for($i = 0; $i < $count; $i++){
-                                        $row = mysqli_fetch_array($result);
-                                        ?>
-
-                                    <div class="card border-primary mb-3">
-                                        <div id="heading<?echo $i?>" class="card-header p-0 border-0">
-                                            <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse<?echo $i?>" aria-expanded="false" aria-controls="collapse<?echo $i?>" class="btn btn-primary d-block text-left rounded-0"><? echo $row['TITLE'] ?><span style="float: right;">등록일: <?echo  substr($row['CRE_DATETIME'],0,10)?></span></a></h4>
-                                        </div>
-                                        <div id="collapse<?echo $i?>" aria-labelledby="heading<?echo $i?>" data-parent="#accordion" <?if($i != 0){?>class="collapse"<?} else {?>class="collapse show"<?}?>>
-                                            <div class="card-body"><? echo str_replace("\n","</br>",$row['CONTENTS']) ?></div>
-                                            <? if($_SESSION['USER_TYPE'] == "0") { ?>
-                                                <div class="navbar-buttons" align="right" style="display: flex;">
-                                                    <!-- /.nav-collapse-->
-                                                    <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=<?echo $row['SEQ']?>" class="btn btn-primary navbar-btn">수정</a></div>
-                                                    <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=<?echo $row['SEQ']?>&TYPE=<?echo $row['TYPE']?>" class="btn btn-primary navbar-btn">삭제</a></div>
-                                                </div>
-                                            <?}?>
-                                        </div>
-                                    </div>
-                                    <?}?>
-                                </div>
-                                <!-- /.accordion-->
-                            </div>
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination" style="justify-content: center;">
-                                        <li class="page-item"><a href="#" class="page-link">«</a></li>
-                                        <li class="page-item active"><a href="#" class="page-link">1</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">4</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">»</a></li>
-                                    </ul>
-                                </nav>
-                            <?} else {?>
-                            <!--자유게시판-->
+                            <!--Q&A 답변-->
                             <section class="contact spad">
                                 <div class="container">
                                     <div class="search-box" style="margin-bottom: 5px;">
@@ -180,36 +99,25 @@ include 'head.php'
                                     <table id="free_board_post_tb" class="table table-hover" style="text-align: center;">
                                         <thead>
                                         <tr>
-                                            <th>번호</th>
+                                            <th>답변상태</th>
+                                            <th>질문유형</th>
+                                            <th>상품명</th>
                                             <th style="width: 50%;">제목</th>
                                             <th>작성자</th>
                                             <th>날짜</th>
-                                            <th>조회수</th>
                                         </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="accordion_qanda">
                                         </tbody>
                                     </table>
                                     <hr/>
-                                    <?if($_SESSION['LOGIN_ID'] != ''){?>
-                                    <div id="btn_write" class="navbar-collapse collapse d-none d-lg-block" style="text-align: right"><a href="writeFreeBoard.php" class="btn btn-primary navbar-btn">작성하기</a></div>
-                                    <?}?>
                                     <nav aria-label="Page navigation">
-                                        <ul class="pagination" style="justify-content: center;">
-                                            <!--<li class="page-item"><a href="#" class="page-link">«</a></li>
-                                            <li class="page-item active"><a href="#" class="page-link">1</a></li>
-                                            <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                            <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                            <li class="page-item"><a href="#" class="page-link">4</a></li>
-                                            <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                            <li class="page-item"><a href="#" class="page-link">»</a></li>-->
-                                        </ul>
+                                        <ul class="pagination" style="justify-content: center;"></ul>
                                     </nav>
 
                                 </div>
                             </section>
                         </div>
-                        <?}?>
                         <!-- /.box-->
                     </div>
                 </div>
@@ -242,23 +150,9 @@ include 'head.php'
 
     <script>
         $(document).ready(function(){
-            if(<?echo $board_no?> == '3'){
-                let searchSelect = $('#search-select').val();
-                let searchText = $('#search-text').val();
-                search(searchSelect, searchText);
-            }
-        });
-
-        // menu_no에 따라 menu_title, cat_second, cat_third 변경하기
-        boardNo = '<?echo $board_no?>';
-
-        // 선택된 커뮤니티 active
-        // href$="val" : href의 속성값이 val로 끝나는 요소
-        $('.category-menu li a[href$='+ boardNo +']').each(function (index, item){
-            if(index == 0) {
-                $(item).addClass("active");
-            }
-            console.log(item);
+            let searchSelect = $('#search-select').val();
+            let searchText = $('#search-text').val();
+            search(searchSelect, searchText);
         });
 
         //게시물 검색
@@ -272,7 +166,7 @@ include 'head.php'
             $.ajax({
                 type: 'post',
                 dataType: 'json',
-                url: '/mall/php/selectFreeBoardCompl.php',
+                url: '/mall/php/selectQandaAnswerCompl.php',
                 data: {
                     searchSelect: searchSelect,
                     searchText: searchText,
@@ -293,77 +187,71 @@ include 'head.php'
                             return;
                         }
 
-                        /* 전체 데이터 뿌리기
-                        for(let i = 0; i < json.seq.length; i++){
-                            let space = '';
-
-                            for(let j= 0; j < (json.depth[i] - 1) * 3; j++){
-                                space += '&nbsp';
-                            }
-                            if(space != ''){
-                                space += '┖';
-                            }
-                            $('#free_board_post_tb > tbody:last').append(
-                                '<tr style="cursor: pointer;" onclick="location.href=\'detailFreeBoard.php?board_no=3&seq=' + json.seq[i] + '\'">'
-                                +    '<td>'+json.seq[i]+'</td>'
-                                +    '<td style="text-align: left;">'
-                                +         '<a href="detailFreeBoard.php?board_no=3&seq='+json.seq[i]+'">'
-                                +             space + '<u>' + json.title[i] + '</u>'
-                                +         '</a>' + ' [' + json.commentCnt[i] + ']'
-                                +     '</td>'
-                                +     '<td>'+ json.name[i] +'</td>'
-                                +     '<td>'+ json.creDatetime[i].substring(0,10) +'</td>'
-                                +     '<td>'+ json.cnt[i] +'</td>'
-                                + '</tr>');
-                        }*/
-
                         // 페이징 적용
                         for(let i = 0; i < json.seq.length; i++){
-                            let space = '';
-
-                            for(let j= 0; j < (json.depth[i] - 1) * 3; j++){
-                                space += '&nbsp';
-                            }
-                            if(space != ''){
-                                space += '┖';
-                            }
-                            $('#free_board_post_tb > tbody:last').append(
-                                '<tr style="cursor: pointer;" onclick="location.href=\'detailFreeBoard.php?board_no=3&seq=' + json.seq[i] + '\'">'
-                                +    '<td>'+json.seq[i]+'</td>'
+                            let tr = '<tr id="heading'+i+'" class="card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse'+i+'" aria-expanded="false" aria-controls="collapse'+i+'">'
+                                +    '<td id="answer_state'+i+'">'+json.answerState[i]+'</td>'
+                                +    '<td>'+json.type[i]+'</td>'
                                 +    '<td style="text-align: left;">'
-                                +         '<a href="detailFreeBoard.php?board_no=3&seq='+json.seq[i]+'">'
-                                +             space + '<u>' + json.title[i] + '</u>'
-                                +         '</a>' + ' [' + json.commentCnt[i] + ']'
+                                +         '<a href="javascript:getProductInfo('+json.productSeq[i]+');">'
+                                +             '<u>' + json.productName[i] + '</u>'
+                                +         '</a>'
+                                +     '</td>'
+                                +    '<td style="text-align: left;">'
+                                +       '<u>' + json.title[i] + '</u>'
                                 +     '</td>'
                                 +     '<td>'+ json.name[i] +'</td>'
                                 +     '<td>'+ json.creDatetime[i].substring(0,10) +'</td>'
-                                +     '<td>'+ json.cnt[i] +'</td>'
-                                + '</tr>');
+                                + '</tr>'
+                                + '<tr id="collapse'+i+'" aria-labelledby="heading'+i+'" data-parent="#accordion_qanda" class="collapse" >';
+                            // 답변중, 답변완료 상태에 따라 textarea readOnly 결정
+                            if(json.answerState[i] == '답변중'){
+                                    tr += '<td colspan="6">'
+                                            + '<div id="answer_div'+i+'">'
+                                                + '<textarea name="answer'+i+'" id="answer'+i+'" rows="5" style="width: 100%;"></textarea>'
+                                                + '<button onclick="updateAnswer('+ json.seq[i] +','+ i + ');" name="btn_answer'+i+'" id="btn_answer_write'+i+'" class="btn btn-info" style="float: right; margin-top: 5px;">답변완료</button>'
+                                            + '</div>'
+                                        + '</td>'
+                                    + '</tr>';
+                            } else{
+                                tr += '<td colspan="6">'
+                                    + '<div id="answer_div'+i+'">'
+                                    + '<textarea name="answer'+i+'" id="answer'+i+'" rows="5" style="width: 100%;" readonly>'+json.answer[i]+'</textarea>'
+                                    + '<button name="btn_answer'+i+'" id="btn_answer_delete'+i+'" class="btn btn-warning" style="float: right; margin-top: 5px; margin-left: 5px;">삭제</button>'
+                                    + '<button name="btn_answer'+i+'" id="btn_answer_modify'+i+'" class="btn btn-info" style="float: right; margin-top: 5px;">수정</button>'
+                                    + '</div>'
+                                    + '</td>'
+                                    + '</tr>';
+                            }
+
+
+                            $('#free_board_post_tb > tbody:last').append(tr);
+
                         }
 
                         /* 페이징 시작 */
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no=1 "class="page-link">' + '처음' + '</a></li>');
+                            $('.pagination').append('<li class="page-item"><a href="qandaAnswer.php?page_no=1 "class="page-link">' + '처음' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ (parseInt(json.start_page_num_of_block) - 1) + '"class="page-link">' + '«' + '</a></li>');
+                            $('.pagination').append('<li class="page-item"><a href="qandaAnswer.php?&page_no='+ (parseInt(json.start_page_num_of_block) - 1) + '"class="page-link">' + '«' + '</a></li>');
                         }
 
                         for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
                             if(page_no != i){
-                                $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+i + '"class="page-link">' + i + '</a></li>');
+                                $('.pagination').append('<li class="page-item"><a href="qandaAnswer.php?page_no='+i + '"class="page-link">' + i + '</a></li>');
                             } else{
-                                $('.pagination').append('<li class="page-item active"><a href="board.php?board_no=3&page_no='+i + '"class="page-link">' + i + '</a></li>');
+                                $('.pagination').append('<li class="page-item active"><a href="qandaAnswer.php?page_no='+i + '"class="page-link">' + i + '</a></li>');
                             }
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ (parseInt(json.end_page_num_of_block) + 1) + '"class="page-link">' + '»' + '</a></li>');
+                            $('.pagination').append('<li class="page-item"><a href="qandaAnswer.php?page_no='+ (parseInt(json.end_page_num_of_block) + 1) + '"class="page-link">' + '»' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ parseInt(json.total_count_of_page) + '"class="page-link">' + '끝' + '</a></li>');
+                            $('.pagination').append('<li class="page-item"><a href="qandaAnswer.php?page_no='+ parseInt(json.total_count_of_page) + '"class="page-link">' + '끝' + '</a></li>');
                         }
                         /* 페이징 종료 */
                     } else {
@@ -402,6 +290,52 @@ include 'head.php'
                 search(searchSelect, searchText);
             }
         });
+
+        //상품정보
+        function getProductInfo(productSeq){
+            window.open("/mall/productInfo.php?product_no="+productSeq,"상품정보","width=1200px;,height=1200px;");
+        }
+
+        // 답변 작성완료
+        function updateAnswer(seq, index){
+            if(confirm("답변을 완료하시겠습니까?")){
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: '/mall/php/product/qanda/updateAnswer.php',
+                    data: {
+                          seq: seq
+                        , answer: $('#answer'+index).val()
+                    },
+
+                    success: function (json) {
+                        if (json.result == 'ok') {
+                            // textarea readOnly로 변경
+                            $('#answer'+index).attr("readonly", true);
+
+                            // 답변완료 버튼 비활성화
+                            $('#btn_answer_write'+index).hide();
+                            $('#btn_answer_write'+index).attr("disabled", true);
+
+                            // 수정, 삭제 버튼 생성
+                            let buttons =
+                                    '<button name="btn_answer'+index+'" id="btn_answer_delete'+index+'" class="btn btn-warning" style="float: right; margin-top: 5px; margin-left: 5px;">삭제</button>'
+                                +  '<button name="btn_answer'+index+'" id="btn_answer_modify'+index+'" class="btn btn-info" style="float: right; margin-top: 5px;">수정</button>';
+
+                            $('#answer_div'+index).append(buttons);
+
+                            // 답변중=>답변완료로 변경
+                            $('#answer_state'+index).text('답변완료');
+                        } else {
+                            alert("작성에 실패했습니다!");
+                        }
+                    },
+                    error: function () {
+                        alert("에러가 발생했습니다.");
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>

@@ -257,9 +257,9 @@ include 'head.php'
                                                     </tr>
                                                     <!-- 카테고리에 따라 넣어야 할 값 달라지고 그 부분은 여기에 입력하기-->
                                                     <tr>
-                                                        <td class="item_title" colspan="6">상품 수량정보(색상, 사이즈, 수량)<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="product_info_add" class="btn btn-dark">상품정보 추가</button></span></td>
+                                                        <td class="item_title" colspan="6">상품 수량정보(색상, 사이즈, 수량)<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="product_info_add" class="btn btn-dark">상품정보 추가</button>&nbsp;<button type="button" id="product_info_delete" class="btn btn-warning">상품정보 삭제</button></span></td>
                                                     </tr>
-                                                    <tr id="tr_product_info">
+                                                    <tr id="tr_product_info_0">
                                                         <td class="item_title">색상</td>
                                                         <td>
                                                             <select class="form-control"  name="product_color[]" id="product_color">
@@ -315,10 +315,10 @@ include 'head.php'
                                                             <div id="img_detail" style="margin-top: 10px;"></div>
                                                         </td>
                                                     </tr>
-                                                    <tr>
-                                                        <td class="tr_model_info item_title" colspan="6">모델 정보<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="model_info_add" class="btn btn-dark">모델정보 추가</button></span></td>
+                                                    <tr id="model_info">
+                                                        <td class="tr_model_info item_title" colspan="6">모델 정보<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="model_info_add" class="btn btn-dark">모델정보 추가</button>&nbsp;<button type="button" id="model_info_delete" class="btn btn-warning">모델정보 삭제</button></span></td>
                                                     </tr>
-                                                    <tr class="tr_model_info" id="tr_model_info">
+                                                    <tr class="tr_model_info" id="tr_model_info_0">
                                                         <td class="item_title">키(cm)</td>
                                                         <td>
                                                             <input type="text" class="form-control" name="model_height[]">
@@ -463,10 +463,12 @@ include 'head.php'
                 }
             });
 
+            let productInfoCnt = 1;
+
             // 상품정보(색상, 사이즈, 수량 추가) 추가 버튼 클릭
             $('#product_info_add').on("click", function(){
                 // 동적생성 - 색상, 사이즈 셀렉터 사용
-                let trTop = '<tr>'
+                let trTop = '<tr id="tr_product_info_'+productInfoCnt+'">'
                         + '<td class="item_title">색상</td>'
                         + '<td>'
                             + '<select class="form-control"  name="product_color[]" id="product_color">'
@@ -537,7 +539,8 @@ include 'head.php'
                 let tr = trTop + trBody + trBottom;
 
 
-               $('#tr_product_info').after(tr);
+               $('#tr_product_info_'+(productInfoCnt-1)).after(tr);
+                productInfoCnt++;
             });
 
             //상세이미지 추가
@@ -631,7 +634,7 @@ include 'head.php'
                                 + '<td colspan="5" class="added_info">'
                                 + '<table class="table" style="border: 1px solid black">'
                                 + '<tr >'
-                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button></span></td>'
+                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-warning">치수정보 삭제</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-dark">치수정보 삭제</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
@@ -641,7 +644,7 @@ include 'head.php'
                                 + '<td class="item_title_inner upper" style="border-top: 1px solid black;">팔길이</td>'
                                 + '<td class="item_title_inner upper" style="border-right: 1px solid black; border-top: 1px solid black;">총길이</td>'
                                 + '</tr>'
-                                + '<tr id="tr_size_info">'
+                                + '<tr id="tr_size_info_0">'
                                 + '<td>'
                                 + '<select class="form-control"  name="size[]" id="size">'
                                 + '<option value="">[선택]</option>'
@@ -730,7 +733,7 @@ include 'head.php'
                                 + '<td colspan="5" class="added_info">'
                                 + '<table class="table" style="border: 1px solid black">'
                                 + '<tr >'
-                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button></span></td>'
+                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-warning">치수정보 삭제</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
@@ -739,7 +742,7 @@ include 'head.php'
                                 + '<td class="item_title_inner upper" style="border-top: 1px solid black;">가슴단면</td>'
                                 + '<td colspan="2" class="item_title_inner upper" style="border-top: 1px solid black;">소매길이</td>'
                                 + '</tr>'
-                                + '<tr id="tr_size_info">'
+                                + '<tr id="tr_size_info_0">'
                                 + '<td>'
                                 + '<select class="form-control"  name="size[]" id="size">'
                                 + '<option value="">[선택]</option>'
@@ -825,7 +828,7 @@ include 'head.php'
                                 + '<td colspan="5" class="added_info">'
                                 + '<table class="table" style="border: 1px solid black">'
                                 + '<tr >'
-                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button></span></td>'
+                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-warning">치수정보 삭제</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
@@ -835,7 +838,7 @@ include 'head.php'
                                 + '<td class="item_title_inner upper" style="border-top: 1px solid black;">밑단단면</td>'
                                 + '<td class="item_title_inner upper" style="border-top: 1px solid black;">밑위</td>'
                                 + '</tr>'
-                                + '<tr id="tr_size_info">'
+                                + '<tr id="tr_size_info_0">'
                                 + '<td>'
                                 + '<select class="form-control"  name="size[]" id="size">'
                                 + '<option value="">[선택]</option>'
@@ -934,16 +937,15 @@ include 'head.php'
                                 + '<td colspan="5" class="added_info">'
                                 + '<table class="table" style="border: 1px solid black">'
                                 + '<tr >'
-                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button></span></td>'
+                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-warning">치수정보 삭제</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
-                                + '<td><input class="chk_added_info" type="checkbox"></td>'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">둘레</td>'
                                 + '<td class="item_title_inner upper" style="border-top: 1px solid black;">챙길이</td>'
                                 + '<td class="item_title_inner upper" style="border-top: 1px solid black;">높이</td>'
                                 + '</tr>'
-                                + '<tr id="tr_size_info">'
+                                + '<tr id="tr_size_info_0">'
                                 + '<td>'
                                 + '<select class="form-control"  name="size[]" id="size">'
                                 + '<option value="">[선택]</option>'
@@ -970,6 +972,7 @@ include 'head.php'
                                 + '</table>';
 
                             $('.tr_model_info').remove();
+                            $('#model_info').remove();
                         }
                         $('#detail_info').before(tr);
 
@@ -978,8 +981,9 @@ include 'head.php'
             });
 
             // 모델정보 추가
+            let modelCnt = 1;
             $('#model_info_add').on("click", function(){
-                let trTop = '<tr>'
+                let trTop = '<tr class="tr_model_info" id="tr_model_info_'+modelCnt+'">'
                     + '<td class="item_title">키(cm)</td>'
                     + '<td>'
                         + '<input type="text" class="form-control" name="model_height[]">'
@@ -1032,15 +1036,17 @@ include 'head.php'
                 }
 
                 let tr = trTop + trBody;
-                $('#tr_model_info').after(tr);
+                $('#tr_model_info_'+(modelCnt-1)).after(tr);
+                modelCnt++;
             });
 
             //치수정보 추가
+            let sizeCnt = 1;
             $(document).on("click", "#size_info_add", function(){
                 let tr = null;
                 if($('#first_category').val() == '2'){
                     //상의
-                    tr = '<tr id="tr_size_info">'
+                    tr = '<tr id="tr_size_info_'+sizeCnt+'">'
                         + '<td>'
                         + '<select class="form-control"  name="size[]" id="size">'
                         + '<option value="">[선택]</option>'
@@ -1072,7 +1078,7 @@ include 'head.php'
                         + '</tr>';
                 } else if($('#first_category').val() == '3'){
                     // 아우터
-                    tr = '<tr id="tr_size_info">'
+                    tr = '<tr id="tr_size_info_'+sizeCnt+'">'
                         + '<td>'
                         + '<select class="form-control"  name="size[]" id="size">'
                         + '<option value="">[선택]</option>'
@@ -1101,7 +1107,7 @@ include 'head.php'
                         + '</tr>';
                 } else if($('#first_category').val() == '4'){
 // 하의
-                    tr = '<tr id="tr_size_info">'
+                    tr = '<tr id="tr_size_info_'+sizeCnt+'">'
                         + '<td>'
                         + '<select class="form-control"  name="size[]" id="size">'
                         + '<option value="">[선택]</option>'
@@ -1133,7 +1139,7 @@ include 'head.php'
                         + '</tr>';
                 } else if($('#first_category').val() == '27'){
                     // 모자
-                    tr = '<tr id="tr_size_info">'
+                    tr = '<tr id="tr_size_info_'+sizeCnt+'">'
                         + '<td>'
                         + '<select class="form-control"  name="size[]" id="size">'
                         + '<option value="">[선택]</option>'
@@ -1159,7 +1165,36 @@ include 'head.php'
                         + '</tr>'
                 }
 
-                $('#tr_size_info').after(tr);
+                $('#tr_size_info_'+(sizeCnt-1)).after(tr);
+                sizeCnt++;
+            });
+
+            // 상품정보 삭제(마지막 행 삭제)
+            $(document).on("click", "#product_info_delete", function(){
+                let currentCnt = productInfoCnt-1;
+
+                if(currentCnt != 0){
+                    $('#tr_product_info_'+(productInfoCnt-1)).remove();
+                    productInfoCnt--;
+                }
+            });
+
+            // 모델정보 삭제(마지막 행 삭제)
+            $(document).on("click", "#model_info_delete", function(){
+                let currentCnt = modelCnt-1;
+                if(currentCnt != 0){
+                    $('#tr_model_info_'+(modelCnt-1)).remove();
+                    modelCnt--;
+                }
+            });category
+
+            // 치수정보 삭제(마지막 행 삭제)
+            $(document).on("click", "#size_info_delete", function(){
+                let currentCnt = sizeCnt-1;
+                if(currentCnt != 0){
+                    $('#tr_size_info_'+(sizeCnt-1)).remove();
+                    sizeCnt--;
+                }
             });
 
             // 대표이미지 미리보기

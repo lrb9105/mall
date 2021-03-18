@@ -26,6 +26,7 @@ $sql = "SELECT P.PRODUCT_SEQ,
         INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
         WHERE P.SECOND_CATEGORY = $menu_no
         AND F.TYPE = 0
+        AND P.USE_YN = 'Y'
         ";
 // 쿼리를 통해 가져온 결과
 $result = mysqli_query($conn, $sql);
@@ -100,6 +101,7 @@ $sql = "SELECT P.PRODUCT_SEQ,
         INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
         WHERE P.SECOND_CATEGORY = $menu_no
         AND F.TYPE = 0
+        AND P.USE_YN = 'Y'
         LIMIT $s_point,$count_of_post_per_page
         ";
 
@@ -120,7 +122,8 @@ if($order_type != ''){
         FROM PRODUCT P
         INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
         WHERE P.SECOND_CATEGORY = $menu_no
-        AND F.TYPE = 0";
+        AND F.TYPE = 0
+        AND P.USE_YN = 'Y'";
 
     $sql = $sql.$order_type." LIMIT $s_point,$count_of_post_per_page";
 }

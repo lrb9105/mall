@@ -14,13 +14,13 @@
                     <?if($isSet){?>
                         <li class="list-inline-item" id="login_id_li" style="color: #FFFFFF"><?echo $name?>님<a href="#" ></a></li>
                         <li class="list-inline-item" id="logout"><a href="#">로그아웃</a></li>
+                        <li class="list-inline-item"><a href="mypage.php?mypage_no=1">마이페이지</a></li>
                     <?} else{?>
                         <li class="list-inline-item" id="login"><a href="#" data-toggle="modal" data-target="#login-modal">로그인</a></li>
                         <li class="list-inline-item"><a href="register.php">회원가입</a></li>
                     <?}?>
-                    <li class="list-inline-item"><a href="mypage.php?mypage_no=1">마이페이지</a></li>
-                    <li class="list-inline-item"><a href="contact.php">고객센터</a></li>
-                    <li class="list-inline-item"><a href="#">찜한상품</a></li>
+                    <!--<li class="list-inline-item"><a href="contact.php">고객센터</a></li>-->
+                    <!--<li class="list-inline-item"><a href="#">찜한상품</a></li>-->
                     <li class="list-inline-item"><a href="viewRecent.php">최근본상품</a></li>
                 </ul>
             </div>
@@ -51,8 +51,8 @@
                             <input name="auto_login" id="auto_login" type="checkbox" > <label for="auto_login">로그인 상태 유지</label></p>
                         </div>
                     </div>
-                    <p class="text-center text-muted">아직 회원이 아니신가요?</p>
-                    <p class="text-center text-muted"><a href="register.php"><strong>회원가입 하러가기</strong></a></p>
+                    <p class="text-center text-muted"><a href="findIdPw.php?no=1"><strong>아이디 찾기</strong></a> | <a href="findIdPw.php"><strong>비밀번호 찾기</strong></a></p><br>
+                    <p class="text-center text-muted"><a href="register.php?no=2"><strong>회원가입</strong></a></p>
                 </div>
             </div>
         </div>

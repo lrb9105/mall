@@ -79,6 +79,14 @@ include 'head.php'
                                 <input id="email" name="email" type="email" class="form-control">
                             </div>
                             <div class="form-group">
+                                <label class="register_form" for="phone_num"><span>* </span>휴대폰번호</label>
+                                <div class="form-inline">
+                                    <input id="phone_num1" name="phone_num1" class="form-control" >-
+                                    <input id="phone_num2" name="phone_num2" class="form-control" >-
+                                    <input id="phone_num3" name="phone_num3" class="form-control" >
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="register_form" for="zip_code"><span>* </span>주소</label>
                                 <div class="form-inline">
                                     <input readonly id="zip_code" name="zip_code" type="number" placeholder="우편 번호" class="form-control" style="width: 100px; margin-right: 5px;">
@@ -195,6 +203,7 @@ include 'jsfile.php'
         $('#btn_register').on("click",function () {
             // 이메일 체크
             let regExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+            let regExp2 = /^[0-9]*$/
 
             if($('#login_id').val() == ''){
                 alert("아이디를 입력해주세요.");
@@ -236,6 +245,22 @@ include 'jsfile.php'
                 return;
             }
 
+            if($('#phone_num1').val() == '' || $('#phone_num2').val() == '' || $('#phone_num3').val() == ''){
+                alert("휴대폰번호를 입력해주세요.");
+                return;
+            }
+
+
+            if( !regExp2.test($('#phone_num1').val()) || !regExp2.test($('#phone_num2').val()) || !regExp2.test($('#phone_num3').val())) {
+
+                alert("전화번호는 숫자만 입력하세요");
+
+                $('#phone_num1').val('');
+                $('#phone_num2').val('');
+                $('#phone_num3').val('');
+                return;
+            }
+
             if($('#zip_code').val() == ''){
                 alert("주소를 입력해주세요.");
 
@@ -253,6 +278,7 @@ include 'jsfile.php'
                 return;
             }
 
+            let email = ($('#email').val()).split("@");
 
             if(confirm("회원가입을 완료하시겠습니까?")){
                 // ajax로 registerComplete.php에 데이터 보내기
@@ -264,10 +290,14 @@ include 'jsfile.php'
                         login_id: $('#login_id').val()
                         , password: $('#password').val()
                         , name: $('#name').val()
-                        , email: $('#email').val()
+                        , emailFront: email[0]
+                        , emailBack: email[1]
                         , zip_code: $('#zip_code').val()
                         , address_basic: $('#address_basic').val()
                         , address_detail: $('#address_detail').val()
+                        , phone_num1: $('#phone_num1').val()
+                        , phone_num2: $('#phone_num2').val()
+                        , phone_num3: $('#phone_num3').val()
                     },
 
                     success: function (json) {

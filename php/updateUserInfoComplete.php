@@ -1,12 +1,11 @@
 <?php
-/* 회원가입 모듈
+/* 회원가입 수정
     1.
 */
-
+session_start();
+$login_id = $_SESSION['LOGIN_ID'];
 // 클라이언트로부터 받은 회원정보
-$login_id = $_POST['login_id'];
-$password = $_POST['password'];
-$name = $_POST['name'];
+
 $emailFront = $_POST['emailFront'];
 $emailBack = $_POST['emailBack'];
 $zip_code = $_POST['zip_code'];
@@ -15,28 +14,23 @@ $address_detail = $_POST['address_detail'];
 $phone_num1 = $_POST['phone_num1'];
 $phone_num2 = $_POST['phone_num2'];
 $phone_num3 = $_POST['phone_num3'];
+
 //mysql연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 
 // 회원정보 입력 쿼리
 $sql  = "
-    INSERT INTO USER 
-    VALUES (
-            '$login_id',
-            '$password',
-            '$name',
-            '$zip_code',
-            '$address_basic',
-            '$address_detail',
-            '$emailFront',
-            NOW(),
-            NULL,
-            '1',
-            '$phone_num1',
-            '$phone_num2',
-            '$phone_num3',
-            '$emailBack'
-    )";
+       UPDATE USER 
+       SET    EMAIL_FRONT =  '$emailFront'
+            , EMAIL_BACK =  '$emailBack'
+            , ZIP_CODE =  '$zip_code'
+            , ADDRESS_BASIC =  '$address_basic'
+            , ADDRESS_DETAIL =  '$address_detail'
+            , PHONE_NUM1 =  '$phone_num1'
+            , PHONE_NUM2 =  '$phone_num2'
+            , PHONE_NUM3 =  '$phone_num3'
+        WHERE LOGIN_ID = '$login_id'
+       ";
 
 // 회원정보 db에 입력
 $result = mysqli_query($conn, $sql);

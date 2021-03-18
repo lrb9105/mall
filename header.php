@@ -125,7 +125,7 @@
                                         <h5>작성</h5>
                                         <ul class="list-unstyled mb-3">
                                             <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">공지사항 | 자주묻는질문 작성</a></li>
-                                            <li class="nav-item"><a href="writeNoticeOrFaq.php" class="nav-link">Q&A 답변하기</a></li>
+                                            <li class="nav-item"><a href="qandaAnswer.php" class="nav-link">Q&A 답변하기</a></li>
                                         </ul>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
