@@ -34,6 +34,7 @@ $sqlPhotoReviewInfo = "SELECT   R.SEQ,
                  AND OPL.REVIEW_YN = '1'
                  AND OPL.REVIEW_SEQ = R.SEQ
                  AND F.TYPE = 2
+                 AND R.USE_YN = 'Y'
                  ORDER BY CRE_DATETIME DESC
         ";
 $resultPhotoReviewInfo = mysqli_query($conn, $sqlPhotoReviewInfo);
@@ -95,6 +96,7 @@ $sqlPhotoReviewInfo = "SELECT   R.SEQ,
                  AND OPL.REVIEW_YN = '1'
                  AND OPL.REVIEW_SEQ = R.SEQ
                  AND F.TYPE = 2
+                 AND R.USE_YN = 'Y'
                  ORDER BY CRE_DATETIME DESC
                  LIMIT $s_point,$count_of_post_per_page";
 

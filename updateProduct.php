@@ -200,7 +200,8 @@ include 'head.php'
                         <div class="box">
                             <!-- Contact Section Begin -->
                             <section class="contact spad">
-                                <form method="POST" action="/mall/php/product/updateProductCompl.php" enctype="multipart/form-data">
+                                <form method="POST" action="/mall/php/product/updateProductCompl.php" enctype="multipart/form-data" onsubmit="return confirm('상품을 수정하시겠습니까');)">
+                                    <input hidden name="product_no" value="<?=$product_no?>">
                                 <div class="container">
                                     <table class="table">
                                         <tr>
@@ -720,7 +721,7 @@ include 'head.php'
                                                                             </select>
                                                                         </td>
                                                                         <td>
-                                                                            <select class="form-control"  name="season" id="season">
+                                                                            <select class="form-control"  name="touch" id="touch">
                                                                                 <option value="">[선택]</option>
                                                                                 <option value="부드러움" <?if($rowProductInfo['TOUCH'] == '부드러움'){?>selected<?}?>>부드러움</option>
                                                                                 <option value="보통" <?if($rowProductInfo['TOUCH'] == '보통'){?>selected<?}?>>보통</option>

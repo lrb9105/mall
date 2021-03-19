@@ -150,13 +150,13 @@ include 'head.php'
                             </div>
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination" style="justify-content: center;">
-                                        <li class="page-item"><a href="#" class="page-link">«</a></li>
+                                        <li class="page-item"><a href="#" class="page-link"><</a></li>
                                         <li class="page-item active"><a href="#" class="page-link">1</a></li>
                                         <li class="page-item"><a href="#" class="page-link">2</a></li>
                                         <li class="page-item"><a href="#" class="page-link">3</a></li>
                                         <li class="page-item"><a href="#" class="page-link">4</a></li>
                                         <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">»</a></li>
+                                        <li class="page-item"><a href="#" class="page-link">></a></li>
                                     </ul>
                                 </nav>
                             <?} else {?>
@@ -196,13 +196,13 @@ include 'head.php'
                                     <?}?>
                                     <nav aria-label="Page navigation">
                                         <ul class="pagination" style="justify-content: center;">
-                                            <!--<li class="page-item"><a href="#" class="page-link">«</a></li>
+                                            <!--<li class="page-item"><a href="#" class="page-link"><</a></li>
                                             <li class="page-item active"><a href="#" class="page-link">1</a></li>
                                             <li class="page-item"><a href="#" class="page-link">2</a></li>
                                             <li class="page-item"><a href="#" class="page-link">3</a></li>
                                             <li class="page-item"><a href="#" class="page-link">4</a></li>
                                             <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                            <li class="page-item"><a href="#" class="page-link">»</a></li>-->
+                                            <li class="page-item"><a href="#" class="page-link">></a></li>-->
                                         </ul>
                                     </nav>
 
@@ -343,11 +343,11 @@ include 'head.php'
 
                         /* 페이징 시작 */
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no=1 "class="page-link">' + '처음' + '</a></li>');
+                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no=1 "class="page-link">' + '<<' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ (parseInt(json.start_page_num_of_block) - 1) + '"class="page-link">' + '«' + '</a></li>');
+                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ (parseInt(json.start_page_num_of_block) - 1) + '"class="page-link">' + '<' + '</a></li>');
                         }
 
                         for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
@@ -359,11 +359,11 @@ include 'head.php'
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ (parseInt(json.end_page_num_of_block) + 1) + '"class="page-link">' + '»' + '</a></li>');
+                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ (parseInt(json.end_page_num_of_block) + 1) + '"class="page-link">' + '>' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ parseInt(json.total_count_of_page) + '"class="page-link">' + '끝' + '</a></li>');
+                            $('.pagination').append('<li class="page-item"><a href="board.php?board_no=3&page_no='+ parseInt(json.total_count_of_page) + '"class="page-link">' + '>>' + '</a></li>');
                         }
                         /* 페이징 종료 */
                     } else {

@@ -49,6 +49,14 @@ $sql = "
     )";
 $result = mysqli_query($conn, $sql);
 
+// Q&A 조회
+$sql = "SELECT MAX(SEQ) FROM QANDA";
+
+// 자신의 seq가져오기!
+$result = mysqli_query($conn, $sql);
+$row = mysqli_fetch_array($result);
+$seqOfQandA = $row[0];
+
 if($result === false){
     echo $sql;
     return;
@@ -58,5 +66,5 @@ if($result === false){
 if ($result == false) {
     echo json_encode(array('result'=>'fail'));
 } else {
-    echo json_encode(array('result'=>'ok'));
+    echo json_encode(array('result'=>'ok', 'seq'=>$seqOfQandA));
 }

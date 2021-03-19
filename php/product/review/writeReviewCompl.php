@@ -202,5 +202,5 @@ else {
 if ($result === false) {
     echo json_encode(array('result'=>'fail'));
 } else {
-    echo json_encode(array('result'=>'ok', 'save_path'=>$saved_path, 'color'=> $rowProductColAndSize['PRODUCT_COLOR'], 'size'=>$rowProductColAndSize['PRODUCT_SIZE']));
+    echo json_encode(array('result'=>'ok', 'save_path'=>$saved_path, 'color'=> $rowProductColAndSize['PRODUCT_COLOR'], 'size'=>$rowProductColAndSize['PRODUCT_SIZE'], 'seq'=>$seqOfReview));
 }

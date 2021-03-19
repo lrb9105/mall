@@ -160,7 +160,7 @@ include 'head.php'
                         <div class="col-md-6">
                             <form id="form_purchase" method="post" action="checkout4.php" onsubmit="return verifyBeforePurchase();">
                                 <div class="box">
-                                    <h1 class="text-center">상품명: <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
+                                    <h1 class="text-center"> <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
                                     <div class="product-info">
                                         <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo $rowProductInfo['PRODUCT_PRICE']?>원</del></span></p>
                                         <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</span>
@@ -734,13 +734,13 @@ include 'head.php'
                                             <!-- /.accordion-->
                                             <nav aria-label="Page navigation">
                                                 <ul class="pagination pagination_review" style="justify-content: center;">
-                                                    <!--<li class="page-item"><a href="#" class="page-link">«</a></li>
+                                                    <!--<li class="page-item"><a href="#" class="page-link"><</a></li>
                                                     <li class="page-item active"><a href="#" class="page-link">1</a></li>
                                                     <li class="page-item"><a href="#" class="page-link">2</a></li>
                                                     <li class="page-item"><a href="#" class="page-link">3</a></li>
                                                     <li class="page-item"><a href="#" class="page-link">4</a></li>
                                                     <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                                    <li class="page-item"><a href="#" class="page-link">»</a></li>-->
+                                                    <li class="page-item"><a href="#" class="page-link">></a></li>-->
                                                 </ul>
                                             </nav>
                                         </div>
@@ -1509,11 +1509,11 @@ include 'jsfile.php'
 
                         /* 페이징 시작 */
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview(1)"class="page-link">' + '처음' + '</a></li>');
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview(1)"class="page-link">' + '<<' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '«' + '</a></li>');
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '<' + '</a></li>');
                         }
 
                         for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
@@ -1525,11 +1525,11 @@ include 'jsfile.php'
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '»' + '</a></li>');
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '>' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '끝' + '</a></li>');
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '>>' + '</a></li>');
                         }
                         /* 페이징 종료 */
                     } else {
@@ -1614,11 +1614,11 @@ include 'jsfile.php'
 
                         /* 페이징 시작 */
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview(1)"class="page-link">' + '처음' + '</a></li>');
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview(1)"class="page-link">' + '<<' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '«' + '</a></li>');
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '<' + '</a></li>');
                         }
 
                         for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
@@ -1630,11 +1630,11 @@ include 'jsfile.php'
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '»' + '</a></li>');
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '>' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '끝' + '</a></li>');
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '>>' + '</a></li>');
                         }
                         /* 페이징 종료 */
                     } else {
@@ -1712,11 +1712,11 @@ include 'jsfile.php'
 
                         /* 페이징 시작 */
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA(1)"class="page-link">' + '처음' + '</a></li>');
+                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA(1)"class="page-link">' + '<<' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '«' + '</a></li>');
+                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '<' + '</a></li>');
                         }
 
                         for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
@@ -1728,11 +1728,11 @@ include 'jsfile.php'
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '»' + '</a></li>');
+                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '>' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '끝' + '</a></li>');
+                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '>>' + '</a></li>');
                         }
                         /* 페이징 종료 */
                     } else {

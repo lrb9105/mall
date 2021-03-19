@@ -22,6 +22,7 @@ $sqlOrderProductInfo = "SELECT   OPL.ORDER_NO
                       ,  OPL.PRODUCT_ORDER_PRICE                       
                       ,  OPL.SRC  
                       ,  P.FIRST_CATEGORY  
+                      ,  P.SECOND_CATEGORY  
         FROM ORDER_PRODUCT_LIST OPL
         INNER JOIN PRODUCT P ON OPL.PRODUCT_SEQ = P.PRODUCT_SEQ
         WHERE ORDER_NO = '$order_no'
@@ -139,7 +140,7 @@ include 'head.php'
                                     <?while($rowProductInfo = mysqli_fetch_array($resultOrderProductInfo)) {
                                         ?>
                                         <tr class="product_info">
-                                            <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['FIRST_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
+                                            <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
                                             <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['COLOR']?></span> 사이즈: <span class="product_size"><?echo $rowProductInfo['SIZE']?></span></td>
                                             <td class="product_number"><?echo $rowProductInfo['PRODUCT_NUMBER']?></td>
                                             <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></td>

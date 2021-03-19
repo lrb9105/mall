@@ -25,6 +25,7 @@ $sqlReviewInfo = "SELECT SEQ,
                  FROM QANDA QA
                  INNER JOIN USER U ON QA.WRITER = U.LOGIN_ID
                  WHERE PRODUCT_SEQ = $product_no
+                 AND QA.USE_YN = 'Y'
                  ORDER BY CRE_DATETIME DESC
         ";
 $resultReviewInfo = mysqli_query($conn, $sqlReviewInfo);
@@ -77,6 +78,7 @@ $sqlQAndAInfo = "SELECT SEQ,
                  FROM QANDA QA
                  INNER JOIN USER U ON QA.WRITER = U.LOGIN_ID
                  WHERE PRODUCT_SEQ = $product_no
+                 AND QA.USE_YN = 'Y'
                  ORDER BY CRE_DATETIME DESC
                  LIMIT $s_point,$count_of_post_per_page";
 

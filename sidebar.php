@@ -1,19 +1,29 @@
 <?php
 // DB연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
-// 첫번째 카테고리 카운트
-$sqlFirstCatCnt = "SELECT MENU_NAME
-                        , MENU_ID
-                        , P.PRODUCT_SEQ
-                        , COUNT(*)
-                    FROM MENU M 
-                    LEFT JOIN PRODUCT P ON M.MENU_ID = P.SECOND_CATEGORY 
-                    WHERE M.MENU_PARENT_ID = '2' 
-                    GROUP BY M.MENU_NAME, M.MENU_ID,P.PRODUCT_SEQ
+// 첫번째 메뉴정보
+$sqlFirstMenuInfo = "SELECT MENU_ID 
+                          , MENU_NAME 
+                          , (SELECT COUNT(*) FROM PRODUCT WHERE FIRST_CATEGORY = MENU_ID AND USE_YN = 'Y') CNT 
+                     FROM MENU 
+                     WHERE DEPTH = 2
+                     ORDER BY CAST(MENU_PARENT_ID AS UNSIGNED), MENU_ORDER
             ";
-$resultFirstCatCnt = mysqli_query($conn, $sqlFirstCatCnt);
-$rowFirstCatCnt = mysqli_fetch_array($resultFirstCatCnt);
+$resultFirstMenuInfo = mysqli_query($conn, $sqlFirstMenuInfo);
+$countFirstMenuInfo = mysqli_num_rows($resultFirstMenuInfo);
 
+//두번째 메뉴 정보
+$sqlSecondMenuInfo = "SELECT MENU_ID 
+                          , MENU_NAME 
+                          , (SELECT COUNT(*) FROM PRODUCT WHERE SECOND_CATEGORY = MENU_ID AND USE_YN = 'Y') CNT 
+                     FROM MENU 
+                     WHERE DEPTH = 3
+                     ORDER BY CAST(MENU_PARENT_ID AS UNSIGNED), MENU_ORDER
+            ";
+$resultSecondMenuInfo = mysqli_query($conn, $sqlSecondMenuInfo);
+$countSecondMenuInfo = mysqli_num_rows($resultSecondMenuInfo);
+
+$sizeArr = array(9, 7, 5, 3, 5);
 ?>
 
 <div class="col-lg-2">
@@ -27,55 +37,23 @@ $rowFirstCatCnt = mysqli_fetch_array($resultFirstCatCnt);
         </div>
         <div class="card-body">
             <ul class="nav nav-pills flex-column category-menu" id="category-menu">
-                <li><a href="#" aria-expanded="false" data-toggle="collapse" data-target="#collapse0" class="nav-link top">상의 <span class="badge badge-secondary">6</span></a>
-                    <ul id="collapse0" class="list-unstyled top_ul collapse">
-                        <li><a href="category.php?menu_no=5" class="nav-link" >반팔</a></li>
-                        <li><a href="category.php?menu_no=6" class="nav-link" id="banpal">긴팔</a></li>
-                        <li><a href="category.php?menu_no=7" class="nav-link">민소매</a></li>
-                        <li><a href="category.php?menu_no=8" class="nav-link">셔츠</a></li>
-                        <li><a href="category.php?menu_no=9" class="nav-link">맨투맨</a></li>
-                        <li><a href="category.php?menu_no=10" class="nav-link">카라 티셔츠</a></li>
-                        <li><a href="category.php?menu_no=11" class="nav-link">후드</a></li>
-                        <li><a href="category.php?menu_no=12" class="nav-link">니트</a></li>
-                        <li><a href="category.php?menu_no=13" class="nav-link">기타 상의</a></li>
+                <?for($i = 0; $i< $countFirstMenuInfo; $i++){
+                    $rowFirstMenuInfo = mysqli_fetch_array($resultFirstMenuInfo);
+                    $cnt = $sizeArr[$i];
+                    ?>
+                    <?if($i == 0){?>
+                        <li><a href="#" aria-expanded="false" data-toggle="collapse" data-target="#collapse<?=$i?>" class="nav-link"><?=$rowFirstMenuInfo[1]?> <span class="badge badge-secondary"><?=$rowFirstMenuInfo[2]?></span></a>
+                    <?} else{?>
+                        <li><a href="#" aria-expanded="false" data-toggle="collapse" data-target="#collapse<?=$i?>" class="nav-link"><?=$rowFirstMenuInfo[1]?> <span class="badge badge-secondary"><?=$rowFirstMenuInfo[2]?></span></a>
+                    <?}?>
+                    <ul id="collapse<?=$i?>" class="list-unstyled outer_ul collapse">
+                    <?for($j = 0; $j < $cnt; $j++) {
+                        $rowSecondMenuInfo = mysqli_fetch_array($resultSecondMenuInfo);
+                        ?>
+                        <li><a href="category.php?menu_no=<?=$rowSecondMenuInfo[0]?>" class="nav-link" ><?=$rowSecondMenuInfo[1]?><span style="text-align: left;" class="badge badge-light"><?=$rowSecondMenuInfo[2]?></span></a>
+                    <?}?>
                     </ul>
-                </li>
-                <li><a href="#" aria-expanded="false" data-toggle="collapse" data-target="#collapse1" class="nav-link outer">아우터 <span class="badge badge-secondary">0</span></a>
-                    <ul id="collapse1" class="list-unstyled outer_ul collapse ">
-                        <li><a href="category.php?menu_no=14" class="nav-link">후드 집업</a></li>
-                        <li><a href="category.php?menu_no=15" class="nav-link">라이더 자켓</a></li>
-                        <li><a href="category.php?menu_no=16" class="nav-link">블루종/MA-1</a></li>
-                        <li><a href="category.php?menu_no=17" class="nav-link">코트</a></li>
-                        <li><a href="category.php?menu_no=18" class="nav-link">패딩</a></li>
-                        <li><a href="category.php?menu_no=19" class="nav-link">트레이닝 상의</a></li>
-                        <li><a href="category.php?menu_no=20" class="nav-link">기타 아우터</a></li>
-                    </ul>
-                </li>
-                <li><a href="#" aria-expanded="false" data-toggle="collapse" data-target="#collapse2" class="nav-link bottom">바지  <span class="badge badge-secondary">0</span></a>
-                    <ul id="collapse2" class="list-unstyled outer_ul collapse">
-                        <li><a href="category.php?menu_no=21" class="nav-link">데님 팬츠</a></li>
-                        <li><a href="category.php?menu_no=22" class="nav-link">숏 팬츠</a></li>
-                        <li><a href="category.php?menu_no=23" class="nav-link">슬랙스</a></li>
-                        <li><a href="category.php?menu_no=24" class="nav-link">트레이닝 바지</a></li>
-                        <li><a href="category.php?menu_no=25" class="nav-link">기타 바지</a></li>
-                    </ul>
-                </li>
-                <li><a href="#" aria-expanded="false" data-toggle="collapse" data-target="#collapse3" class="nav-link bottom">신발  <span class="badge badge-secondary">0</span></a>
-                    <ul id="collapse3" class="list-unstyled outer_ul collapse">
-                        <li><a href="category.php?menu_no=28" class="nav-link">스니커즈</a></li>
-                        <li><a href="category.php?menu_no=29" class="nav-link">로퍼&구두</a></li>
-                        <li><a href="category.php?menu_no=30" class="nav-link">슬리퍼&쪼리&샌들</a></li>
-                    </ul>
-                </li>
-                <li><a href="#" aria-expanded="false" data-toggle="collapse" data-target="#collapse4" class="nav-link bottom">모자  <span class="badge badge-secondary">0</span></a>
-                    <ul id="collapse4" class="list-unstyled outer_ul collapse">
-                        <li><a href="category.php?menu_no=31" class="nav-link">야구모자</a></li>
-                        <li><a href="category.php?menu_no=32" class="nav-link">스냅백</a></li>
-                        <li><a href="category.php?menu_no=33" class="nav-link">비니</a></li>
-                        <li><a href="category.php?menu_no=34" class="nav-link">사파리/벙거지</a></li>
-                        <li><a href="category.php?menu_no=35" class="nav-link">페도라/중절모</a></li>
-                    </ul>
-                </li>
+                <?}?>
             </ul>
         </div>
     </div>

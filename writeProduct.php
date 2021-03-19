@@ -257,7 +257,7 @@ include 'head.php'
                                                     </tr>
                                                     <!-- 카테고리에 따라 넣어야 할 값 달라지고 그 부분은 여기에 입력하기-->
                                                     <tr>
-                                                        <td class="item_title" colspan="6">상품 수량정보(색상, 사이즈, 수량)<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="product_info_add" class="btn btn-dark">상품정보 추가</button>&nbsp;<button type="button" id="product_info_delete" class="btn btn-warning">상품정보 삭제</button></span></td>
+                                                        <td class="item_title" colspan="6">상품 수량정보(색상, 사이즈, 수량)<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="product_info_add" class="btn btn-warning">상품정보 추가</button>&nbsp;<button type="button" id="product_info_delete" class="btn btn-dark">상품정보 삭제</button></span></td>
                                                     </tr>
                                                     <tr id="tr_product_info_0">
                                                         <td class="item_title">색상</td>
@@ -316,7 +316,7 @@ include 'head.php'
                                                         </td>
                                                     </tr>
                                                     <tr id="model_info">
-                                                        <td class="tr_model_info item_title" colspan="6">모델 정보<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="model_info_add" class="btn btn-dark">모델정보 추가</button>&nbsp;<button type="button" id="model_info_delete" class="btn btn-warning">모델정보 삭제</button></span></td>
+                                                        <td class="tr_model_info item_title" colspan="6">모델 정보<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="model_info_add" class="btn btn-warning">모델정보 추가</button>&nbsp;<button type="button" id="model_info_delete" class="btn btn-dark">모델정보 삭제</button></span></td>
                                                     </tr>
                                                     <tr class="tr_model_info" id="tr_model_info_0">
                                                         <td class="item_title">키(cm)</td>
@@ -634,7 +634,7 @@ include 'head.php'
                                 + '<td colspan="5" class="added_info">'
                                 + '<table class="table" style="border: 1px solid black">'
                                 + '<tr >'
-                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-warning">치수정보 삭제</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-dark">치수정보 삭제</button></span></td>'
+                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-warning">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-dark">치수정보 삭제</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
@@ -733,7 +733,7 @@ include 'head.php'
                                 + '<td colspan="5" class="added_info">'
                                 + '<table class="table" style="border: 1px solid black">'
                                 + '<tr >'
-                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-warning">치수정보 삭제</button></span></td>'
+                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-warning">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-dark">치수정보 삭제</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
@@ -828,7 +828,7 @@ include 'head.php'
                                 + '<td colspan="5" class="added_info">'
                                 + '<table class="table" style="border: 1px solid black">'
                                 + '<tr >'
-                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-warning">치수정보 삭제</button></span></td>'
+                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-warning">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-dark">치수정보 삭제</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
@@ -910,7 +910,7 @@ include 'head.php'
                                 + '</select>'
                                 + '</td>'
                                 + '<td>'
-                                + '<select class="form-control"  name="season" id="season">'
+                                + '<select class="form-control"  name="touch" id="touch">'
                                 + '<option value="">[선택]</option>'
                                 + '<option value="부드러움">부드러움</option>'
                                 + '<option value="보통">보통</option>'
@@ -918,7 +918,7 @@ include 'head.php'
                                 + '</select>'
                                 + '</td>'
                                 + '<td>'
-                                + '<select class="form-control"  name="touch" id="touch">'
+                                + '<select class="form-control"  name="season" id="season">'
                                 + '<option value="">[선택]</option>'
                                 + '<option value="봄/가을">봄/가을</option>'
                                 + '<option value="여름">여름</option>'
@@ -937,7 +937,7 @@ include 'head.php'
                                 + '<td colspan="5" class="added_info">'
                                 + '<table class="table" style="border: 1px solid black">'
                                 + '<tr >'
-                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보 추가<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-dark">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-warning">치수정보 삭제</button></span></td>'
+                                + '<td colspan="6" class="item_title_inner upper" style="border-left: 1px solid black;border-right: 1px solid black; border-top: 1px solid black;">치수정보<span>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="size_info_add" class="btn btn-warning">치수정보 추가</button>&nbsp;<button type="button" id="size_info_delete" class="btn btn-dark">치수정보 삭제</button></span></td>'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'

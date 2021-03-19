@@ -26,6 +26,7 @@
                       ,  OL.ORDER_DATETIME
                       ,  OL.ORDER_STATE
                       ,  P.FIRST_CATEGORY 
+                      ,  P.SECOND_CATEGORY 
                       ,  OL.INVOICE_NUMBER
                       ,  OPL.REVIEW_YN
         FROM ORDER_PRODUCT_LIST OPL 
@@ -137,7 +138,7 @@ include 'head.php'
                                         <tr class="product_info">
                                             <td class="product_number"><?echo substr($rowProductInfo['ORDER_DATETIME'],0,10)?></td>
                                             <td class="product_number"><a href="orderDetail.php?order_no=<?echo $rowProductInfo['ORDER_NO']?>"><?echo $rowProductInfo['ORDER_NO']?></a></td>
-                                            <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['FIRST_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img style="width: 100px;" class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
+                                            <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img style="width: 100px;" class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
                                             <td><span style="text-align: center;"class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['PRODUCT_COLOR']?></span><br>사이즈: <span class="product_size"><?echo $rowProductInfo['PRODUCT_SIZE']?></span><br>수량: <span class="product_size"><?echo $rowProductInfo['PRODUCT_NUMBER']?></span></td>
                                             <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></td>
                                             <td class="invoice_number"><?echo $rowProductInfo['INVOICE_NUMBER']?></td>
@@ -151,13 +152,13 @@ include 'head.php'
                             </div>
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination" style="justify-content: center;">
-                                        <li class="page-item"><a href="#" class="page-link">«</a></li>
+                                        <li class="page-item"><a href="#" class="page-link"><</a></li>
                                         <li class="page-item active"><a href="#" class="page-link">1</a></li>
                                         <li class="page-item"><a href="#" class="page-link">2</a></li>
                                         <li class="page-item"><a href="#" class="page-link">3</a></li>
                                         <li class="page-item"><a href="#" class="page-link">4</a></li>
                                         <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">»</a></li>
+                                        <li class="page-item"><a href="#" class="page-link">></a></li>
                                     </ul>
                                 </nav>
                         <!-- /.box-->

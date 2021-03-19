@@ -6,6 +6,8 @@
 $result = true;
 
 /* 입력 값 받아오기 */
+// 상품번호
+$product_no = $_POST['product_no'];
 // 상품명
 $product_name = $_POST['product_name'];
 // 상품1차분류
@@ -96,7 +98,7 @@ $season = $_POST['season'];
 
 
 /* 입력값 출력 */
-// 상품명
+/*// 상품명
 echo $product_name ."<br>";
 // 상품1차분류first_category
 echo $first_category ."<br>";
@@ -113,9 +115,9 @@ echo $country_of_manufacture ."<br>";
 // 상품소재
 echo $product_material ."<br>";
 // 세탁방법 및 취급 시 주의사항
-echo $cleaning_method ."<br>";
+echo $cleaning_method ."<br>";*/
 
-// 색상
+/*// 색상
 for($i = 0; $i < count($product_colorArr); $i++){
     echo $product_colorArr[$i] ."<br>";
 }
@@ -226,10 +228,8 @@ echo $reflection."<br>";
 //촉감
 echo $touch."<br>";
 //계절
-echo $season."<br>";
+echo $season."<br>";*/
 
-
-return;
 
 
 /* 입력값 db 저장 */
@@ -237,135 +237,88 @@ return;
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 
 // PRODUCT 테이블
-$sqlInsertProduct = null;
+$sqlUpdateProduct = null;
 
+//상의 아우터
 if($first_category == '2' || $first_category == '3'){
-    $sqlInsertProduct = "
-    INSERT INTO PRODUCT (
-                FIRST_CATEGORY, 
-                SECOND_CATEGORY,
-                PRODUCT_NAME,
-                PRODUCT_PRICE,
-                PRODUCT_PRICE_SALE,
-                MATERIAL,
-                MANUFACTURER,
-                COUNTRY_OF_MANUFACTURER,
-                CLEANING_METHOD,
-                DETAIL_INFO,
-                CRE_DATETIME,
-                THICKNESS,
-                REFLECTION,
-                ELASTICITY,
-                SEASON,
-                FIT
-    ) VALUES (
-            '$first_category', 
-            '$second_category', 
-            '$product_name',
-            '$product_price', 
-            '$product_price_sale',
-            '$product_material',
-            '$product_manufacture', 
-            '$country_of_manufacture', 
-            '$cleaning_method', 
-            '$contents',
-            NOW(),
-            '$thickness',
-            '$reflection',
-            '$elasticity',
-            '$season',
-            '$fit'
-    )";
-} elseif ($first_category == '4'){
-    $sqlInsertProduct = "
-    INSERT INTO PRODUCT (
-                FIRST_CATEGORY, 
-                SECOND_CATEGORY,
-                PRODUCT_NAME,
-                PRODUCT_PRICE,
-                PRODUCT_PRICE_SALE,
-                MATERIAL,
-                MANUFACTURER,
-                COUNTRY_OF_MANUFACTURER,
-                CLEANING_METHOD,
-                DETAIL_INFO,
-                CRE_DATETIME,
-                THICKNESS,
-                REFLECTION,
-                ELASTICITY,
-                SEASON,
-                TOUCH,
-                FIT
-    ) VALUES (
-            '$first_category', 
-            '$second_category', 
-            '$product_name',
-            '$product_price', 
-            '$product_price_sale',
-            '$product_material',
-            '$product_manufacture', 
-            '$country_of_manufacture', 
-            '$cleaning_method', 
-            '$contents',
-            NOW(),
-            '$thickness',
-            '$reflection',
-            '$elasticity',
-            '$season',
-            '$touch',
-            '$fit'
-    )";
-} else {
-    $sqlInsertProduct = "
-    INSERT INTO PRODUCT (
-                FIRST_CATEGORY, 
-                SECOND_CATEGORY,
-                PRODUCT_NAME,
-                PRODUCT_PRICE,
-                PRODUCT_PRICE_SALE,
-                MATERIAL,
-                MANUFACTURER,
-                COUNTRY_OF_MANUFACTURER,
-                CLEANING_METHOD,
-                DETAIL_INFO,
-                CRE_DATETIME
-    ) VALUES (
-            '$first_category', 
-            '$second_category', 
-            '$product_name',
-            '$product_price', 
-            '$product_price_sale',
-            '$product_material',
-            '$product_manufacture', 
-            '$country_of_manufacture', 
-            '$cleaning_method', 
-            '$contents',
-            NOW()
-    )";
+    $sqlUpdateProduct = "
+    UPDATE PRODUCT SET
+                PRODUCT_NAME = '$product_name',
+                PRODUCT_PRICE = '$product_price',
+                PRODUCT_PRICE_SALE = '$product_price_sale',
+                MATERIAL = '$product_material',
+                MANUFACTURER = '$product_manufacture',
+                COUNTRY_OF_MANUFACTURER = '$country_of_manufacture',
+                CLEANING_METHOD = '$cleaning_method',
+                DETAIL_INFO = '$contents',
+                CRE_DATETIME = NOW(),
+                THICKNESS = '$thickness',
+                REFLECTION = '$reflection',
+                ELASTICITY = '$elasticity',
+                SEASON = '$season',
+                FIT = '$fit'
+    WHERE PRODUCT_SEQ = $product_no
+    ";
+} elseif ($first_category == '4'){ //하의
+    $sqlUpdateProduct = "
+    UPDATE PRODUCT SET
+                PRODUCT_NAME = '$product_name',
+                PRODUCT_PRICE = '$product_price',
+                PRODUCT_PRICE_SALE = '$product_price_sale',
+                MATERIAL = '$product_material',
+                MANUFACTURER = '$product_manufacture',
+                COUNTRY_OF_MANUFACTURER = '$country_of_manufacture',
+                CLEANING_METHOD = '$cleaning_method',
+                DETAIL_INFO = '$contents',
+                CRE_DATETIME = NOW(),
+                THICKNESS = '$thickness',
+                REFLECTION = '$reflection',
+                ELASTICITY = '$elasticity',
+                SEASON = '$season',
+                FIT = '$fit',
+                TOUCH = '$touch'
+    WHERE PRODUCT_SEQ = $product_no
+    ";
+} else { //그 외
+    $sqlUpdateProduct = "
+    UPDATE PRODUCT SET
+                PRODUCT_NAME = '$product_name',
+                PRODUCT_PRICE = '$product_price',
+                PRODUCT_PRICE_SALE = '$product_price_sale',
+                MATERIAL = '$product_material',
+                MANUFACTURER = '$product_manufacture',
+                COUNTRY_OF_MANUFACTURER = '$country_of_manufacture',
+                CLEANING_METHOD = '$cleaning_method',
+                DETAIL_INFO = '$contents',
+                CRE_DATETIME = NOW()
+    WHERE PRODUCT_SEQ = $product_no";
 }
 
-$resultInsertProduct = mysqli_query($conn, $sqlInsertProduct);
+$resultUpdateProduct = mysqli_query($conn, $sqlUpdateProduct);
 
 // 결과값(실패 시 false 들어감)
-$result = $resultInsertProduct;
+$result = $resultUpdateProduct;
 
 if($result === false){
-    echo $sqlInsertProduct;
-    echo '<script>alert("실패$resultInsertProduct")</script>';
+    echo $sqlUpdateProduct;
+    echo '<script>alert("실패$resultUpdateProduct")</script>';
     return;
 }
 
 // 결과값(실패 시 false 들어감)
-$result = $resultInsertProduct;
-
-//최상위 상품번호 조회
-$sqlSelectProduct = "SELECT MAX(PRODUCT_SEQ) FROM PRODUCT";
-$resultSelectProduct = mysqli_query($conn, $sqlSelectProduct);
-$row = mysqli_fetch_array($resultSelectProduct);
-// 상품번호
-$seqOfProduct = $row[0];
+$result = $resultUpdateProduct;
 
 // PRODUCT_OPTION 테이블
+$sqlDeleteOption = "
+        DELETE FROM PRODUCT_OPTION WHERE PRODUCT_SEQ = $product_no";
+$resultDeleteOption = mysqli_query($conn, $sqlDeleteOption);
+
+if($resultDeleteOption === false){
+    echo $sqlDeleteOption;
+    echo '<script>alert("실패$resultDeleteOption")</script>';
+    return;
+}
+
 for($i=0; $i < count($product_colorArr); $i++){
     $sqlInsertOption = "
         INSERT INTO PRODUCT_OPTION (
@@ -375,7 +328,7 @@ for($i=0; $i < count($product_colorArr); $i++){
             QUANTITY,
             CRE_DATETIME
         ) VALUES(
-            $seqOfProduct,
+            $product_no,
             '$product_colorArr[$i]',
             '$product_sizeArr[$i]',
             $product_numberArr[$i],
@@ -394,6 +347,17 @@ for($i=0; $i < count($product_colorArr); $i++){
 }
 
 //PRODUCT_SIZE 테이블
+
+$sqlDeleteSize = "
+        DELETE FROM PRODUCT_SIZE WHERE PRODUCT_SEQ = $product_no";
+$resultDeleteSize = mysqli_query($conn, $sqlDeleteSize);
+
+if($resultDeleteSize === false){
+    echo $sqlDeleteSize;
+    echo '<script>alert("실패$resultDeleteSize")</script>';
+    return;
+}
+
 for($i=0; $i < count($sizeArr); $i++){
     $sqlInsertSize = null;
 
@@ -408,7 +372,7 @@ for($i=0; $i < count($sizeArr); $i++){
                 , TOP_TOTAL_LENGTH 
                 , SIZE
         ) VALUES(
-                 $seqOfProduct
+                 $product_no
                 , $TOP_SHOULDER_SIZEArr[$i]
                 , $TOP_CHEST_SIZEArr[$i] 
                 , $TOP_ARMHOLE_SIZEArr[$i] 
@@ -426,7 +390,7 @@ for($i=0; $i < count($sizeArr); $i++){
                 , OUTER_TOTAL_LENGTH 
                 , SIZE
         ) VALUES(
-                 $seqOfProduct
+                 $product_no
                 , $OUTER_SHOULDER_SIZEArr[$i] 
                 , $OUTER__CHEST_SIZEArr[$i]
                 , $OUTER_SLEEVE_LENGTHArr[$i] 
@@ -444,7 +408,7 @@ for($i=0; $i < count($sizeArr); $i++){
                 , BOTTOM_TOTAL_LENGTH 
                 , SIZE
         ) VALUES(
-                 $seqOfProduct
+                 $product_no
                 , $BOTTOM_WAIST_SIZEArr[$i] 
                 , $BOTTOM_RISEArr[$i] 
                 , $BOTTOM_THIGH_SIZEArr[$i] 
@@ -461,7 +425,7 @@ for($i=0; $i < count($sizeArr); $i++){
                 , HAT_HEIGHT 
                 , SIZE
         ) VALUES(
-                 $seqOfProduct
+                 $product_no
                 , $HAT_ROUNDArr[$i] 
                 , $HAT_LENGTHArr[$i] 
                 , $HAT_HEIGHTArr[$i] 
@@ -482,6 +446,17 @@ for($i=0; $i < count($sizeArr); $i++){
     }
 }
 //PRODUCT_MODEL_SIZE 테이블
+
+$sqlDeleteModelSize = "
+        DELETE FROM PRODUCT_MODEL_SIZE WHERE PRODUCT_SEQ = $product_no";
+$resultDeleteModelSize = mysqli_query($conn, $sqlDeleteModelSize);
+
+if($resultDeleteModelSize === false){
+    echo $sqlDeleteModelSize;
+    echo '<script>alert("실패$sqlDeleteModelSize")</script>';
+    return;
+}
+
 for($i=0; $i < count($model_heightArr); $i++){
     $sqlInsertModelSize = "
         INSERT INTO PRODUCT_MODEL_SIZE (
@@ -490,7 +465,7 @@ for($i=0; $i < count($model_heightArr); $i++){
                 , MODEL_WEIGHT 
                 , MODEL_SIZE
         ) VALUES(
-                $seqOfProduct
+                $product_no
                 , $model_heightArr[$i]
                 , $model_weightArr[$i]
                 , '$model_sizeArr[$i]'
@@ -544,6 +519,16 @@ if (isset($_FILES)) {
                     //파일저장 경로(img 태그에서 이 값 사용)
                     $saved_path = "/mall/img/clothes/" . $saved_name;
 
+                    $sqlDeleteFile = "
+                    DELETE FROM FILE WHERE REF_SEQ = $product_no AND TYPE = 0";
+                    $resultDeleteFile = mysqli_query($conn, $sqlDeleteFile);
+
+                    if($resultDeleteFile === false){
+                        echo $sqlDeleteModelSize;
+                        echo '<script>alert("실패$resultDeleteFile")</script>';
+                        return;
+                    }
+                    
                     // 대표이미지 파일 저장
                     //구분값 0: 상품대표이미지
                     $sqlInsertFileRep = "
@@ -555,7 +540,7 @@ if (isset($_FILES)) {
                                 SAVE_PATH,
                                 CRE_DATETIME
                             ) VALUES(
-                                $seqOfProduct,
+                                $product_no,
                                 0, 
                                 '$name',
                                 '$saved_name',
@@ -598,7 +583,7 @@ for($i = 0; $i < count($_FILES['file_detail']['name']); $i++){
     $filePath = "/mall/img/clothes/";
 
     if ( $error > 0 ) {
-        echo "Error: " . $error . "<br>";
+        //echo "Error: " . $error . "<br>";
     }
     else {
         $temp = explode(".", $name);
@@ -615,6 +600,18 @@ for($i = 0; $i < count($_FILES['file_detail']['name']); $i++){
                     // 저장경로
                     $saved_path = "/mall/img/clothes/" . $saved_name_detail;
 
+                    if($i == 0) {
+                        $sqlDeleteFileDetail = "
+                        DELETE FROM FILE WHERE REF_SEQ = $product_no AND TYPE = 1";
+                        $resultDeleteFileDetail = mysqli_query($conn, $sqlDeleteFileDetail);
+
+                        if($resultDeleteFileDetail === false){
+                            echo $sqlDeleteFileDetail;
+                            echo '<script>alert("실패$resultDeleteFileDetail")</script>';
+                            return;
+                        }
+                    }
+
                     // 상세이미지 파일 저장
                     //구분값 1: 상품상세이미지
                     $sqlInsertFileRep = "
@@ -626,7 +623,7 @@ for($i = 0; $i < count($_FILES['file_detail']['name']); $i++){
                             SAVE_PATH,
                             CRE_DATETIME
                         ) VALUES(
-                            $seqOfProduct,
+                            $product_no,
                             1, 
                             '$name',
                             '$saved_name_detail',
@@ -658,4 +655,4 @@ if ($result === false) {
 } else {
     echo '<script>alert("작성 완료했습니다")</script>';
 }
-echo "<script> document.location.href='/mall/category.php?menu_no=$second_category'</script>";
+echo "<script> document.location.href='/mall/updateProduct.php?product_no=$product_no'</script>";

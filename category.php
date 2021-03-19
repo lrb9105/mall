@@ -228,16 +228,14 @@ include 'head.php'
                                     <div class="theribbon">SALE</div>
                                     <div class="ribbon-background"></div>
                                 </div>
-                                <!-- /.ribbon-->
-                                <div class="ribbon new">
+                                <!--<div class="ribbon new">
                                     <div class="theribbon">NEW</div>
                                     <div class="ribbon-background"></div>
                                 </div>
-                                <!-- /.ribbon-->
                                 <div class="ribbon gift">
                                     <div class="theribbon">GIFT</div>
                                     <div class="ribbon-background"></div>
-                                </div>
+                                </div>-->
                                 <!-- /.ribbon-->
                             </div>
                             <!-- /.product            -->
@@ -252,7 +250,7 @@ include 'head.php'
                                     <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Previous" class="page-link"><span aria-hidden="true">시작</span><span class="sr-only">Previous</span></a></li>
                                 <?}?>
                                 <?if($current_num_of_block != 1){ ?>
-                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $start_page_num_of_block - 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Previous" class="page-link"><span aria-hidden="true">«</span><span class="sr-only">Previous</span></a></li>
+                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $start_page_num_of_block - 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Previous" class="page-link"><span aria-hidden="true"><</span><span class="sr-only">Previous</span></a></li>
                                 <?}?>
                                 <?for($i = $start_page_num_of_block; $i <= $end_page_num_of_block; $i++) {
                                     if($page_no != $i){ ?>
@@ -261,10 +259,10 @@ include 'head.php'
                                         <li class="page-item active"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $i?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" class="page-link"><?= $i?></a></li><?}?>
                                 <?}?>
                                 <?if($current_num_of_block != $total_count_of_block){?>
-                                <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $end_page_num_of_block + 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Next" class="page-link"><span aria-hidden="true">»</span><span class="sr-only">Next</span></a></li>
+                                <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $end_page_num_of_block + 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Next" class="page-link"><span aria-hidden="true">></span><span class="sr-only">Next</span></a></li>
                                 <?}?>
                                 <?if($current_num_of_block != $total_count_of_block){?>
-                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $total_count_of_page?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Next" class="page-link"><span aria-hidden="true">끝</span><span class="sr-only">Next</span></a></li>
+                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $total_count_of_page?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Next" class="page-link"><span aria-hidden="true">>></span><span class="sr-only">Next</span></a></li>
                                 <?}?>
                             </ul>
                         </nav>

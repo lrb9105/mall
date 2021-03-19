@@ -141,8 +141,22 @@ $sqlOrderListInfo = " SELECT SEQ
         ";
 $resultOrderListInfo = mysqli_query($conn, $sqlOrderListInfo);
 
-// Q&A
+// 별점정보
+$sqlStarScoreInfo = "
+                 SELECT SUM(STAR_SCORE) SUM
+                      , COUNT(*) COUNT_OF_REVIEWER
+                 FROM REVIEW 
+                 WHERE PRODUCT_SEQ = $product_no;
+;
+        ";
+$resultStarScoreInfo = mysqli_query($conn, $sqlStarScoreInfo);
+$rowStarScoreInfo = mysqli_fetch_array($resultStarScoreInfo);
 
+$sum = $rowStarScoreInfo[0];
+if($sum == null || $sum == ''){
+    $sum = 0;
+}
+$cntOfReviewer = $rowStarScoreInfo[1];
 ?>
 <script>
     if('<?echo $referer?>' == ''){
@@ -156,6 +170,11 @@ $resultOrderListInfo = mysqli_query($conn, $sqlOrderListInfo);
 <?php
 include 'head.php'
 ?>
+<style>
+    .img-fluid{
+        object-fit: cover;
+    }
+</style>
 <body>
 <!-- navbar-->
 <header class="header mb-5">
@@ -188,7 +207,7 @@ include 'head.php'
                             <li class="breadcrumb-item"><a href="#">품목</a></li>
                             <li class="breadcrumb-item" id="cat_second"><a href="#"></a></li>
                             <li class="breadcrumb-item" id="cat_third"><a href="#"></a></li>
-                            <li aria-current="page" class="breadcrumb-item" id="cat_four"></li>
+                            <li aria-current="page" class="breadcrumb-item" id="cat_four"><?=$rowProductInfo['PRODUCT_NAME']?></li>
                         </ol>
                     </nav>
                 </div>
@@ -198,7 +217,7 @@ include 'head.php'
                 <div class="col-lg-10 order-1 order-lg-2">
                     <div id="productMain" class="row">
                         <div class="col-md-6">
-                            <div class="item"> <img id="img_rep" src="<? echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></div>
+                            <div class="item" style="width: 100%;"> <img id="img_rep" src="<? echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></div>
                             <!--<div data-slider-id="1" class="owl-carousel shop-detail-carousel">
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
@@ -218,7 +237,7 @@ include 'head.php'
                         <div class="col-md-6">
                             <form id="form_purchase" method="post" action="checkout4.php" onsubmit="return verifyBeforePurchase();">
                                 <div class="box">
-                                    <h1 class="text-center">상품명: <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
+                                    <h1 class="text-center"> <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
                                     <div class="product-info">
                                         <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo $rowProductInfo['PRODUCT_PRICE']?>원</del></span></p>
                                         <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</span>
@@ -255,6 +274,10 @@ include 'head.php'
                                                 <option value="1">착불</option>
                                             </select>
                                         </div>-->
+                                        <hr>
+                                        <div class="number form-inline">
+                                            <span>상품평: &nbsp;&nbsp;&nbsp; <span id="raty_product"></span><span id="cnt_reviewer">&nbsp;&nbsp;<?=$cntOfReviewer?>건</span></span>
+                                        </div>
                                         <hr>
                                         <div class="number form-inline">
                                             <span>배송유형: &nbsp;&nbsp;&nbsp; 무료배송</span>
@@ -299,6 +322,7 @@ include 'head.php'
                                 <li class="nav-item" ><a id="qanda-tab" data-toggle="pill" href="#qanda" role="tab" aria-controls="qanda" aria-selected="false" class="nav-link">Q&A</a></li>
                             </ul>
                             <div id="pills-tabContent" class="tab-content">
+                                <!-- detail-info-->
                                 <div id="detail-info" role="tabpanel" aria-labelledby="detail-info-tab" class="tab-pane fade active show">
                                     <div>
                                         <?echo $rowProductInfo['DETAIL_INFO']?>
@@ -561,6 +585,9 @@ include 'head.php'
                                         <p style="margin-bottom: 7px; margin-top: 7px">&nbsp;</p>
                                     </div>
                                 </div>
+                                <!-- /detail-info-->
+
+                                <!-- review -->
                                 <div id="review" role="tabpanel" aria-labelledby="review-tab" class="tab-pane fade">
                                     <div id="board" class="col-lg-12">
                                         <div id="contact" class="box">
@@ -570,6 +597,7 @@ include 'head.php'
                                                 <button id="btn_review" class="btn btn-info" data-toggle="modal" data-target="#photo-review-modal">후기 작성</button>
                                                 <?}?>
                                             </div>
+                                            <hr>
                                             <div id="photo-review-modal" tabindex="-1" role="dialog" aria-labelledby="Photo-Reivew" aria-hidden="true" class="modal fade">
                                                 <div class="modal-dialog modal-lg">
                                                     <div class="modal-content">
@@ -664,7 +692,7 @@ include 'head.php'
                                                                                 <td>
                                                                                     <input type="file" class="form-control" name="photo_review_file_photo_review" id="photo_review_file_photo_review">
                                                                                     <div style="margin-top: 10px;">
-                                                                                        <img id="img_photo_review" width="300px;">
+                                                                                        <img id="img_photo_review" width="200px;">
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -679,47 +707,102 @@ include 'head.php'
                                                     </div>
                                                 </div>
                                             </div>
-                                            <hr>
-                                            <div id="accordion">
-                                                <?/*
-                                                $i = 0;
-                                                while($rowPhotoReviewInfo = mysqli_fetch_array($resultPhotoReviewInfo)){*/?><!--
-                                                    <div id="photo_review_<?/*=$i*/?>"" class="card border-primary mb-3">
-                                                        <div id="heading<?/*=$i*/?>" class="card-header p-0 border-0" style="color: white">
-                                                            <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse<?/*=$i*/?>" aria-expanded="false" aria-controls="collapse<?/*=$i*/?>" class="btn btn-light d-block text-left rounded-0">
-                                                                    <span class="raty" id="raty_<?/*=$i*/?>" style="margin-right: 50px;"><input id="star_score_<?/*=$i*/?>"hidden value="<?/*=$rowPhotoReviewInfo['STAR_SCORE']*/?>"></span>
-                                                                    <span><?/*=$rowPhotoReviewInfo['TITLE']*/?></span>
-                                                                    <span style="float: right; color: darkgrey" ><?/*=$rowPhotoReviewInfo['WRITER']*/?></span>
-                                                                </a>
-                                                            </h4>
+
+                                            <!-- 후기 수정 모달-->
+                                            <div id="photo-review-modify-modal" tabindex="-1" role="dialog" aria-labelledby="Photo-Reivew" aria-hidden="true" class="modal fade">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title">후기 수정</h4>
+                                                            <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
                                                         </div>
-                                                        <div id="collapse<?/*=$i*/?>" aria-labelledby="heading<?/*=$i*/?> data-parent=#accordion" class="collapse show" >
-                                                            <div class="card-body">
-                                                                <p><?/*=$rowPhotoReviewInfo['CONTENTS']*/?></p>
-                                                                <img style="text-align: center; align:center;" width="300px;" src="<?/*=$rowPhotoReviewInfo['SAVE_PATH']*/?>">
-                                                                <p style="color: darkgrey"><?/*=$rowPhotoReviewInfo['PRODUCT_COLOR']*/?>색상/<?/*=$rowPhotoReviewInfo['PRODUCT_SIZE']*/?>사이즈 구매</p>
-                                                                <div>
-                                                                    <table class="table">
-                                                                        <tr>
-                                                                            <td>사이즈: <span><?/*=$rowPhotoReviewInfo['EVAL_SIZE']*/?></span></td>
-                                                                            <td>밝기: <span><?/*=$rowPhotoReviewInfo['EVAL_LIGHTNESS']*/?></span></td>
-                                                                            <td>색감: <span><?/*=$rowPhotoReviewInfo['EVAL_COLOR']*/?></span></td>
-                                                                            <?/*if($rowProductInfo['FIRST_CATEGORY'] != 26 && $rowProductInfo['FIRST_CATEGORY'] != 27){*/?>
-                                                                            <td>무게감: <span><?/*=$rowPhotoReviewInfo['EVAL_THICKNESS']*/?></span></td>
-                                                                            <?/*}*/?>
-                                                                        </tr>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                            <div class="navbar-buttons" align="right" style="display: flex;">
-                                                                <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>
-                                                                <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>
-                                                            </div>
+                                                        <div class="modal-body">
+                                                            <table class="table">
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td bgcolor="white">
+                                                                        <table class="table">
+                                                                            <tbody>
+                                                                            <tr>
+                                                                                <td>상품 선택<input hidden id="photo_review_modify_seq"><input hidden id="photo_review_modify_cnt"><input hidden id="photo_review_modify_type"></td>
+                                                                                <td>
+                                                                                    <div id="photo_review_modify_product"></div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>제목</td>
+                                                                                <td><input class="form-control py-4" type="text" name="photo_review_title" id="photo_review_modify_title" maxlength="1000" value=""></td>
+                                                                            </tr>
+
+                                                                            <tr>
+                                                                                <td>내용</td>
+                                                                                <td>
+                                                                                    <textarea name="photo_review_contents" id="photo_review_modify_contents" class="nse_content" style="width: 100%; height: 100px;"></textarea>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>평가</td>
+                                                                                <td>
+                                                                                    <table style="width: 100%;">
+                                                                                        <tr>
+                                                                                            <td>사이즈</td>
+                                                                                            <td>밝기</td>
+                                                                                            <td>색감</td>
+                                                                                            <?if($rowProductInfo['FIRST_CATEGORY'] != 26 && $rowProductInfo['FIRST_CATEGORY'] != 27){?>
+                                                                                                <td>무게감</td>
+                                                                                            <?}?>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <select class="form-control"  name="photo_review_modify_evaluation_size" id="photo_review_modify_evaluation_size">
+                                                                                                </select>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <select class="form-control"  name="photo_review_modify_evaluation_lightness" id="photo_review_evaluation_modify_lightness">
+                                                                                                </select>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <select class="form-control"  name="photo_review_evaluation_modify_color" id="photo_review_evaluation_modify_color">
+                                                                                                </select>
+                                                                                            </td>
+                                                                                            <!--상의, 아우터, 하의일 경우에만 나오기-->
+                                                                                            <?if($rowProductInfo['FIRST_CATEGORY'] != 26 && $rowProductInfo['FIRST_CATEGORY'] != 27){?>
+                                                                                                <td>
+                                                                                                    <select class="form-control"  name="photo_review_modify_evaluation_thickness" id="photo_review_modify_evaluation_thickness">
+                                                                                                    </select>
+                                                                                                </td>
+                                                                                            <?}?>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>별점</td>
+                                                                                <td>
+                                                                                    <div id="photo_review_modify_raty"></div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr id="photo_review_modify_product_img">
+                                                                                <td>상품이미지</td>
+                                                                                <td>
+                                                                                    <input type="file" class="form-control" name="photo_review_modify_file_photo_review" id="photo_review_modify_file_photo_review">
+                                                                                    <div style="margin-top: 10px;">
+                                                                                        <img id="photo_review_modify_img_photo_review" width="200px;">
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <button id="btn_modify_photo_review_compl" class="btn btn-info" style="float: right;">수정완료</button>
                                                         </div>
                                                     </div>
-                                                --><?/*
-                                                    $i++;
-                                                }*/?>
+                                                </div>
+                                            </div>
+                                            <div id="accordion">
                                             </div>
                                             <!-- /.accordion-->
                                             <nav aria-label="Page navigation">
@@ -736,83 +819,18 @@ include 'head.php'
                                             </div>
                                             <hr>
                                             <div id="accordion_review">
-                                                <!--<div class="card border-primary mb-3">
-                                                    <div id="heading1" class="card-header p-0 border-0" style="color: white">
-                                                        <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse1" aria-expanded="false" aria-controls="collapse1" class="btn btn-light d-block text-left rounded-0">
-                                                                <span id="raty_1" style="margin-right: 50px;"></span>
-                                                                <span>111111</span>
-                                                                <span style="float: right; color: darkgrey" >test</span>
-                                                            </a>
-                                                        </h4>
-                                                    </div>
-                                                    <div id="collapse1" aria-labelledby="heading0 data-parent=#accordion_review" class="collapse" >
-                                                        <div class="card-body">
-                                                            <p>매우 정말 만족합니다. <br> ㄴㅇㄹㄴㅇㄹ<br> ㄴㅇㄹㄴㅇㄹ<br> ㄴㅇㄹㄴㅇㄹ</p>
-                                                            <p style="color: darkgrey">화이트색상/M사이즈 구매</p>
-                                                            <div>
-                                                                <table class="table">
-                                                                    <tr>
-                                                                        <td>사이즈: <span>좋아요</span></td>
-                                                                        <td>밝기: <span>좋아요</span></td>
-                                                                        <td>색감: <span>좋아요</span></td>
-                                                                        <td>무게감: <span>좋아요</span></td>
-                                                                    </tr>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                        <div class="navbar-buttons" align="right" style="display: flex;">
-                                                            <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>
-                                                            <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card border-primary mb-3">
-                                                    <div id="heading2" class="card-header p-0 border-0" style="color: white">
-                                                        <h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2" class="btn btn-light d-block text-left rounded-0">
-                                                                <span id="raty_2" style="margin-right: 50px;"></span>
-                                                                <span>111111</span>
-                                                                <span style="float: right; color: darkgrey" >test</span>
-                                                            </a>
-                                                        </h4>
-                                                    </div>
-                                                    <div id="collapse2" aria-labelledby="heading0 data-parent=#accordion_review" class="collapse" >
-                                                        <div class="card-body">
-                                                            <p>매우 정말 만족합니다. <br> ㄴㅇㄹㄴㅇㄹ<br> ㄴㅇㄹㄴㅇㄹ<br> ㄴㅇㄹㄴㅇㄹ</p>
-                                                            <p style="color: darkgrey">화이트색상/M사이즈 구매</p>
-                                                            <div>
-                                                                <table class="table">
-                                                                    <tr>
-                                                                        <td>사이즈: <span>좋아요</span></td>
-                                                                        <td>밝기: <span>좋아요</span></td>
-                                                                        <td>색감: <span>좋아요</span></td>
-                                                                        <td>무게감: <span>좋아요</span></td>
-                                                                    </tr>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                        <div class="navbar-buttons" align="right" style="display: flex;">
-                                                            <div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=2" class="btn btn-primary navbar-btn">수정</a></div>
-                                                            <div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a onclick="return confirm('정말로 삭제하시겠습니까?');" href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>
-                                                        </div>
-                                                    </div>
-                                                </div>-->
                                             </div>
                                             <!-- /.accordion-->
                                             <nav aria-label="Page navigation">
                                                 <ul class="pagination pagination_review" style="justify-content: center;">
-                                                    <!--<li class="page-item"><a href="#" class="page-link">«</a></li>
-                                                    <li class="page-item active"><a href="#" class="page-link">1</a></li>
-                                                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                                    <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                                    <li class="page-item"><a href="#" class="page-link">4</a></li>
-                                                    <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                                    <li class="page-item"><a href="#" class="page-link">»</a></li>-->
                                                 </ul>
                                             </nav>
                                         </div>
                                     </div>
                                 </div>
+                                <!-- /review -->
+
+                                <!-- q&a -->
                                 <div id="qanda" role="tabpanel" aria-labelledby="qanda-tab" class="tab-pane fade">
                                     <div id="board" class="col-lg-12">
                                         <div class="container">
@@ -871,6 +889,60 @@ include 'head.php'
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <!-- Q&A 수정-->
+                                                <div id="qanda-modify-modal" tabindex="-1" role="dialog" aria-labelledby="Photo-Reivew" aria-hidden="true" class="modal fade">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title">Q&A 수정</h4>
+                                                                <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <table class="table">
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td bgcolor="white">
+                                                                            <table class="table">
+                                                                                <tbody>
+                                                                                <!--<tr>
+                                                                                    <td><input id="qanda_modify_secret_yn" type="checkbox" readonly>&nbsp; 비밀글 여부</td>
+                                                                                </tr>-->
+                                                                                <tr>
+                                                                                    <td style="width: 20%;">질문유형<input hidden id="qanda_modify_seq"><input hidden id="qanda_modify_cnt"></td>
+                                                                                    <td>
+                                                                                        <select class="form-control"  name="qanda_modify_question_type" id="qanda_modify_question_type">
+                                                                                            <option value="사이즈">사이즈</option>
+                                                                                            <option value="재입고">재입고</option>
+                                                                                            <option value="배송">배송</option>
+                                                                                            <option value="기타문의">기타문의</option>
+                                                                                        </select>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td>제목</td>
+                                                                                    <td><input class="form-control py-4" type="text" name="qanda_modify_title" id="qanda_modify_title" maxlength="200" placeholder="제목을 입력하세요."></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td>내용</td>
+                                                                                    <td>
+                                                                                        <textarea name="qanda_modify_contents" id="qanda_modify_contents" class="nse_content" style="width: 100%; height: 100px;" placeholder="내용을 입력하세요."></textarea>
+                                                                                    </td>
+                                                                                </tr>
+
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <button id="btn_qanda_modify_compl" class="btn btn-info" style="float: right;">수정완료</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- //Q&A 수정-->
+
                                                 <hr>
                                                 <div id="accordion_qanda"></div>
                                                 <!-- /.accordion-->
@@ -881,109 +953,9 @@ include 'head.php'
                                         </div>
                                     </div>
                                 </div>
+                                <!-- /q&a -->
                             </div>
                     </div>
-
-                    <!--<div class="row same-height-row">
-                        <div class="col-md-3 col-sm-6">
-                            <div class="box same-height">
-                                <h3>You may also like these products</h3>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="product same-height">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php"><img src="img/product2.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php"><img src="img/product2_2.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php" class="invisible"><img src="img/product2.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3>Fur coat</h3>
-                                    <p class="price">$143</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="product same-height">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php"><img src="img/product1.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php"><img src="img/product1_2.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php" class="invisible"><img src="img/product1.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3>Fur coat</h3>
-                                    <p class="price">$143</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="product same-height">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php"><img src="img/product3.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php"><img src="img/product3_2.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php" class="invisible"><img src="img/product3.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3>Fur coat</h3>
-                                    <p class="price">$143</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>-->
-                    <!--<div class="row same-height-row">
-                        <div class="col-md-3 col-sm-6">
-                            <div class="box same-height">
-                                <h3>Products viewed recently</h3>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="product same-height">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php"><img src="img/product2.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php"><img src="img/product2_2.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php" class="invisible"><img src="img/product2.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3>Fur coat</h3>
-                                    <p class="price">$143</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="product same-height">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php"><img src="img/product1.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php"><img src="img/product1_2.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php" class="invisible"><img src="img/product1.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3>Fur coat</h3>
-                                    <p class="price">$143</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="product same-height">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="front"><a href="detail.php"><img src="img/product3.jpg" alt="" class="img-fluid"></a></div>
-                                        <div class="back"><a href="detail.php"><img src="img/product3_2.jpg" alt="" class="img-fluid"></a></div>
-                                    </div>
-                                </div><a href="detail.php" class="invisible"><img src="img/product3.jpg" alt="" class="img-fluid"></a>
-                                <div class="text">
-                                    <h3>Fur coat</h3>
-                                    <p class="price">$143</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
-                <!-- /.col-md-9-->
             </div>
         </div>
     </div>
@@ -1021,6 +993,13 @@ include 'jsfile.php'
             searchQandA(1);
         });
 
+        // 별점정보
+        sum = <?=$sum?>;
+        cntOfReviewer = <?=$cntOfReviewer?>;
+
+        starScore = sum/cntOfReviewer
+
+
         // menu_no에 따라 menu_title, cat_second, cat_third 변경하기
         menuNo = '<?echo $menu_no?>';
         productNo = '<?echo $product_no?>';
@@ -1029,9 +1008,10 @@ include 'jsfile.php'
         // href$="val" : href의 속성값이 val로 끝나는 요소
         $('.category-menu li a[href$='+ menuNo +']').each(function (index, item){
             if(index == 0) {
+                console.log($(item));
+                console.log("1111");
                 $(item).addClass("active");
             }
-            console.log(item);
         });
 
         function changeImg(src){
@@ -1339,9 +1319,10 @@ include 'jsfile.php'
         $('#photo_review_raty').raty({half : true, readOnly: false});
         $('#raty_photo_review').raty({half : true, readOnly: false});
         $('#raty_review').raty({half : true, readOnly: false});
+        $('#raty_product').raty({half : true, readOnly: true, score:(starScore > 0 ? starScore : 0)});
 
         // 상품이미지
-        $('#file_photo_review').on("change", function(e){
+        $('#photo_review_file_photo_review').on("change", function(e){
             let files = e.target.files;
             let fileArr = Array.prototype.slice.call(files);
 
@@ -1360,6 +1341,31 @@ include 'jsfile.php'
 
             });
         });
+
+
+
+        // 상품이미지 수정
+        $('#photo_review_modify_file_photo_review').on("change", function(e) {
+            let files = e.target.files;
+            let fileArr = Array.prototype.slice.call(files);
+
+            fileArr.forEach(function (file) {
+                if (!file.type.match("image.*")) {
+                    alert("확장자는 이미지 확장자만 가능합니다.");
+                    return;
+                }
+
+                let reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#photo_review_modify_img_photo_review').attr("src", e.target.result);
+                }
+                reader.readAsDataURL(file);
+
+            });
+        });
+
+
 
         // 리뷰 작성완료
         $('#btn_write_photo_review_compl').on("click", function(){
@@ -1410,32 +1416,32 @@ include 'jsfile.php'
                                 +'<div id="heading_photo_review'+cntPhotoReview+'" class="card-header p-0 border-0" style="color: white">'
                                 +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_photo_review'+cntPhotoReview+'" aria-expanded="false" aria-controls="collapse_photo_review'+cntPhotoReview+'" class="btn btn-light d-block text-left rounded-0">'
                                 +'<span class="raty" id="raty_'+cntPhotoReview+'" style="margin-right: 50px;"><input id="star_score_'+cntPhotoReview+'"hidden value="'+$("#photo_review_raty").children('input').val()+'"></span>'
-                                +'<span>'+$("#photo_review_title").val()+'</span>'
-                                +'<span style="float: right; color: darkgrey" ><?=$user_name?></span>'
+                                +'<span id="photo_review_title_'+cntPhotoReview+'" >'+$("#photo_review_title").val()+'</span>'
+                                +'<span id="photo_review_name_'+cntPhotoReview+'"  style="float: right; color: darkgrey" ><?=$user_name?></span>'
                                 +'</a>'
                                 +'</h4>'
                                 +'</div>'
                                 +'<div id="collapse_photo_review'+cntPhotoReview+'" aria-labelledby="heading_photo_review'+cntPhotoReview+' data-parent=#accordion" class="collapse show" >'
                                 +'<div class="card-body">'
-                                +'<p>'+$("#photo_review_contents").val()+'</p>'
-                                +'<img style="text-align: center; align:center;" width="300px;" src="'+json.save_path+'">'
+                                +'<p id="photo_review_contents_'+cntPhotoReview+'" >'+$("#photo_review_contents").val()+'</p>'
+                                +'<img id="photo_review_img_'+cntPhotoReview+'" style="text-align: center; align:center;" width="300px;" src="'+json.save_path+'">'
                                 +'<p style="color: darkgrey">'+json.color+'색상/'+json.size+'사이즈 구매</p>'
                                 +'<div>'
                                 +'<table class="table">'
                                 +'<tr>'
-                                +'<td>사이즈: <span>'+$("#photo_review_evaluation_size").val()+'</span></td>'
-                                +'<td>밝기: <span>'+$("#photo_review_evaluation_lightness").val()+'</span></td>'
-                                +'<td>색감: <span>'+$("#photo_review_evaluation_color").val()+'</span></td>';
+                                +'<td>사이즈: <span id="photo_review_eval_size_'+cntPhotoReview+'" >'+$("#photo_review_evaluation_size").val()+'</span></td>'
+                                +'<td>밝기: <span id="photo_review_eval_lightness_'+cntPhotoReview+'" >'+$("#photo_review_evaluation_lightness").val()+'</span></td>'
+                                +'<td>색감: <span id="photo_review_eval_color_'+cntPhotoReview+'" >'+$("#photo_review_evaluation_color").val()+'</span></td>';
                             if(<?=$rowProductInfo['FIRST_CATEGORY']?> != 26 && <?=$rowProductInfo['FIRST_CATEGORY']?> != 27 ){
-                                photoReview += '<td>무게감: <span>'+$("#photo_review_evaluation_thickness").val()+'</span></td>';
+                                photoReview += '<td>무게감: <span id="photo_review_eval_thickness_'+cntPhotoReview+'" >'+$("#photo_review_evaluation_thickness").val()+'</span></td>';
                             }
                             photoReview += '</tr>'
                                 +'</table>'
                                 +'</div>'
                                 +'</div>'
                                 +'<div class="navbar-buttons" align="right" style="display: flex;">'
-                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
-                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="javascript:modifyReview('+json.seq +' , ' + cntPhotoReview +' ,'+ 0 +')" class="btn btn-primary navbar-btn">수정</a></div>'
+                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="javascript:deleteReview('+json.seq +' , ' + cntPhotoReview +' ,'+ 0 +')" class="btn btn-primary navbar-btn">삭제</a></div>'
                                 +'</div>'
                                 +'</div>'
                                 +'</div>';
@@ -1456,31 +1462,31 @@ include 'jsfile.php'
                                 +'<div id="heading_review'+cntReview+'" class="card-header p-0 border-0" style="color: white">'
                                 +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_review'+cntReview+'" aria-expanded="false" aria-controls="collapse_review'+cntReview+'" class="btn btn-light d-block text-left rounded-0">'
                                 +'<span class="raty" id="raty_review_'+cntReview+'" style="margin-right: 50px;"><input id="star_score_'+cntReview+'"hidden value="'+$("#photo_review_raty").children('input').val()+'"></span>'
-                                +'<span>'+$("#photo_review_title").val()+'</span>'
-                                +'<span style="float: right; color: darkgrey" ><?=$user_name?></span>'
+                                +'<span id="review_title_'+cntReview+'" >'+$("#photo_review_title").val()+'</span>'
+                                +'<span  id="review_name_'+cntReview+'" style="float: right; color: darkgrey" ><?=$user_name?></span>'
                                 +'</a>'
                                 +'</h4>'
                                 +'</div>'
                                 +'<div id="collapse_review'+cntReview+'" aria-labelledby="heading_review'+cntReview+' data-parent=#accordion" class="collapse show" >'
                                 +'<div class="card-body">'
-                                +'<p>'+$("#photo_review_contents").val()+'</p>'
+                                +'<p id="review_contents_'+cntReview+'" >'+$("#photo_review_contents").val()+'</p>'
                                 +'<p style="color: darkgrey">'+json.color+'색상/'+json.size+'사이즈 구매</p>'
                                 +'<div>'
                                 +'<table class="table">'
                                 +'<tr>'
-                                +'<td>사이즈: <span>'+$("#photo_review_evaluation_size").val()+'</span></td>'
-                                +'<td>밝기: <span>'+$("#photo_review_evaluation_lightness").val()+'</span></td>'
-                                +'<td>색감: <span>'+$("#photo_review_evaluation_color").val()+'</span></td>';
+                                +'<td>사이즈: <span id="review_eval_size_'+cntReview+'" >'+$("#photo_review_evaluation_size").val()+'</span></td>'
+                                +'<td>밝기: <span id="review_eval_lightness_'+cntReview+'" >'+$("#photo_review_evaluation_lightness").val()+'</span></td>'
+                                +'<td>색감: <span id="review_eval_color_'+cntReview+'" >'+$("#photo_review_evaluation_color").val()+'</span></td>';
                             if(<?=$rowProductInfo['FIRST_CATEGORY']?> != 26 && <?=$rowProductInfo['FIRST_CATEGORY']?> != 27 ){
-                                review += '<td>무게감: <span>'+$("#photo_review_evaluation_thickness").val()+'</span></td>';
+                                review += '<td>무게감: <span id="review_eval_thickness_'+cntReview+'" >'+$("#photo_review_evaluation_thickness").val()+'</span></td>';
                             }
                             review += '</tr>'
                                 +'</table>'
                                 +'</div>'
                                 +'</div>'
                                 +'<div class="navbar-buttons" align="right" style="display: flex;">'
-                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
-                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="javascript:modifyReview('+json.seq +' , ' + cntReview +' ,'+ 1 +')" class="btn btn-primary navbar-btn">수정</a></div>'
+                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="javascript:deleteReview('+json.seq +' , ' + cntReview +' ,'+ 1 +')" class="btn btn-primary navbar-btn">삭제</a></div>'
                                 +'</div>'
                                 +'</div>'
                                 +'</div>';
@@ -1583,34 +1589,36 @@ include 'jsfile.php'
                                     +'<div id="heading_photo_review'+i+'" class="card-header p-0 border-0" style="color: white">'
                                         +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_photo_review'+i+'" aria-expanded="false" aria-controls="collapse_photo_review'+i+'" class="btn btn-light d-block text-left rounded-0">'
                                             +'<span class="raty" id="raty_'+i+'" style="margin-right: 50px;"><input id="star_score_'+i+'"hidden value="'+json.starScore[i]+'"></span>'
-                                            +'<span>'+json.title[i]+'</span>'
-                                            +'<span style="float: right; color: darkgrey" >'+json.name[i]+'</span>'
+                                            +'<span id="photo_review_title_'+i+'">'+json.title[i]+'</span>'
+                                            +'<span id="photo_review_name_'+i+'" style="float: right; color: darkgrey" >'+json.name[i]+'</span>'
                                         +'</a>'
                                         +'</h4>'
                                     +'</div>'
                                     +'<div id="collapse_photo_review'+i+'" aria-labelledby="heading_photo_review'+i+' data-parent=#accordion" class="collapse show" >'
                                         +'<div class="card-body">'
-                                            +'<p>'+json.contents[i]+'</p>'
-                                            +'<img style="text-align: center; align:center;" width="300px;" src="'+json.savePath[i]+'">'
+                                            +'<p id="photo_review_contents_'+i+'">'+json.contents[i]+'</p>'
+                                            +'<img id="photo_review_img_'+i+'" style="text-align: center; align:center;" width="300px;" src="'+json.savePath[i]+'">'
                                             +'<p style="color: darkgrey">'+json.productColor[i]+'색상/'+json.productSize[i]+'사이즈 구매</p>'
                                             +'<div>'
                                                 +'<table class="table">'
                                                     +'<tr>'
-                                                        +'<td>사이즈: <span>'+json.evalSize[i]+'</span></td>'
-                                                        +'<td>밝기: <span>'+json.evalLightness[i]+'</span></td>'
-                                                        +'<td>색감: <span>'+json.evalColor[i]+'</span></td>';
+                                                        +'<td>사이즈: <span id="photo_review_eval_size_'+i+'">'+json.evalSize[i]+'</span></td>'
+                                                        +'<td>밝기: <span id="photo_review_eval_lightness_'+i+'">'+json.evalLightness[i]+'</span></td>'
+                                                        +'<td>색감: <span id="photo_review_eval_color_'+i+'">'+json.evalColor[i]+'</span></td>';
                                                         if(<?=$rowProductInfo['FIRST_CATEGORY']?> != 26 && <?=$rowProductInfo['FIRST_CATEGORY']?> != 27 ){
-                                                            photoReview += '<td>무게감: <span>'+json.evalThickness[i]+'</span></td>';
+                                                            photoReview += '<td>무게감: <span id="photo_review_eval_thickness_'+i+'">'+json.evalThickness[i]+'</span></td>';
                                                         }
                                             photoReview += '</tr>'
                                                 +'</table>'
                                             +'</div>'
-                                        +'</div>'
-                                        +'<div class="navbar-buttons" align="right" style="display: flex;">'
-                                            +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
-                                            +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
-                                        +'</div>'
-                                    +'</div>'
+                                        +'</div>';
+                                        if('<?=$login_id?>' == json.writer[i]){
+                                            photoReview += '<div class="navbar-buttons" align="right" style="display: flex;">'
+                                                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="javascript:modifyReview('+json.seq[i]+' , '+ i +' ,'+ 0 +')" class="btn btn-primary navbar-btn">수정</a></div>'
+                                                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="javascript:deleteReview('+json.seq[i]+' , '+ i +' ,'+ 0 +')" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                                         +'</div>';
+                                        }
+                            photoReview += '</div>'
                                 +'</div>';
                             $('#accordion').append(photoReview);
                             $('#raty_'+i).raty({half : true, readOnly: true, score: json.starScore[i]});
@@ -1618,11 +1626,11 @@ include 'jsfile.php'
 
                         /* 페이징 시작 */
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview(1)"class="page-link">' + '처음' + '</a></li>');
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview(1)"class="page-link">' + '<<' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '«' + '</a></li>');
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '<' + '</a></li>');
                         }
 
                         for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
@@ -1634,11 +1642,11 @@ include 'jsfile.php'
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '»' + '</a></li>');
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '>' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '끝' + '</a></li>');
+                            $('.pagination_photo_review').append('<li class="page-item"><a href="javascript:searchPhotoReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '>>' + '</a></li>');
                         }
                         /* 페이징 종료 */
                     } else {
@@ -1689,32 +1697,35 @@ include 'jsfile.php'
                                 +'<div id="heading_review'+i+'" class="card-header p-0 border-0" style="color: white">'
                                 +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_review'+i+'" aria-expanded="false" aria-controls="collapse_review'+i+'" class="btn btn-light d-block text-left rounded-0">'
                                 +'<span class="raty" id="raty_review_'+i+'" style="margin-right: 50px;"><input id="star_score_'+i+'"hidden value="'+json.starScore[i]+'"></span>'
-                                +'<span>'+json.title[i]+'</span>'
-                                +'<span style="float: right; color: darkgrey" >'+json.name[i]+'</span>'
+                                +'<span id="review_title_'+i+'">'+json.title[i]+'</span>'
+                                +'<span id="review_name_'+i+'" style="float: right; color: darkgrey" >'+json.name[i]+'</span>'
                                 +'</a>'
                                 +'</h4>'
                                 +'</div>'
                                 +'<div id="collapse_review'+i+'" aria-labelledby="heading_review'+i+' data-parent=#accordion_review" class="collapse" >'
                                 +'<div class="card-body">'
-                                +'<p>'+json.contents[i]+'</p>'
+                                +'<p id="review_contents_'+i+'" >'+json.contents[i]+'</p>'
                                 +'<p style="color: darkgrey">'+json.productColor[i]+'색상/'+json.productSize[i]+'사이즈 구매</p>'
                                 +'<div>'
                                 +'<table class="table">'
                                 +'<tr>'
-                                +'<td>사이즈: <span>'+json.evalSize[i]+'</span></td>'
-                                +'<td>밝기: <span>'+json.evalLightness[i]+'</span></td>'
-                                +'<td>색감: <span>'+json.evalColor[i]+'</span></td>';
+                                +'<td>사이즈: <span id="review_eval_size_'+i+'" >'+json.evalSize[i]+'</span></td>'
+                                +'<td>밝기: <span id="review_eval_lightness_'+i+'" >'+json.evalLightness[i]+'</span></td>'
+                                +'<td>색감: <span id="review_eval_color_'+i+'" >'+json.evalColor[i]+'</span></td>';
                             if(<?=$rowProductInfo['FIRST_CATEGORY']?> != 26 && <?=$rowProductInfo['FIRST_CATEGORY']?> != 27 ){
-                                review += '<td>무게감: <span>'+json.evalThickness[i]+'</span></td>';
+                                review += '<td>무게감: <span id="review_eval_thickness_'+i+'" >'+json.evalThickness[i]+'</span></td>';
                             }
                             review += '</tr>'
                                 +'</table>'
                                 +'</div>'
                                 +'</div>'
-                                +'<div class="navbar-buttons" align="right" style="display: flex;">'
-                                +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
-                                +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
-                                +'</div>'
+                            if('<?=$login_id?>' == json.writer[i]){
+                                review += '<div class="navbar-buttons" align="right" style="display: flex;">'
+                                    +'<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="javascript:modifyReview('+json.seq[i]+' , '+ i +' ,'+ 1 +')" class="btn btn-primary navbar-btn">수정</a></div>'
+                                    +'<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="javascript:deleteReview('+json.seq[i]+' , '+ i +' ,'+ 1 +')" class="btn btn-primary navbar-btn">삭제</a></div>'
+
+                            }
+                           review += '</div>'
                                 +'</div>'
                                 +'</div>';
                             $('#accordion_review').append(review);
@@ -1723,11 +1734,11 @@ include 'jsfile.php'
 
                         /* 페이징 시작 */
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview(1)"class="page-link">' + '처음' + '</a></li>');
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview(1)"class="page-link">' + '<<' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '«' + '</a></li>');
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '<' + '</a></li>');
                         }
 
                         for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
@@ -1739,11 +1750,11 @@ include 'jsfile.php'
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '»' + '</a></li>');
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '>' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '끝' + '</a></li>');
+                            $('.pagination_review').append('<li class="page-item"><a href="javascript:searchReview('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '>>' + '</a></li>');
                         }
                         /* 페이징 종료 */
                     } else {
@@ -1794,49 +1805,57 @@ include 'jsfile.php'
                                     + '<div id="heading_qanda'+i+'" class="card-header p-0 border-0">';
                                 if(json.secretYn[i] == 1){
                                     if(json.writer[i] == '<?=$login_id?>'){ //작성자가 로그인한 사용자인 경우
-                                        qanda +='<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+i+'" aria-expanded="false" aria-controls="collapse_qanda'+i+'" class="btn btn-toolbar d-block text-left rounded-0"'
+                                        qanda +='<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+i+'" aria-expanded="false" aria-controls="collapse_qanda'+i+'" class="btn btn-toolbar d-block text-left rounded-0">'
                                     } else{
-                                        qanda +='<h4 class="mb-0" onclick="alert(\'비밀글입니다.\');"><a class="btn btn-toolbar d-block text-left rounded-0"'
+                                        qanda +='<h4 class="mb-0" onclick="alert(\'비밀글입니다.\');"><a class="btn btn-toolbar d-block text-left rounded-0">'
                                     }
                                 } else{
-                                    qanda +='<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+i+'" aria-expanded="false" aria-controls="collapse_qanda'+i+'" class="btn btn-toolbar d-block text-left rounded-0"'
+                                    qanda +='<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+i+'" aria-expanded="false" aria-controls="collapse_qanda'+i+'" class="btn btn-toolbar d-block text-left rounded-0">'
                                 }
-                                qanda += '<span>'+json.answerState[i]+'</span>';
+                                qanda +=  '<span style="display: inline-block; width: 100px;">'+json.answerState[i]+'</span>';
                                         // 비밀글인 경우
-                                        if(json.secretYn[i] == 1){
+                                        if(json.secretYn[i] == 1 && json.writer[i] != '<?=$login_id?>'){
                                             if(json.answerYn[i] == 0){ //답변중
-                                                qanda += '<span style="margin-left: 94px;">'+json.title[i]+'<i class="fa fa-lock"></i></span>'
+                                                qanda += '<span id="qanda_type_'+i+'" style="display: inline-block; width: 80px;">'+json.type[i]+'</span>';
+                                                qanda += '<span id="qanda_title_'+i+'">'+json.title[i]+'<i class="fa fa-lock"></i></span>'
                                             } else{ //답변완료
-                                                qanda += '<span style="margin-left: 80px;">'+json.title[i]+'<i class="fa fa-lock"></i></span>'
+                                                qanda += '<span id="qanda_type_'+i+'" style="display: inline-block; width: 80px;">'+json.type[i]+'</span>';
+                                                qanda += '<span id="qanda_title_'+i+'">'+json.title[i]+'<i class="fa fa-lock"></i></span>'
                                             }
                                         } else{ //일반글인 겨우
                                             if(json.answerYn[i] == 0){ //답변중
-                                                qanda += '<span style="margin-left: 94px;">'+json.title[i]+'</span>'
+                                                qanda += '<span id="qanda_type_'+i+'" style="display: inline-block; width: 80px;">'+json.type[i]+'</span>';
+                                                qanda += '<span id="qanda_title_'+i+'">'+json.title[i]+'</span>'
                                             } else{ //답변완료
-                                                qanda += '<span style="margin-left: 80px;">'+json.title[i]+'</span>'
+                                                qanda += '<span id="qanda_type_'+i+'" style="display: inline-block; width: 80px;">'+json.type[i]+'</span>';
+                                                qanda += '<span id="qanda_title_'+i+'">'+json.title[i]+'</span>'
                                             }
                                         }
 
                                         qanda += '<span style="float: right;">'+json.name[i]+'</span></a></h4>'
                                     + '</div>'
                                     + '<div id="collapse_qanda'+i+'" aria-labelledby="heading_qanda'+i+' data-parent=#accordion_qanda" class="collapse" >'
-                                        + '<div class="card-body contents" style=" margin-left: 130px;" >'
+                                        + '<div id="qanda_contents_'+i+'" class="card-body contents" style=" margin-left: 173px;" >'
                                         + json.contents[i]
                                         + '</div>';
                                     // 답변 상태에 따라 나올지 안나올지 결정
                                     if(json.answerState[i] == '답변완료'){
                                         qanda += '<div class="card-body reply" style="background-color: lightgrey;">'
-                                                + '<div style="margin-left: 130px;">'
+                                                + '<div style="margin-left: 173px;">'
                                                 + '<span style="font-weight: bold;">답변</span><br><br>'
                                                 + json.answer[i]+'<br><br><br><br><br><br>'
                                                 + '</div>'
                                              + '</div>';
                                     }
-                                        qanda += '<div class="navbar-buttons" align="right" style="display: flex;">'
-                                            + '<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
-                                            + '<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
-                                        + '</div>'
-                                    + '</div>'
+                                    if('<?=$login_id?>' == json.writer[i]){
+                                        qanda += '<div class="navbar-buttons" align="right" style="display: flex;">';
+                                        if(json.answerState[i] == '답변중'){
+                                            qanda += '<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="javascript:modifyQandA('+json.seq[i]+' , '+i+')" class="btn btn-primary navbar-btn">수정</a></div>';
+                                        }
+                                        qanda += '<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="javascript:deleteQandA('+json.seq[i]+' , '+i+')" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                            + '</div>';
+                                    }
+                            qanda += '</div>'
                                 + '</div>';
 
                             $('#accordion_qanda').append(qanda);
@@ -1844,11 +1863,11 @@ include 'jsfile.php'
 
                         /* 페이징 시작 */
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA(1)"class="page-link">' + '처음' + '</a></li>');
+                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA(1)"class="page-link">' + '<<' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != 1){
-                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '«' + '</a></li>');
+                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ (parseInt(json.start_page_num_of_block) - 1) + ')" class="page-link">' + '<' + '</a></li>');
                         }
 
                         for(let i = parseInt(json.start_page_num_of_block); i <= parseInt(json.end_page_num_of_block); i++){
@@ -1860,11 +1879,11 @@ include 'jsfile.php'
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '»' + '</a></li>');
+                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ (parseInt(json.end_page_num_of_block) + 1) + ')"class="page-link">' + '>' + '</a></li>');
                         }
 
                         if(parseInt(json.current_num_of_block) != parseInt(json.total_count_of_block)){
-                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '끝' + '</a></li>');
+                            $('.pagination_qanda').append('<li class="page-item"><a href="javascript:searchQandA('+ parseInt(json.total_count_of_page) + ')" class="page-link">' + '>>' + '</a></li>');
                         }
                         /* 페이징 종료 */
                     } else {
@@ -1913,18 +1932,19 @@ include 'jsfile.php'
                             let qanda =
                                 '<div id="qanda'+cntQandA+'" class="card border-primary mb-3">'
                                 + '<div id="heading_qanda'+cntQandA+'" class="card-header p-0 border-0">'
-                                + '<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+cntQandA+'" aria-expanded="false" aria-controls="collapse_qanda'+cntQandA+'" class="btn btn-toolbar d-block text-left rounded-0"'
-                                + '<span>답변중</span>'
-                                + '<span style="margin-left: 94px;">'+$('#qanda_title').val()+'</span>'
+                                + '<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_qanda'+cntQandA+'" aria-expanded="false" aria-controls="collapse_qanda'+cntQandA+'" class="btn btn-toolbar d-block text-left rounded-0">'
+                                + '<span style="display: inline-block; width: 100px;">답변중</span>'
+                                + '<span id="qanda_type_'+cntQandA+'" style="display: inline-block; width: 80px;">'+$('#question_type').val()+'</span>'
+                                + '<span id="qanda_title_'+cntQandA+'">'+$('#qanda_title').val()+'</span>'
                                 + '<span style="float: right;"><?=$user_name?></span></a></h4>'
                                 + '</div>'
                                 + '<div id="collapse_qanda'+cntQandA+'" aria-labelledby="heading_qanda'+cntQandA+' data-parent=#accordion_qanda" class="collapse" >'
-                                + '<div class="card-body contents" style=" margin-left: 130px;" >'
+                                + '<div id="qanda_contents_'+cntQandA+'" class="card-body contents" style=" margin-left: 173px;" >'
                                 + $('#qanda_contents').val()
                                 + '</div>'
                                 + '<div class="navbar-buttons" align="right" style="display: flex;">'
-                                + '<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="/mall/updateNoticeOrFaq.php?SEQ=1" class="btn btn-primary navbar-btn">수정</a></div>'
-                                + '<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="/mall/php/deleteNoticeOrFaqCompl.php?SEQ=1&TYPE=2" class="btn btn-primary navbar-btn">삭제</a></div>'
+                                + '<div style="flex: 11; margin: 3px;" id="btn_modify" class="navbar-collapse collapse d-none d-lg-block"><a href="javascript:modifyQandA('+json.seq+' , '+cntQandA+')" class="btn btn-primary navbar-btn">수정</a></div>'
+                                + '<div style="flex: 1; margin: 3px;" id="btn_delete" class="navbar-collapse collapse d-none d-lg-block"><a  href="javascript:deleteQandA('+json.seq+', '+cntQandA+')" class="btn btn-primary navbar-btn">삭제</a></div>'
                                 + '</div>'
                                 + '</div>'
                                 + '</div>';
@@ -1956,6 +1976,371 @@ include 'jsfile.php'
                 });
             }
         });
+
+        // 상품 삭제
+        $('#btn_product_delete').on("click", function(){
+            if(confirm("해당상품을 삭제하시겠습니까?")){
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: '/mall/php/product/deleteProductCompl.php',
+                    data: {
+                        product_no: <?=$product_no?>
+                    },
+
+                    success: function (json) {
+                        if (json.result == 'ok') {
+                            // 로그인 -> 로그아웃으로 변경
+                            location.href = "category.php?menu_no="+<?=$menu_no?>;
+                            // 모달창 종료
+                        } else {
+                            alert("삭제에 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("에러가 발생했습니다.");
+                    }
+                });
+            }
+        });
+
+        //후기 삭제
+        function deleteReview(seq, cnt, type){
+            if(confirm("해당상품을 삭제하시겠습니까?")){
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: '/mall/php/product/review/deleteReviewCompl.php',
+                    data: {
+                        seq: seq
+                    },
+
+                    success: function (json) {
+                        if (json.result == 'ok') {
+                            // 포토후기라면(type=0)
+                            if(type == 0){
+                                $('#photo_review_'+cnt).remove();
+                                cntPhotoReview--;
+                            } else {// 일반후기라면(type=1)
+                                $('#review_'+cnt).remove();
+                                cntReview--;
+                            }
+                        } else {
+                            alert("삭제에 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("에러가 발생했습니다.");
+                    }
+                });
+            }
+        }
+
+        //Q&A 삭제
+        function deleteQandA(seq, cnt){
+            if(confirm("해당상품을 삭제하시겠습니까?")){
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: '/mall/php/product/qanda/deleteQandaCompl.php',
+                    data: {
+                        seq: seq
+                    },
+
+                    success: function (json) {
+                        if (json.result == 'ok') {
+                            $('#qanda'+cnt).remove();
+                            cntQandA--;
+                        } else {
+                            alert("삭제에 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("에러가 발생했습니다.");
+                    }
+                });
+            }
+        }
+
+        // 후기 수정열기
+        function modifyReview(seq, cnt, type){
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/product/review/selectReviewOneCompl.php',
+                data: {
+                    seq: seq,
+                    type: type
+                },
+
+                success: function (json) {
+                    if (json.result == 'ok') {
+                        $('#photo_review_modify_product').text(json.productColor + '/' + json.productSize);
+                        $('#photo_review_modify_title').val(json.title);
+                        $('#photo_review_modify_contents').val(json.contents);
+                        $('#photo_review_modify_seq').val(seq);
+                        $('#photo_review_modify_cnt').val(cnt);
+                        $('#photo_review_modify_type').val(type);
+
+                        /* 평가항목 */
+                        //사이즈
+                        let sizeArr = ['작아요', '보통이에요', '커요'];
+                        let optionSize = '';
+
+                        $('#photo_review_modify_evaluation_size').children('option').remove();
+
+                        for(let i = 0; i < sizeArr.length; i++){
+                            if(json.evalSize == sizeArr[i]){
+                                optionSize += '<option value="'+sizeArr[i]+'" selected>'+sizeArr[i]+'</option>';
+                            } else{
+                                optionSize += '<option value="'+sizeArr[i]+'">'+sizeArr[i]+'</option>';
+                            }
+                        }
+
+                        $('#photo_review_modify_evaluation_size').append(optionSize);
+
+                        // 밝기
+                        let lightnessArr = ['어두워요', '보통이에요', '밝아요'];
+                        let optionLightness = '';
+
+                        $('#photo_review_evaluation_modify_lightness').children('option').remove();
+
+                        for(let i = 0; i < lightnessArr.length; i++){
+                            if(json.evalLightness == lightnessArr[i]){
+                                optionLightness += '<option value="'+lightnessArr[i]+'" selected>'+lightnessArr[i]+'</option>';
+                            } else{
+                                optionLightness += '<option value="'+lightnessArr[i]+'">'+lightnessArr[i]+'</option>';
+                            }
+                        }
+
+                        $('#photo_review_evaluation_modify_lightness').append(optionLightness);
+
+                        // 색상
+                        let colorArr = ['흐려요', '보통이에요', '선명해요'];
+                        let optionColor = '';
+
+                        $('#photo_review_evaluation_modify_color').children('option').remove();
+
+                        for(let i = 0; i < colorArr.length; i++){
+                            if(json.evalColor == colorArr[i]){
+                                optionColor += '<option value="'+colorArr[i]+'" selected>'+colorArr[i]+'</option>';
+                            } else{
+                                optionColor += '<option value="'+lightnessArr[i]+'">'+colorArr[i]+'</option>';
+                            }
+                        }
+                        $('#photo_review_evaluation_modify_color').append(optionColor);
+
+                        // 무게감
+                        let thicknessArr = ['얇아요', '보통이에요', '두꺼워요'];
+                        let optionThickness = '';
+
+                        $('#photo_review_modify_evaluation_thickness').children('option').remove();
+
+                        for(let i = 0; i < thicknessArr.length; i++){
+                            if(json.evalThickness == thicknessArr[i]){
+                                optionThickness += '<option value="'+thicknessArr[i]+'" selected>'+thicknessArr[i]+'</option>';
+                            } else{
+                                optionThickness += '<option value="'+thicknessArr[i]+'">'+thicknessArr[i]+'</option>';
+                            }
+                        }
+                        $('#photo_review_modify_evaluation_thickness').append(optionThickness);
+
+                        // 별점
+                        $('#photo_review_modify_raty').children('img').remove();
+                        $('#photo_review_modify_raty').raty({half : true, readOnly: false, score: json.starScore});
+
+                        // 포토후기인 경우 파일 보이기
+                        if(type == 0){
+                            $('#photo_review_modify_product_img').show();
+                            $('#photo_review_modify_img_photo_review').attr("src",json.savePath);
+                        } else{
+                            $('#photo_review_modify_product_img').hide();
+                        }
+                    } else {
+                        alert("수정에 실패했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("에러가 발생했습니다.");
+                }
+            });
+
+            // input hidden으로 cnt, type넣어주기
+            // type에 따라 파일 숨기기
+            $('#photo-review-modify-modal').modal('show');
+        }
+
+        // 후기 수정완료
+        $('#btn_modify_photo_review_compl').on("click", function(){
+            /*console.log(1 + ': '+ $('#photo_review_modify_seq').val());
+            console.log(2 + ': '+ $('#photo_review_modify_cnt').val());
+            console.log(2 + ': '+ $('#photo_review_modify_type').val());*/
+
+            let formData = new FormData();
+
+            formData.append("photo_review_seq", $('#photo_review_modify_seq').val());
+            formData.append("photo_review_type", $('#photo_review_modify_type').val());
+            formData.append("photo_review_title", $("#photo_review_modify_title").val());
+            formData.append("photo_review_contents", $("#photo_review_modify_contents").val());
+            formData.append("photo_review_evaluation_size", $("#photo_review_modify_evaluation_size").val());
+            formData.append("photo_review_evaluation_color", $("#photo_review_evaluation_modify_color").val());
+            formData.append("photo_review_evaluation_lightness", $("#photo_review_evaluation_modify_lightness").val());
+            formData.append("photo_review_evaluation_thickness", $("#photo_review_modify_evaluation_thickness").val());
+            formData.append("photo_review_raty", $("#photo_review_modify_raty").children('input').val());
+            formData.append("photo_review_modify_file_photo_review", $('#photo_review_modify_file_photo_review')[0].files[0]);
+
+            let cnt = $('#photo_review_modify_cnt').val();
+            let type = $('#photo_review_modify_type').val();
+
+            if(confirm("해당리뷰를 수정하시겠습니까?")){
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: '/mall/php/product/review/modifyReviewCompl.php',
+                    processData: false, // 필수
+                    contentType: false, // 필수
+                    data: formData,
+
+                    success: function (json) {
+                        if (json.result == 'ok') {
+                            // 포토 후기 완료 시 데이터 수정
+                            // 모달 창 닫기
+                            $('#photo-review-modify-modal').modal("hide");
+
+                            // 포토리뷰
+                            if(type == 0){
+                                $('#photo_review_title_'+cnt).text($("#photo_review_modify_title").val());
+                                $('#photo_review_contents_'+cnt).text($("#photo_review_modify_contents").val());
+                                $('#photo_review_eval_size_'+cnt).text($("#photo_review_modify_evaluation_size").val());
+                                $('#photo_review_eval_color_'+cnt).text($("#photo_review_evaluation_modify_color").val());
+                                $('#photo_review_eval_lightness_'+cnt).text($("#photo_review_evaluation_modify_lightness").val());
+                                $('#photo_review_eval_thickness_'+cnt).text($("#photo_review_modify_evaluation_thickness").val());
+
+                                $('#raty_'+cnt).children('img').remove();
+                                $('#raty_'+cnt).raty({half : true, readOnly: false, score: $("#photo_review_modify_raty").children('input').val()});
+
+                                // 이미지 파일이 있다면 넣어 줌
+                                if(json.saved_path != null && json.saved_path != '' ){
+                                    $('#photo_review_img_'+cnt).attr("src",json.saved_path);
+                                }
+
+                            } else { //일반 후기 완료 시 데이터 수정
+
+                                $('#review_title_'+cnt).text($("#photo_review_modify_title").val());
+                                $('#review_contents_'+cnt).text($("#photo_review_modify_contents").val());
+                                $('#review_eval_size_'+cnt).text($("#photo_review_modify_evaluation_size").val());
+                                $('#review_eval_color_'+cnt).text($("#photo_review_evaluation_modify_color").val());
+                                $('#review_eval_lightness_'+cnt).text($("#photo_review_evaluation_modify_lightness").val());
+                                $('#review_eval_thickness_'+cnt).text($("#photo_review_modify_evaluation_thickness").val());
+
+                                $('#raty_review_'+cnt).children('img').remove();
+                                $('#raty_review_'+cnt).raty({half : true, readOnly: false, score: $("#photo_review_modify_raty").children('input').val()});
+                            }
+                        } else {
+                            alert("수정에 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("에러가 발생했습니다.");
+                    }
+                });
+            }
+        });
+
+        //Q&A수정
+        function modifyQandA(seq, cnt) {
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/mall/php/product/qanda/selectQandaOneCompl.php',
+                data: {
+                    seq: seq
+                },
+
+                success: function (json) {
+                    if (json.result == 'ok') {
+                        /*if (json.secretYn == 1) {
+                            $('#qanda_modify_secret_yn').prop("checked", true);
+                        } else{
+                            $('#qanda_modify_secret_yn').prop("checked", false);
+                        }*/
+                        $('#qanda_modify_title').val(json.title);
+                        $('#qanda_modify_contents').text(json.contents);
+
+                        $('#qanda_modify_seq').val(seq);
+                        $('#qanda_modify_cnt').val(cnt);
+
+                        /* 평가항목 */
+                        //사이즈
+                        let typeArr = ['사이즈', '재입고', '배송', '기타문의'];
+                        let optionSize = '';
+
+                        $('#qanda_modify_question_type').children('option').remove();
+
+                        for (let i = 0; i < typeArr.length; i++) {
+                            if (json.type == typeArr[i]) {
+                                optionSize += '<option value="' + typeArr[i] + '" selected>' + typeArr[i] + '</option>';
+                            } else {
+                                optionSize += '<option value="' + typeArr[i] + '">' + typeArr[i] + '</option>';
+                            }
+                        }
+
+                        $('#qanda_modify_question_type').append(optionSize);
+
+                        // 모달 열기
+                        $('#qanda-modify-modal').modal('show');
+                    } else {
+                        alert("수정에 실패했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("에러가 발생했습니다.");
+                }
+            });
+        }
+
+        // Q&A 수정완료
+        $('#btn_qanda_modify_compl').on("click", function(){
+            let cnt = $('#qanda_modify_cnt').val();
+            let seq = $('#qanda_modify_seq').val();
+
+            let formData = new FormData();
+
+            //formData.append("secret_yn", $('#qanda_modify_secret_yn').is(":checked") ? 1 : 0);
+            formData.append("question_type", $('#qanda_modify_question_type').val());
+            formData.append("qanda_title", $("#qanda_modify_title").val());
+            formData.append("qanda_contents", $("#qanda_modify_contents").val());
+            formData.append("qanda_seq", seq);
+
+            if(confirm("해당 Q&A를 수정하시겠습니까?")){
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: '/mall/php/product/qanda/modifyQandaCompl.php',
+                    processData: false, // 필수
+                    contentType: false, // 필수
+                    data: formData,
+
+                    success: function (json) {
+                        if (json.result == 'ok') {
+                            // 모달 창 닫기
+                            $('#qanda-modify-modal').modal("hide");
+
+                            $('#qanda_title_'+cnt).text($("#qanda_modify_title").val());
+                            $('#qanda_contents_'+cnt).text($("#qanda_modify_contents").val());
+                            $('#qanda_type_'+cnt).text($("#qanda_modify_question_type").val());
+                            // 포토리뷰
+                        } else {
+                            alert("수정에 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("에러가 발생했습니다.");
+                    }
+                });
+            }
+        });
+
     </script>
 </body>
 </html>
