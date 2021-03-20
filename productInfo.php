@@ -162,9 +162,9 @@ include 'head.php'
                                 <div class="box">
                                     <h1 class="text-center"> <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
                                     <div class="product-info">
-                                        <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo $rowProductInfo['PRODUCT_PRICE']?>원</del></span></p>
-                                        <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</span>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ceil(($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100)?>%할인<em class="color-lightgrey">(-<?echo $rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE']?>원)</em></span>
+                                        <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?>원</del></span></p>
+                                        <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?>원</span>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ceil(($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100)?>%할인<em class="color-lightgrey">(-<?echo number_format($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])?>원)</em></span>
                                         </p>
                                         <hr>
                                         <div class="option1 form-inline">

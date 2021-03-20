@@ -93,7 +93,7 @@ include 'head.php'
                     </div>
                     <div class="box info-bar">
                         <div class="row">
-                            <div class="col-md-12 col-lg-3 products-showing">전체 <strong>1개</strong> 상품</div>
+                            <div class="col-md-12 col-lg-3 products-showing">전체 <strong><?=$count?>개</strong> 상품</div>
                         </div>
                     </div>
                     <div class="row products">
@@ -104,32 +104,32 @@ include 'head.php'
                             <div class="product">
                                 <div class="flip-container">
                                     <div class="flipper">
-                                        <div class="front"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a></div>
+                                        <div><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a></div>
                                     </div>
-                                </div><a href="detail.html?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>" class="invisible"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a>
+                                </div>
                                 <div class="text">
-                                    <h3><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><?echo $row['PRODUCT_NAME']?></a></h3>
-                                    <p class="price">
-                                        <del><?echo $row['PRODUCT_PRICE']?>원</del><?echo $row['PRODUCT_PRICE_SALE']?>원
+                                    <h3 style="text-align: left;"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><?echo $row['PRODUCT_NAME']?></a></h3>
+                                    <p class="price" style="text-align: left;">
+                                        <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
+                                            <del style="font-size: 15px;"><?echo number_format($row['PRODUCT_PRICE'])?>원</del><br>
+                                        <?} else{ ?>
+                                            <del></del><br>
+                                        <?}?>
+                                        <span><?echo number_format($row['PRODUCT_PRICE_SALE'])?>원</span>
+                                        <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
+                                            <span style="color: red; float: right;"><?echo ceil(($row['PRODUCT_PRICE'] - $row['PRODUCT_PRICE_SALE'])/$row['PRODUCT_PRICE']*100)?>%</span>
+                                        <?}?>
                                     </p>
 <!--                                    <p class="buttons"><a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
 -->                                </div>
+                                <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
                                 <!-- /.text-->
                                 <div class="ribbon sale">
                                     <div class="theribbon">SALE</div>
                                     <div class="ribbon-background"></div>
                                 </div>
                                 <!-- /.ribbon-->
-                                <div class="ribbon new">
-                                    <div class="theribbon">NEW</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <!-- /.ribbon-->
-                                <div class="ribbon gift">
-                                    <div class="theribbon">GIFT</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <!-- /.ribbon-->
+                                <?}?>
                             </div>
                             <!-- /.product            -->
                         </div>

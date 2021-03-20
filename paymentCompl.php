@@ -143,9 +143,9 @@ include 'head.php'
                                             <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['FIRST_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
                                             <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['COLOR']?></span> 사이즈: <span class="product_size"><?echo $rowProductInfo['SIZE']?></span></td>
                                             <td class="product_number"><?echo $rowProductInfo['PRODUCT_NUMBER']?></td>
-                                            <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></td>
+                                            <td class="product_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?></td>
                                             <td class="product_delivery_fee"><?echo $rowProductInfo['PRODUCT_DELIVERY_FEE']?></td>
-                                            <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></span></td>
+                                            <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?></span></td>
                                         </tr>
                                     <?}?>
 

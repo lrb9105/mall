@@ -1,5 +1,14 @@
 <?php
 // 상품등록페이지
+
+session_start();
+$login_id = $_SESSION['LOGIN_ID'];
+
+// 로그인 되어있지 않다면 메인화면으로 이동
+if($login_id == null || $login_id == ''){
+    echo "<script> document.location.href='index.php'</script>";
+}
+
 // 카테고리 정보를 가지고 있는 클래스
 class Second_Category {
     // 프로퍼티(멤버 변수)
@@ -638,11 +647,11 @@ include 'head.php'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
-                                + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">어깨길이</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">가슴둘레</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">암홀</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">팔길이</td>'
-                                + '<td class="item_title_inner upper" style="border-right: 1px solid black; border-top: 1px solid black;">총길이</td>'
+                                + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">어깨길이(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">가슴둘레(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">암홀(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">팔길이(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-right: 1px solid black; border-top: 1px solid black;">총길이(cm)</td>'
                                 + '</tr>'
                                 + '<tr id="tr_size_info_0">'
                                 + '<td>'
@@ -737,10 +746,10 @@ include 'head.php'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
-                                + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">총장</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">어깨너비</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">가슴단면</td>'
-                                + '<td colspan="2" class="item_title_inner upper" style="border-top: 1px solid black;">소매길이</td>'
+                                + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">총장(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">어깨너비(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">가슴단면(cm)</td>'
+                                + '<td colspan="2" class="item_title_inner upper" style="border-top: 1px solid black;">소매길이(cm)</td>'
                                 + '</tr>'
                                 + '<tr id="tr_size_info_0">'
                                 + '<td>'
@@ -832,11 +841,11 @@ include 'head.php'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
-                                + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">허리단면</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">총기장</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">허벅지단면</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">밑단단면</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">밑위</td>'
+                                + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">허리단면(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">총기장(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">허벅지단면(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">밑단단면(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">밑위(cm)</td>'
                                 + '</tr>'
                                 + '<tr id="tr_size_info_0">'
                                 + '<td>'
@@ -941,9 +950,9 @@ include 'head.php'
                                 + '</tr>'
                                 + '<tr >'
                                 + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">사이즈</td>'
-                                + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">둘레</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">챙길이</td>'
-                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">높이</td>'
+                                + '<td class="item_title_inner upper" style="border-left: 1px solid black; border-top: 1px solid black;">둘레(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">챙길이(cm)</td>'
+                                + '<td class="item_title_inner upper" style="border-top: 1px solid black;">높이(cm)</td>'
                                 + '</tr>'
                                 + '<tr id="tr_size_info_0">'
                                 + '<td>'
@@ -993,7 +1002,7 @@ include 'head.php'
                         + '<input type="text" class="form-control" name="model_weight[]">'
                     + '</td>'
                 let trBody= null;
-
+굼
                 if($('#first_category').val() != '26'){
                     trBody = '<td class="item_title">사이즈</td>'
                         + '<td>'
@@ -1186,7 +1195,7 @@ include 'head.php'
                     $('#tr_model_info_'+(modelCnt-1)).remove();
                     modelCnt--;
                 }
-            });category
+            });
 
             // 치수정보 삭제(마지막 행 삭제)
             $(document).on("click", "#size_info_delete", function(){

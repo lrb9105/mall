@@ -28,7 +28,8 @@ if($type == 0){
                                 OPL.PRODUCT_SIZE,
                                 OPL.PRODUCT_COLOR,
                                 U.NAME,
-                                F.SAVE_PATH
+                                F.SAVE_PATH,
+                                F.FILE_NAME_ORIGIN
                  FROM REVIEW R
                  INNER JOIN ORDER_PRODUCT_LIST OPL ON R.PRODUCT_SEQ = OPL.PRODUCT_SEQ
                  INNER JOIN USER  U ON U.LOGIN_ID = R.WRITER
@@ -81,6 +82,7 @@ $dbSavePath = array();
 $dbProductSize = array();
 $dbProductColor = array();
 $dbName = array();
+$dbFileName = array();
 
 // iconv: 한글이 깨지지 않게 하기위해 인코딩
 while($rowReviewInfo = mysqli_fetch_array($resultReviewInfo)) {
@@ -97,6 +99,7 @@ while($rowReviewInfo = mysqli_fetch_array($resultReviewInfo)) {
     array_push($dbProductColor, $rowReviewInfo['PRODUCT_COLOR']);
     array_push($dbName, $rowReviewInfo['NAME']);
     array_push($dbSavePath, $rowReviewInfo['SAVE_PATH']);
+    array_push($dbFileName, $rowReviewInfo['FILE_NAME_ORIGIN']);
 }
 
 // select가 실패했다면 false, 성공이라면 ok
@@ -116,5 +119,6 @@ if ($resultReviewInfo === false) {
         , 'productSize'=> $dbProductSize
         , 'productColor'=> $dbProductColor
         , 'name'=> $dbName
+        , 'fileName'=> $dbFileName
         , 'savePath'=> $dbSavePath));
 }

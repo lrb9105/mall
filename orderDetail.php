@@ -23,6 +23,8 @@ $sqlOrderProductInfo = "SELECT   OPL.ORDER_NO
                       ,  OPL.SRC  
                       ,  P.FIRST_CATEGORY  
                       ,  P.SECOND_CATEGORY  
+                      ,  OPL.PRODUCT_COLOR  
+                      ,  OPL.PRODUCT_SIZE  
         FROM ORDER_PRODUCT_LIST OPL
         INNER JOIN PRODUCT P ON OPL.PRODUCT_SEQ = P.PRODUCT_SEQ
         WHERE ORDER_NO = '$order_no'
@@ -141,15 +143,15 @@ include 'head.php'
                                         ?>
                                         <tr class="product_info">
                                             <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
-                                            <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['COLOR']?></span> 사이즈: <span class="product_size"><?echo $rowProductInfo['SIZE']?></span></td>
+                                            <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['PRODUCT_COLOR']?></span> / 사이즈: <span class="product_size"><?echo $rowProductInfo['PRODUCT_SIZE']?></span></td>
                                             <td class="product_number"><?echo $rowProductInfo['PRODUCT_NUMBER']?></td>
-                                            <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></td>
+                                            <td class="product_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?>원</td>
                                             <td class="product_delivery_fee">0원</td>
-                                            <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></span></td>
+                                            <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?>원</span></td>
                                             <?if($rowOrderInfo['ORDER_STATE'] == '배송중' || $rowOrderInfo['ORDER_STATE'] == '배송완료') {?>
                                             <td class="invoice_number"><?echo $rowOrderInfo['INVOICE_NUMBER']?></td>
                                             <?}?>
-                                            <td class="product_price"><?echo $rowOrderInfo['ORDER_STATE']?><?if($rowOrderInfo['ORDER_STATE'] == '배송중'){?><br><button onclick="purcharseCompl(<?echo $rowOrderInfo['ORDER_NO']?>)" id="btn_purchase_compl" class="btn btn-info">구매확정</button> <?}?></td>
+                                            <td class="product_price"><?echo $rowOrderInfo['ORDER_STATE']?><?if($rowOrderInfo['ORDER_STATE'] == '배송중' && $login_id == $rowOrderInfo['ORDER_PERSON_ID']){?><br><button onclick="purcharseCompl(<?echo $rowOrderInfo['ORDER_NO']?>)" id="btn_purchase_compl" class="btn btn-info">구매확정</button> <?}?></td>
                                         </tr>
                                     <?}?>
 
@@ -162,7 +164,7 @@ include 'head.php'
                                 <table class="table">
                                     <tr style="border-top: 2px solid black;">
                                         <th style="width: 20%; " >결제금액</th>
-                                        <td style="text-align: left;"><? echo $rowPaymentInfo['PAYMENT_PRICE']?>원</td>
+                                        <td style="text-align: left;"><? echo number_format($rowPaymentInfo['PAYMENT_PRICE'])?>원</td>
                                     </tr>
                                 </table>
                             </div>

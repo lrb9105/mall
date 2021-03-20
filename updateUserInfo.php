@@ -1,6 +1,12 @@
 <?php
 session_start();
 $login_id = $_SESSION['LOGIN_ID'];
+
+// 로그인 되어있지 않다면 메인화면으로 이동
+if($login_id == null || $login_id == ''){
+    echo "<script> document.location.href='index.php'</script>";
+}
+
 // mysql커넥션 연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 

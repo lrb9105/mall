@@ -53,13 +53,6 @@ $sqlProductInfo = "SELECT P.PRODUCT_SEQ,
 $resultProductInfo = mysqli_query($conn, $sqlProductInfo);
 $rowProductInfo = mysqli_fetch_array($resultProductInfo);
 
-// 상품 사이즈 정보
-$sqlProductSizeInfo = "SELECT DISTINCT PO.SIZE
-        FROM PRODUCT_OPTION PO
-        WHERE PO.PRODUCT_SEQ = $product_no
-        AND QUANTITY > 0
-        ";
-
 // 상품 색상 정보
 $sqlProductColorInfo = "SELECT DISTINCT PO.COLOR
         FROM PRODUCT_OPTION PO
@@ -67,7 +60,25 @@ $sqlProductColorInfo = "SELECT DISTINCT PO.COLOR
         AND QUANTITY > 0
         ";
 $option1 = mysqli_query($conn, $sqlProductColorInfo);
-$option2 = mysqli_query($conn, $sqlProductSizeInfo);;
+
+// 상품 사이즈 정보
+$sqlProductSizeInfo = " SELECT PO.COLOR, PO.SIZE
+                        FROM PRODUCT_OPTION PO
+                        WHERE PO.PRODUCT_SEQ = 39
+                        AND COLOR IN ( SELECT COLOR FROM PRODUCT_OPTION WHERE PRODUCT_SEQ = 39 AND QUANTITY > 0);
+        ";
+$option2 = mysqli_query($conn, $sqlProductSizeInfo);
+
+$option2Arr = array();
+$colorArr = array();
+$sizeArr = array();
+
+while($rowOption2 = mysqli_fetch_array($option2)){
+
+    array_push($colorArr, $rowOption2['COLOR']);
+    array_push($sizeArr, $rowOption2['SIZE']);
+}
+array_push($option2Arr, $colorArr, $sizeArr);
 
 // 상품 이미지 정보
 $sqlFileInfo = "SELECT F.SEQ,
@@ -76,6 +87,7 @@ $sqlFileInfo = "SELECT F.SEQ,
         FROM FILE F
         WHERE F.REF_SEQ = $product_no
         AND (F.TYPE = 0 OR F.TYPE = 1)
+        ORDER BY TYPE
         ";
 $resultFileInfo = mysqli_query($conn, $sqlFileInfo);
 $rowFileInfo = mysqli_fetch_array($resultFileInfo);
@@ -146,8 +158,8 @@ $sqlStarScoreInfo = "
                  SELECT SUM(STAR_SCORE) SUM
                       , COUNT(*) COUNT_OF_REVIEWER
                  FROM REVIEW 
-                 WHERE PRODUCT_SEQ = $product_no;
-;
+                 WHERE PRODUCT_SEQ = $product_no
+                 AND USE_YN = 'Y'
         ";
 $resultStarScoreInfo = mysqli_query($conn, $sqlStarScoreInfo);
 $rowStarScoreInfo = mysqli_fetch_array($resultStarScoreInfo);
@@ -157,6 +169,10 @@ if($sum == null || $sum == ''){
     $sum = 0;
 }
 $cntOfReviewer = $rowStarScoreInfo[1];
+if($cntOfReviewer == null || $cntOfReviewer == ''){
+    $cntOfReviewer = 0;
+}
+
 ?>
 <script>
     if('<?echo $referer?>' == ''){
@@ -239,9 +255,9 @@ include 'head.php'
                                 <div class="box">
                                     <h1 class="text-center"> <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
                                     <div class="product-info">
-                                        <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo $rowProductInfo['PRODUCT_PRICE']?>원</del></span></p>
-                                        <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</span>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ceil(($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100)?>%할인<em class="color-lightgrey">(-<?echo $rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE']?>원)</em></span>
+                                        <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?>원</del></span></p>
+                                        <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?>원</span>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ceil(($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100)?>%할인<em class="color-lightgrey">(-<?echo number_format($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])?>원)</em></span>
                                         </p>
                                         <hr>
                                         <div class="option1 form-inline">
@@ -257,14 +273,14 @@ include 'head.php'
                                             <span>사이즈: </span>
                                             <select class="form-control"  name="option2" id="option2" style="width: 85%; margin: 5px;">
                                                 <option value="">[선택]</option>
-                                                <?while($rowProductNumInfo = mysqli_fetch_array($option2)){?>
-                                                    <option value="<?echo $rowProductNumInfo['SIZE']?>"><?echo $rowProductNumInfo['SIZE']?></option>
-                                                <?}?>
+                                                <?/*while($rowProductNumInfo = mysqli_fetch_array($option2)){*/?><!--
+                                                    <option value="<?/*echo $rowProductNumInfo['SIZE']*/?>"><?/*echo $rowProductNumInfo['SIZE']*/?></option>
+                                                --><?/*}*/?>
                                             </select>
                                         </div>
                                         <div class="number form-inline">
                                             <span>수량: </span>
-                                            <input id="product_number" name="product_number" type="number" class="form-control" style="margin-left: 20px;" value="1" min="1">
+                                            <input id="product_number" name="product_number" type="number" max="100" class="form-control" style="margin-left: 20px;" value="1" min="1">
                                         </div>
                                         <!--<div class="number form-inline">
                                             <span>배송비 <br>결제:</span>
@@ -283,15 +299,15 @@ include 'head.php'
                                             <span>배송유형: &nbsp;&nbsp;&nbsp; 무료배송</span>
                                         </div>
                                         <br><br><br>
-                                        <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?></span><span>원</span></p>
+                                        <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?></span><span>원</span></p>
                                         <input name="product_no" type="number" value="<?echo $product_no?>" hidden>
                                         <input name="menu_no" type="number" value="<?echo $menu_no?>" hidden>
                                     </div>
-                                    <? //일반사용자
-                                    if($_SESSION['USER_TYPE'] == 1){?>
-                                        <p class="text-center buttons"><input id="btn_purchase" type="submit" class="btn btn-info" value="바로구매"><a href="javascript:addCart(<?echo $product_no?>);" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a></p>
-                                    <?} else{ //관리자?>
+                                    <? //관리자
+                                    if($_SESSION['USER_TYPE'] == '0'){?>
                                         <p class="text-center buttons"><button type="button" id="btn_product_modify" class="btn btn-info" onclick="location.href='updateProduct.php?product_no=<?=$product_no?>'">상품수정</button> &nbsp; <button type="button" id="btn_product_delete" class="btn btn-warning">상품삭제</button></p>
+                                    <?} else{ //일반사용자?>
+                                        <p class="text-center buttons"><input id="btn_purchase" type="submit" class="btn btn-info" value="바로구매"><a href="javascript:addCart(<?echo $product_no?>);" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a></p>
                                     <?}?>
                                     <!--<a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a>-->
                                 </div>
@@ -592,7 +608,7 @@ include 'head.php'
                                     <div id="board" class="col-lg-12">
                                         <div id="contact" class="box">
                                             <div id="header_photo_review" class="d-flex justify-content-between">
-                                                <h3>포토후기</h3>
+                                                <h3>포토후기(<span id="cnt_photo_review"></span>건)</h3>
                                                 <?if($rowOrderInfo[0] != null) {?>
                                                 <button id="btn_review" class="btn btn-info" data-toggle="modal" data-target="#photo-review-modal">후기 작성</button>
                                                 <?}?>
@@ -785,10 +801,30 @@ include 'head.php'
                                                                             <tr id="photo_review_modify_product_img">
                                                                                 <td>상품이미지</td>
                                                                                 <td>
-                                                                                    <input type="file" class="form-control" name="photo_review_modify_file_photo_review" id="photo_review_modify_file_photo_review">
+                                                                                    <input type="file" name="photo_review_modify_file_photo_review" id="photo_review_modify_file_photo_review" accept="image/*" style="display: none;">
+                                                                                    <label for="photo_review_modify_file_photo_review" class="btn btn-info fileBtn">파일선택</label>
+                                                                                    <span style="width: 50%; display: inline-block;" id="fileName" class="form-control">파일 변경하기</span>
                                                                                     <div style="margin-top: 10px;">
                                                                                         <img id="photo_review_modify_img_photo_review" width="200px;">
                                                                                     </div>
+                                                                                </td>
+                                                                                <script>
+                                                                                    document.getElementById('photo_review_modify_file_photo_review').addEventListener('change', function(){
+                                                                                        let filename = document.getElementById('fileName');
+                                                                                        if(this.files[0] == undefined){
+                                                                                            filename.innerText = '선택된 파일없음';
+                                                                                            return;
+                                                                                        }
+                                                                                        filename.innerText = this.files[0].name;
+                                                                                    });
+                                                                                </script>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>상품이미지2</td>
+                                                                                <td>
+                                                                                    <input type="file" name="file" accept="image/*" id="bizFile" style="display: none;">
+                                                                                    <label for="bizFile" class="btn btn-info fileBtn">파일선택</label>
+                                                                                    <span id="fileName">선택된 파일없음</span>
                                                                                 </td>
                                                                             </tr>
                                                                             </tbody>
@@ -815,7 +851,7 @@ include 'head.php'
                                     <div id="board" class="col-lg-12">
                                         <div id="contact" class="box">
                                             <div id="header_review" class="d-flex justify-content-between">
-                                                <h3>일반후기</h3>
+                                                <h3>일반후기(<span id="cnt_review"></span>건)</h3>
                                             </div>
                                             <hr>
                                             <div id="accordion_review">
@@ -836,7 +872,7 @@ include 'head.php'
                                         <div class="container">
                                             <div id="contact" class="box">
                                                 <div id="header_review" class="d-flex justify-content-between">
-                                                    <h3>Q&A</h3>
+                                                    <h3>Q&A(<span id="cnt_qanda"></span>건)</h3>
                                                     <button id="btn_qanda" class="btn btn-info" data-toggle="modal" data-target="#qanda-modal">Q&A 작성</button>
                                                 </div>
                                                 <div id="qanda-modal" tabindex="-1" role="dialog" aria-labelledby="Photo-Reivew" aria-hidden="true" class="modal fade">
@@ -994,10 +1030,10 @@ include 'jsfile.php'
         });
 
         // 별점정보
-        sum = <?=$sum?>;
-        cntOfReviewer = <?=$cntOfReviewer?>;
+        let sum = <?=$sum?>;
+        let cntOfReviewer = <?=$cntOfReviewer?>;
 
-        starScore = sum/cntOfReviewer
+        let starScore = sum/cntOfReviewer
 
 
         // menu_no에 따라 menu_title, cat_second, cat_third 변경하기
@@ -1211,7 +1247,10 @@ include 'jsfile.php'
 
         // 수량이 변경 될 때 마다 총 금액 변경해줌
         $('#product_number').on("change", function(){
-            $('#total_price').text($('#product_number').val() * parseInt(origin_price));
+            if($(this).val() > 100 ){
+                $(this).val(100);
+            }
+            $('#total_price').text(String($('#product_number').val() * parseInt(origin_price)).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         });
 
 
@@ -1221,6 +1260,25 @@ include 'jsfile.php'
             console.log($('#option1').val());
             console.log($('#option2').val());
             console.log($('#product_number').val());*/
+            let loginId = '<?echo $login_id?>';
+
+            // 색상 선택
+            if(loginId == ''){
+                alert("장바구니에 상품을 담으려면 로그인해주세요!");
+                return false;
+            }
+
+            // 색상 선택
+            if($('#option1').val() == ''){
+                alert("색상을 선택해주세요.");
+                return false;
+            }
+
+            // 사이즈 선택
+            if($('#option2').val() == ''){
+                alert("사이즈를 선택해주세요.");
+                return false;
+            }
 
             if(confirm("장바구니에 추가하시겠습니까?")){
                 $.ajax({
@@ -1456,6 +1514,19 @@ include 'jsfile.php'
                             $('#raty_'+cntPhotoReview).raty({half : true, readOnly: true, score: $("#photo_review_raty").children('input').val()});
 
                             cntPhotoReview++;
+                            totalCntPhotoReview++;
+                            $('#cnt_photo_review').text(totalCntPhotoReview);
+
+                            // 상품 전체 별점 변경
+                            sum = sum + parseInt($("#photo_review_raty").children('input').val());
+                            cntOfReviewer++;
+                            starScore = sum/cntOfReviewer;
+
+                            $('#raty_product').children('img').remove();
+                            $('#raty_product').raty({half : true, readOnly: true, score: starScore});
+
+                            $('#cnt_reviewer').text(' ' + cntOfReviewer + '건');
+
                         } else{ //리뷰
                             let review =
                                 '<div id="review_'+cntReview+'"class="card border-primary mb-3 photo-review">'
@@ -1514,6 +1585,23 @@ include 'jsfile.php'
                             $('#photo_review_file_photo_review').val('');
 
                             cntReview++;
+                            totalCntReview++;
+                            $('#cnt_review').text(totalCntReview);
+
+                            // 상품 전체 별점 변경
+                            sum = sum + parseInt($("#photo_review_raty").children('input').val());
+                            cntOfReviewer++;
+
+                            starScore = sum/cntOfReviewer;
+
+                            console.log(sum);
+                            console.log(cntOfReviewer);
+                            console.log(starScore);
+
+                            $('#raty_product').children('img').remove();
+                            $('#raty_product').raty({half : true, readOnly: true, score: starScore});
+
+                            $('#cnt_reviewer').text(' ' + cntOfReviewer + '건');
                         }
                     }
                     // 리뷰 작성 후 남은 리뷰가능상품의 갯수가 없다면 후기 작성 버튼을 숨긴다.
@@ -1581,6 +1669,8 @@ include 'jsfile.php'
 
                         // 포토리뷰 갯수
                         cntPhotoReview = json.seq.length;
+                        totalCntPhotoReview = json.total_count_of_post;
+                        $('#cnt_photo_review').text(totalCntPhotoReview);
 
                         // 페이징 적용
                         for(let i = 0; i < json.seq.length; i++){
@@ -1689,6 +1779,8 @@ include 'jsfile.php'
 
                         // 리뷰 갯수
                         cntReview = json.seq.length;
+                        totalCntReview = json.total_count_of_post;
+                        $('#cnt_review').text(totalCntReview);
 
                         // 페이징 적용
                         for(let i = 0; i < json.seq.length; i++){
@@ -1796,7 +1888,10 @@ include 'jsfile.php'
                         }
 
                         // Q&A갯수
+
                         cntQandA = json.seq.length;
+                        totlalCntQandA = json.total_count_of_post;
+                        $('#cnt_qanda').text(totlalCntQandA);
 
                         // 페이징 적용
                         for(let i = 0; i < json.seq.length; i++){
@@ -1965,6 +2060,8 @@ include 'jsfile.php'
                             $('#secret_yn').prop("checked", false);
 
                             cntQandA++;
+                            totlalCntQandA++;
+                            $('#cnt_qanda').text(totlalCntQandA);
 
                         } else{
                             alert("Q&A등록에 실패했습니다.");
@@ -2007,6 +2104,13 @@ include 'jsfile.php'
         //후기 삭제
         function deleteReview(seq, cnt, type){
             if(confirm("해당상품을 삭제하시겠습니까?")){
+                let starScoreOfReview;
+
+                if(type == 0){
+                    starScoreOfReview = $("#raty_"+cnt).children('input').val();;
+                } else{
+                    starScoreOfReview = $("#raty_review_"+cnt).children('input').val();;
+                }
                 $.ajax({
                     type: 'post',
                     dataType: 'json',
@@ -2021,10 +2125,24 @@ include 'jsfile.php'
                             if(type == 0){
                                 $('#photo_review_'+cnt).remove();
                                 cntPhotoReview--;
+                                totalCntPhotoReview--;
+                                $('#cnt_photo_review').text(totalCntPhotoReview);
                             } else {// 일반후기라면(type=1)
                                 $('#review_'+cnt).remove();
                                 cntReview--;
+                                totalCntReview--;
+                                $('#cnt_review').text(totalCntReview);
                             }
+
+                            // 상품 전체 별점 변경
+                            sum = sum - starScoreOfReview;
+                            cntOfReviewer--;
+                            starScore = sum/cntOfReviewer;
+
+                            $('#raty_product').children('img').remove();
+                            $('#raty_product').raty({half : true, readOnly: true, score: starScore});
+
+                            $('#cnt_reviewer').text(cntOfReviewer + '건');
                         } else {
                             alert("삭제에 실패했습니다.");
                         }
@@ -2051,6 +2169,8 @@ include 'jsfile.php'
                         if (json.result == 'ok') {
                             $('#qanda'+cnt).remove();
                             cntQandA--;
+                            totlalCntQandA--;
+                            $('#cnt_qanda').text(totlalCntQandA);
                         } else {
                             alert("삭제에 실패했습니다.");
                         }
@@ -2153,6 +2273,7 @@ include 'jsfile.php'
                         if(type == 0){
                             $('#photo_review_modify_product_img').show();
                             $('#photo_review_modify_img_photo_review').attr("src",json.savePath);
+                            $('#fileName').text(json.fileName)
                         } else{
                             $('#photo_review_modify_product_img').hide();
                         }
@@ -2341,6 +2462,22 @@ include 'jsfile.php'
             }
         });
 
+        // 색상 선택 시 해당하는 사이즈만 출력되게 하기
+        let option2Arr = <?=json_encode($option2Arr)?>;
+
+        $('#option1').on("change", function(){
+            // 사이즈 카테고리 박스를 비우기
+            $('#option2').empty();
+            $('#option2').append('<option value="">[선택]</option>');
+
+
+            for(let i = 0; i < option2Arr[0].length; i++){
+                if($(this).val() == option2Arr[0][i]){
+                    let option = "<option value=" + option2Arr[1][i] + ">"+ option2Arr[1][i] +"</option>";
+                    $('#option2').append(option);
+                }
+            }
+        });
     </script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 /* 상품등록.
     1.
 */
+
 //성공여부
 $result = true;
 
@@ -23,6 +24,12 @@ if($product_manufacture == 'etc'){
 $product_price = $_POST['product_price'];
 // 할인가격
 $product_price_sale = $_POST['product_price_sale'];
+
+// 할인가격이 없다면 기존가격을 할인가격에 넣어 줌 || 할인가격이 기존가격보다 크다면 할인가격에 기존가격을 넣어 줌
+if(($product_price_sale == '' || $product_price_sale == null) || $product_price_sale > $product_price){
+    $product_price_sale = $product_price;
+}
+
 // 제조국
 $country_of_manufacture = $_POST['country_of_manufacture'];
 if($country_of_manufacture == 'etc'){
@@ -318,9 +325,9 @@ if($resultDeleteOption === false){
     echo '<script>alert("실패$resultDeleteOption")</script>';
     return;
 }
-
-for($i=0; $i < count($product_colorArr); $i++){
-    $sqlInsertOption = "
+if($product_colorArr[0] != ''){
+    for($i=0; $i < count($product_colorArr); $i++){
+        $sqlInsertOption = "
         INSERT INTO PRODUCT_OPTION (
             PRODUCT_SEQ,
             COLOR,
@@ -334,15 +341,16 @@ for($i=0; $i < count($product_colorArr); $i++){
             $product_numberArr[$i],
             now()   
         )";
-    $resultInsertOption = mysqli_query($conn, $sqlInsertOption);
+        $resultInsertOption = mysqli_query($conn, $sqlInsertOption);
 
-    // 결과값(실패 시 false 들어감)
-    $result = $resultInsertOption;
+        // 결과값(실패 시 false 들어감)
+        $result = $resultInsertOption;
 
-    if($result === false){
-        echo $sqlInsertOption;
-        echo '<script>alert("실패$resultInsertOption")</script>';
-        return;
+        if($result === false){
+            echo $sqlInsertOption;
+            echo '<script>alert("실패$resultInsertOption")</script>';
+            return;
+        }
     }
 }
 
@@ -358,11 +366,12 @@ if($resultDeleteSize === false){
     return;
 }
 
-for($i=0; $i < count($sizeArr); $i++){
-    $sqlInsertSize = null;
+if($sizeArr[0] != ''){
+    for($i=0; $i < count($sizeArr); $i++){
+        $sqlInsertSize = null;
 
-    if($first_category == '2'){
-        $sqlInsertSize = "
+        if($first_category == '2'){
+            $sqlInsertSize = "
         INSERT INTO PRODUCT_SIZE (
                   PRODUCT_SEQ 
                 , TOP_SHOULDER_SIZE 
@@ -380,8 +389,8 @@ for($i=0; $i < count($sizeArr); $i++){
                 , $TOP_TOTAL_LENGTHArr[$i]
                 , '$sizeArr[$i]'
         )";
-    } elseif($first_category == '3'){
-        $sqlInsertSize = "
+        } elseif($first_category == '3'){
+            $sqlInsertSize = "
         INSERT INTO PRODUCT_SIZE (
                   PRODUCT_SEQ 
                 , OUTER_SHOULDER_SIZE 
@@ -397,8 +406,8 @@ for($i=0; $i < count($sizeArr); $i++){
                 , $OUTER_TOTAL_LENGTHArr[$i] 
                 , '$sizeArr[$i]'
         )";
-    } elseif($first_category == '4'){
-        $sqlInsertSize = "
+        } elseif($first_category == '4'){
+            $sqlInsertSize = "
         INSERT INTO PRODUCT_SIZE (
                   PRODUCT_SEQ 
                 , BOTTOM_WAIST_SIZE 
@@ -416,8 +425,8 @@ for($i=0; $i < count($sizeArr); $i++){
                 , $BOTTOM_TOTAL_LENGTHArr[$i] 
                 , '$sizeArr[$i]'
         )";
-    } elseif($first_category == '27'){
-        $sqlInsertSize = "
+        } elseif($first_category == '27'){
+            $sqlInsertSize = "
         INSERT INTO PRODUCT_SIZE (
                   PRODUCT_SEQ 
                 , HAT_ROUND 
@@ -431,18 +440,19 @@ for($i=0; $i < count($sizeArr); $i++){
                 , $HAT_HEIGHTArr[$i] 
                 , '$sizeArr[$i]'
         )";
-    }
+        }
 
-    $resultInsertSize = mysqli_query($conn, $sqlInsertSize);
+        $resultInsertSize = mysqli_query($conn, $sqlInsertSize);
 
-    // 결과값(실패 시 false 들어감)
-    $result = $resultInsertSize;
+        // 결과값(실패 시 false 들어감)
+        $result = $resultInsertSize;
 
-    if($result === false){
-        echo $sqlInsertSize;
+        if($result === false){
+            echo $sqlInsertSize;
 
-        echo '<script>alert("실패$resultInsertSize")</script>';
-        return;
+            echo '<script>alert("실패$resultInsertSize")</script>';
+            return;
+        }
     }
 }
 //PRODUCT_MODEL_SIZE 테이블
@@ -456,9 +466,9 @@ if($resultDeleteModelSize === false){
     echo '<script>alert("실패$sqlDeleteModelSize")</script>';
     return;
 }
-
-for($i=0; $i < count($model_heightArr); $i++){
-    $sqlInsertModelSize = "
+if($model_heightArr[0] != ''){
+    for($i=0; $i < count($model_heightArr); $i++){
+        $sqlInsertModelSize = "
         INSERT INTO PRODUCT_MODEL_SIZE (
                   PRODUCT_SEQ 
                 , MODEL_HEIGHT 
@@ -470,15 +480,16 @@ for($i=0; $i < count($model_heightArr); $i++){
                 , $model_weightArr[$i]
                 , '$model_sizeArr[$i]'
         )";
-    $resultInsertModelSize = mysqli_query($conn, $sqlInsertModelSize);
+        $resultInsertModelSize = mysqli_query($conn, $sqlInsertModelSize);
 
-    // 결과값(실패 시 false 들어감)
-    $result = $resultInsertModelSize;
+        // 결과값(실패 시 false 들어감)
+        $result = $resultInsertModelSize;
 
-    if($result === false){
-        echo $sqlInsertModelSize;
-        echo '<script>alert("실패$resultInsertModelSize")</script>';
-        return;
+        if($result === false){
+            echo $sqlInsertModelSize;
+            echo '<script>alert("실패$resultInsertModelSize")</script>';
+            return;
+        }
     }
 }
 
@@ -495,6 +506,7 @@ if (isset($_FILES)) {
     $tmp_name = $file["tmp_name"];
     $saved_name = null; //저장 파일명
     $saved_path = null; //저장경로
+
 
     if ( $error > 0 ) {
         /*echo "Error: " . $error . "<br>";

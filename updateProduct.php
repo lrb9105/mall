@@ -1,5 +1,14 @@
 <?php
-// 상품수정페이지
+session_start();
+
+$login_id = $_SESSION['LOGIN_ID'];
+
+// 로그인 되어있지 않다면 메인화면으로 이동
+if($login_id == null || $login_id == ''){
+    echo "<script> document.location.href='index.php'</script>";
+}
+
+$seq = $_GET['SEQ'];
 
 // mysql커넥션 연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
@@ -47,10 +56,12 @@ $countProductNumInfo = mysqli_num_rows($resultProductNumInfo);
 // 상품 이미지 정보
 $sqlFileInfo = "SELECT F.SEQ,
                        F.REF_SEQ,
-                       F.SAVE_PATH
+                       F.SAVE_PATH,
+                       F.FILE_NAME_ORIGIN
         FROM FILE F
         WHERE F.REF_SEQ = $product_no
         AND (F.TYPE = 0 OR F.TYPE = 1)
+        ORDER BY TYPE
         ";
 $resultFileInfo = mysqli_query($conn, $sqlFileInfo);
 $rowFileInfo = mysqli_fetch_array($resultFileInfo);
@@ -248,11 +259,11 @@ include 'head.php'
                                                     <tr>
                                                         <td class="item_title">기존가격</td>
                                                         <td>
-                                                            <input  class="form-control" type="text" name="product_price" id="product_price" value="<?echo $rowProductInfo['PRODUCT_PRICE']?>">
+                                                            <input  class="form-control" type="text" name="product_price" id="product_price" value="<?echo number_format($rowProductInfo['PRODUCT_PRICE'])?>">
                                                         </td>
                                                         <td class="item_title">할인가격</td>
                                                         <td>
-                                                            <input style="float: left" class="form-control" type="text" name="product_price_sale" id="product_price_sale" value="<?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>">
+                                                            <input style="float: left" class="form-control" type="text" name="product_price_sale" id="product_price_sale" value="<?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?>">
                                                         </td>
                                                         <td class="item_title">제조국</td>
                                                         <td>
@@ -353,22 +364,51 @@ include 'head.php'
                                                     <tr id="tr_img">
                                                         <td class="item_title">대표 이미지</td>
                                                         <td colspan="5">
-                                                            <input type="file" class="form-control" name="file_represent" id="file_represent">
+                                                            <input type="file" name="file_represent" id="file_represent" accept="image/*" style="display: none;">
+                                                            <label for="file_represent" class="btn btn-info fileBtn">파일선택</label>
+                                                            <span style="width: 50%; display: inline-block;" id="repFileName" class="form-control"><?=$rowFileInfo['FILE_NAME_ORIGIN']?></span>
                                                             <div style="margin-top: 10px;">
                                                                 <img id="img_represent" width="200px;" src="<?=$repImgSrc?>">
                                                             </div>
-                                                        </td>
+                                                        </td><script>
+                                                            document.getElementById('file_represent').addEventListener('change', function(){
+                                                                let filename = document.getElementById('repFileName');
+                                                                if(this.files[0] == undefined){
+                                                                    filename.innerText = '선택된 파일없음';
+                                                                    return;
+                                                                }
+                                                                filename.innerText = this.files[0].name;
+                                                            });
+                                                        </script>
                                                     </tr>
                                                     <tr>
                                                         <td class="item_title">상세 이미지</td>
                                                         <td colspan="5">
-                                                            <input type="file" class="form-control" name="file_detail[]" id="file_detail" multiple>
+                                                            <input type="file" name="file_detail[]" id="file_detail" accept="image/*" style="display: none;" multiple>
+                                                            <label for="file_detail" class="btn btn-info fileBtn">파일선택</label>
+                                                            <span style="width: 50%; display: inline-block;" id="detailFileName" class="form-control">
+                                                                <? $cntFileDetail = mysqli_num_rows($resultFileInfo) - 1; //대표이미지는 무조건 있으므로! - 1 해줌
+                                                                if($cntFileDetail == 0) {?>
+                                                                    선택된 파일 없음
+                                                                <?} else {?>
+                                                                    파일 <?=$cntFileDetail?>개
+                                                                <?}?>
+                                                            </span>
                                                             <div id="img_detail" style="margin-top: 10px;">
                                                                 <?while($rowFileInfo = mysqli_fetch_array($resultFileInfo)) { ?>
                                                                     <img class="img_detail" src="<?=$rowFileInfo['SAVE_PATH']?>" width="200px;"/>
                                                                 <?}?>
                                                             </div>
-                                                        </td>
+                                                        </td><script>
+                                                            document.getElementById('file_detail').addEventListener('change', function(){
+                                                                let filename = document.getElementById('detailFileName');
+                                                                if(this.files[0] == undefined){
+                                                                    filename.innerText = '선택된 파일없음';
+                                                                    return;
+                                                                }
+                                                                filename.innerText = '파일' + this.files.length + '개' ;
+                                                            });
+                                                        </script>
                                                     </tr>
                                                     <?if($rowProductInfo['FIRST_CATEGORY'] != 27) {?>
                                                         <tr id="model_info">

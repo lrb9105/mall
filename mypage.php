@@ -29,6 +29,7 @@
                       ,  P.SECOND_CATEGORY 
                       ,  OL.INVOICE_NUMBER
                       ,  OPL.REVIEW_YN
+                      ,  OL.ORDER_PERSON_ID
         FROM ORDER_PRODUCT_LIST OPL 
         INNER JOIN PRODUCT P ON OPL.PRODUCT_SEQ = P.PRODUCT_SEQ
         INNER JOIN ORDER_LIST OL ON OPL.ORDER_NO = OL.ORDER_NO
@@ -140,9 +141,9 @@ include 'head.php'
                                             <td class="product_number"><a href="orderDetail.php?order_no=<?echo $rowProductInfo['ORDER_NO']?>"><?echo $rowProductInfo['ORDER_NO']?></a></td>
                                             <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img style="width: 100px;" class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
                                             <td><span style="text-align: center;"class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['PRODUCT_COLOR']?></span><br>사이즈: <span class="product_size"><?echo $rowProductInfo['PRODUCT_SIZE']?></span><br>수량: <span class="product_size"><?echo $rowProductInfo['PRODUCT_NUMBER']?></span></td>
-                                            <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></td>
+                                            <td class="product_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?></td>
                                             <td class="invoice_number"><?echo $rowProductInfo['INVOICE_NUMBER']?></td>
-                                            <td class="product_price"><?echo $rowProductInfo['ORDER_STATE']?><?if($rowProductInfo['ORDER_STATE'] == '배송중'){?><br><button onclick="purcharseCompl(<?echo $rowProductInfo['ORDER_NO']?>)" id="btn_purchase_compl" class="btn btn-info">구매확정</button> <?}?></td>
+                                            <td class="product_price"><?echo $rowProductInfo['ORDER_STATE']?><?if($rowProductInfo['ORDER_STATE'] == '배송중' && $login_id == $rowProductInfo['ORDER_PERSON_ID']){?><br><button onclick="purcharseCompl(<?echo $rowProductInfo['ORDER_NO']?>)" id="btn_purchase_compl" class="btn btn-info">구매확정</button> <?}?></td>
                                         </tr>
                                     <?}?>
 

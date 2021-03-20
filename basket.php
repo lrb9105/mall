@@ -107,12 +107,12 @@ include 'head.php'
                                         ?>
                                         <tr class="product_info">
                                             <td><input class="chk" type="checkbox" id="chk_<?echo $cnt?>"><input id="cart_seq_<?echo $cnt?>" value="<?echo $rowCartInfo['CART_SEQ']?>" hidden><input id="menu_no_<?echo $cnt?>" value="<?echo $rowCartInfo['FIRST_CATEGORY']?>" hidden></td>
-                                            <td id="img_<?echo $cnt?>" style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowCartInfo['FIRST_CATEGORY']?>&product_no=<?echo $rowCartInfo['PRODUCT_SEQ']?>"><img class="product_img" src="<?echo $rowCartInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
+                                            <td id="img_<?echo $cnt?>" style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowCartInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowCartInfo['PRODUCT_SEQ']?>"><img class="product_img" src="<?echo $rowCartInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
                                             <td><span id="product_name_<?echo $cnt?>" class="product_name"><a href="#"><?echo $rowCartInfo['PRODUCT_NAME']?></a></span><br>색상: <span id="product_color_<?echo $cnt?>" class="product_color"><?echo $rowCartInfo['COLOR']?></span> 사이즈: <span id="product_size_<?echo $cnt?>" class="product_size"><?echo $rowCartInfo['SIZE']?></span><input id="product_no_<?echo $cnt?>" class="product_no" value="<?echo $rowCartInfo['PRODUCT_SEQ']?>" type="hidden"></td>
                                             <td class="product_number"><input id="product_number_<?echo $cnt?>" type="number" value="<?echo $rowCartInfo['QUANTITY']?>"><button type="button" onclick="modifyQuantity(<?echo $rowCartInfo['CART_SEQ']?>, <?echo $cnt?>);" style="margin-left: 3px;" id="btn_modify_quantity" class="btn btn-outline-dark">변경</button> </td>
-                                            <td class="product_price" id="product_price_<?echo $cnt?>"><?echo $rowCartInfo['PRODUCT_PRICE_SALE']?>원</td>
+                                            <td class="product_price" id="product_price_<?echo $cnt?>"><?echo number_format($rowCartInfo['PRODUCT_PRICE_SALE'])?>원</td>
                                             <td class="product_delivery_fee">0원</td>
-                                            <td><span style="font-weight: bold; color: red;" class="product_order_price" id="product_order_price_<?echo $cnt?>"><?echo $current_price?>원</span></td>
+                                            <td><span style="font-weight: bold; color: red;" class="product_order_price" id="product_order_price_<?echo $cnt?>"><?echo number_format($current_price)?>원</span></td>
                                             <td><button onclick="purchase(<?echo $cnt?>);" type="button" class="btn btn-info">구매하기</button><br><button type="button" onclick="deleteCart(<?echo $rowCartInfo['CART_SEQ']?>)" style="margin-top: 2px;"class="btn btn-success">삭제하기</button> </td>
                                         </tr>
                                         <?$cnt++;
@@ -120,18 +120,20 @@ include 'head.php'
                                     </tbody>
                                 </table>
                             </div>
-                            <div>
-                                <button id="btn_delete_sel" type="button" class="btn btn-outline-secondary"><i class="fa fa-remove"></i>선택상품 삭제</button>
-                                <span style="font-size: 20px; font-weight: bold; float: right; margin-right: 60px;">전체가격:&nbsp;&nbsp;&nbsp;&nbsp;<?echo $total_price?>원</span>
-                            </div>
-                            <!-- /.table-responsive-->
-                            <div class="box-footer d-flex justify-content-between flex-column flex-lg-row">
-                                <div class="left"></div>
-                                <div class="right">
-                                    <button id="btn_purchase_sel" type="button" class="btn btn-warning">선택상품구매 <i class="fa fa-chevron-right"></i></button>
-                                    <button id="btn_purchase_all" type="button" class="btn btn-primary">전체구매 <i class="fa fa-chevron-right"></i></button>
+                            <?if($count > 0) { ?>
+                                <div>
+                                    <button id="btn_delete_sel" type="button" class="btn btn-outline-secondary"><i class="fa fa-remove"></i>선택상품 삭제</button>
+                                    <span style="font-size: 20px; font-weight: bold; float: right; margin-right: 60px;">전체가격:&nbsp;&nbsp;&nbsp;&nbsp;<?echo number_format($total_price)?>원</span>
                                 </div>
-                            </div>
+                                <!-- /.table-responsive-->
+                                <div class="box-footer d-flex justify-content-between flex-column flex-lg-row">
+                                    <div class="left"></div>
+                                    <div class="right">
+                                        <button id="btn_purchase_sel" type="button" class="btn btn-warning">선택상품구매 <i class="fa fa-chevron-right"></i></button>
+                                        <button id="btn_purchase_all" type="button" class="btn btn-primary">전체구매 <i class="fa fa-chevron-right"></i></button>
+                                    </div>
+                                </div>
+                            <?}?>
                         </div>
                     </form>
                     <!-- /.box-->

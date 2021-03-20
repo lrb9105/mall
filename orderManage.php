@@ -27,6 +27,7 @@
                       ,  OL.ORDER_STATE
                       ,  P.FIRST_CATEGORY
                       ,  OL.INVOICE_NUMBER
+                      ,  OL.ORDER_NAME
         FROM ORDER_PRODUCT_LIST OPL 
         INNER JOIN PRODUCT P ON OPL.PRODUCT_SEQ = P.PRODUCT_SEQ
         INNER JOIN ORDER_LIST OL ON OPL.ORDER_NO = OL.ORDER_NO
@@ -127,6 +128,7 @@ include 'head.php'
                                         <th><input type="checkbox" id="chk_all"></th>
                                         <th>주문일</th>
                                         <th>주문번호</th>
+                                        <th>주문자</th>
                                         <th colspan="2" style="text-align: center;">상품정보</th>
                                         <th>주문금액</th>
                                         <th>주문상태</th>
@@ -145,9 +147,10 @@ include 'head.php'
                                             <?}?>
                                             <td class="order_date"><?echo substr($rowProductInfo['ORDER_DATETIME'],0,10)?></td>
                                             <td class="order_no" id="order_no_<?echo $cnt?>"><a href="orderDetail.php?order_no=<?echo $rowProductInfo['ORDER_NO']?>"><?echo $rowProductInfo['ORDER_NO']?></a></td>
+                                            <td class="order_person"><?echo $rowProductInfo['ORDER_NAME']?></td>
                                             <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['FIRST_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img style="width: 100px;" class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
                                             <td><span style="text-align: center;"class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['PRODUCT_COLOR']?></span><br>사이즈: <span class="product_size"><?echo $rowProductInfo['PRODUCT_SIZE']?></span><br>수량: <span class="product_size"><?echo $rowProductInfo['PRODUCT_NUMBER']?></span></td>
-                                            <td class="order_price"><?echo $rowProductInfo['PRODUCT_PRICE']?></td>
+                                            <td class="order_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?></td>
                                             <td class="order_state" id="order_state_<?echo $cnt?>"><?echo $rowProductInfo['ORDER_STATE']?></td>
                                             <?if($rowProductInfo['ORDER_STATE'] == '상품준비중'){?>
                                                 <td><input type="text"  class="invoice_number" id="invoice_number_<?echo $cnt?>"></td>

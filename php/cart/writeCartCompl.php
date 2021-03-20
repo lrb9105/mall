@@ -15,11 +15,28 @@ $quantity = $_POST['quantity'];
 //mysql연결
 $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 
-$sql = "SELECT 1 FROM CART WHERE PRODUCT_SEQ = '$product_no' AND REGISTER_ID = '$loginId'";
+$sql = "SELECT 1 FROM CART 
+        WHERE PRODUCT_SEQ = '$product_no' 
+        AND COLOR = '$color' 
+        AND SIZE = '$size' 
+        AND REGISTER_ID = '$loginId'";
 $result = mysqli_query($conn, $sql);
 
 if(mysqli_fetch_array($result)[0] != null){
-    echo json_encode(array('result'=>'duplicate'));
+    $sql = "UPDATE CART
+            SET  QUANTITY = QUANTITY + $quantity
+            WHERE PRODUCT_SEQ = '$product_no' 
+            AND COLOR = '$color' 
+            AND SIZE = '$size' 
+            AND REGISTER_ID = '$loginId'";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result === false) {
+        echo json_encode(array('result'=>'fail'));
+    } else {
+        echo json_encode(array('result'=>'ok'));
+    }
+
     return;
 }
 

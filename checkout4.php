@@ -159,13 +159,13 @@ include 'head.php'
                                                 <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><img class="product_img" src="<?echo $rowProductInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
                                                 <td><span class="product_name"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1?></span> 사이즈: <span class="product_size"><?echo $option2?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
                                                 <td class="product_number"><?echo $product_number?></td>
-                                                <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</td>
+                                                <td class="product_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?>원</td>
                                                 <?if($delivery_payment =='0'){?>
                                                     <td class="product_delivery_fee">2,500원</td>
                                                 <?} else {?>
                                                     <td class="product_delivery_fee">0원</td>
                                                 <?}?>
-                                                <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo $current_price?>원</span><input class="cart_no" hidden value="<?echo $cart_no?>"></td>
+                                                <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo number_format($current_price)?>원</span><input class="cart_no" hidden value="<?echo $cart_no?>"></td>
                                             </tr>
                                         <?}?>
                                     <?} else {
@@ -210,14 +210,14 @@ include 'head.php'
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td><span style="font-weight: bold;"><?echo $total_price?>원</span></td>
+                                        <td><span style="font-weight: bold;"><?echo number_format($total_price)?>원</span></td>
                                         <td> + </td>
                                         <?if($delivery_payment =='0'){?>
                                             <td><span style="font-weight: bold;">2,500원</span></td>
                                             <td><span id="total_price" style="font-weight: bold; font-size: 22px;"><?echo $total_price + 2500?></span>원</td>
                                         <?} else {?>
                                             <td><span style="font-weight: bold;">0원</span></td>
-                                            <td><span id="total_price" style="font-weight: bold; font-size: 22px;"><?echo $total_price?></span>원</td>
+                                            <td><span id="total_price" style="font-weight: bold; font-size: 22px;"><?echo number_format($total_price)?></span>원</td>
                                         <?}?>
                                     </tr>
                                     </tbody>
@@ -478,7 +478,7 @@ include 'jsfile.php'
                    pay_method : 'card',
                    merchant_uid : 'merchant_' + new Date().getTime(),
                    name : '상품',
-                   amount : $('#total_price').text(),
+                   amount : Number($('#total_price').text().replace(",","")),
                    buyer_email : $('#email_front').val() + '@' + $('#email_back').val(),
                    buyer_name : $('#order_person').val(),
                    buyer_tel : $('#phone_num1').val() + '-' + $('#phone_num2').val() + '-' + $('#phone_num3').val(),
@@ -542,7 +542,7 @@ include 'jsfile.php'
                            dataType: 'json',
                            data: {
                                // 결제상품정보
-                               total_price : $('#total_price').text(),
+                               total_price : Number($('#total_price').text().replace(",","")),
                                paymentInfoArr : JSON.stringify(paymentInfoArr),
 
                                // 주문자 정보

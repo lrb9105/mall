@@ -4,6 +4,12 @@ if($_SESSION['USER_TYPE'] != "0"){
     echo "<script> document.location.href='/mall/index.php'; </script>";
 }
 
+$login_id = $_SESSION['LOGIN_ID'];
+
+// 로그인 되어있지 않다면 메인화면으로 이동
+if($login_id == null || $login_id == ''){
+    echo "<script> document.location.href='index.php'</script>";
+}
 $seq = $_GET['SEQ'];
 
 // mysql커넥션 연결

@@ -1,4 +1,12 @@
 <?php
+session_start();
+$login_id = $_SESSION['LOGIN_ID'];
+
+// 로그인 되어있지 않다면 메인화면으로 이동
+if($login_id == null || $login_id == ''){
+    echo "<script> document.location.href='index.php'</script>";
+}
+
 // 자유게시판 작성페이지
 // 만약 답글작성이라면 원글의 데이터 가져오기
 $seq = $_GET['seq'];
