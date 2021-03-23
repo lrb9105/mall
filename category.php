@@ -182,7 +182,7 @@ include 'head.php'
                             <li class="breadcrumb-item"><a href="#">품목</a></li>
                             <!--카테고리(cat_no)-->
                             <li class="breadcrumb-item" id="cat_second">상의</li>
-                            <li aria-current="page" class="breadcrumb-item active" id="cat_third">반팔</li>
+                            <li aria-current="page" class="breadcrumb-item active" id="cat_third">티셔츠</li>
                         </ol>
                     </nav>
                 </div>
@@ -210,57 +210,55 @@ include 'head.php'
                             </div>
                         </div>
                     </div>
-                    <div class="row products">
-                        <?for($i=0; $i < $count; $i++){
-                        $row = mysqli_fetch_array($result);
-                        ?>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="product">
-                                <div class="flip-container">
-                                    <div class="flipper">
-                                        <div class="thumbnail">
+                    <div class="container">
+                        <div class="row products">
+                            <?for($i=0; $i < $count; $i++){
+                                $row = mysqli_fetch_array($result);
+                                ?>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="product" style="border: 3px solid grey;">
+                                        <div class="flip-container">
                                             <a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>">
                                                 <img id='front' src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid">
                                             </a>
                                         </div>
+                                        <div class="text">
+                                            <h3 style="text-align: left;"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><?echo $row['PRODUCT_NAME']?></a></h3>
+                                            <p class="price" style="text-align: left;">
+                                                <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
+                                                    <del style="font-size: 15px;"><?echo number_format($row['PRODUCT_PRICE'])?>원</del><br>
+                                                <?} else{ ?>
+                                                    <del></del><br>
+                                                <?}?>
+                                                <span><?echo number_format($row['PRODUCT_PRICE_SALE'])?>원</span>
+                                                <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
+                                                    <span style="color: red; float: right;"><?echo ceil(($row['PRODUCT_PRICE'] - $row['PRODUCT_PRICE_SALE'])/$row['PRODUCT_PRICE']*100)?>%</span>
+                                                <?}?>
+                                            </p>
+                                            <!--                                    <p class="buttons"><a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
+                                            -->                                </div>
+                                        <!-- /.text-->
+                                        <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
+                                            <div class="ribbon sale">
+                                                <div class="theribbon">SALE</div>
+                                                <div class="ribbon-background"></div>
+                                            </div>
+                                        <?}?>
+                                        <!--<div class="ribbon new">
+                                            <div class="theribbon">NEW</div>
+                                            <div class="ribbon-background"></div>
+                                        </div>
+                                        <div class="ribbon gift">
+                                            <div class="theribbon">GIFT</div>
+                                            <div class="ribbon-background"></div>
+                                        </div>-->
+                                        <!-- /.ribbon-->
                                     </div>
+                                    <!-- /.product            -->
                                 </div>
-                                <div class="text">
-                                    <h3 style="text-align: left;"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><?echo $row['PRODUCT_NAME']?></a></h3>
-                                    <p class="price" style="text-align: left;">
-                                        <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
-                                            <del style="font-size: 15px;"><?echo number_format($row['PRODUCT_PRICE'])?>원</del><br>
-                                        <?} else{ ?>
-                                            <del></del><br>
-                                        <?}?>
-                                        <span><?echo number_format($row['PRODUCT_PRICE_SALE'])?>원</span>
-                                        <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
-                                            <span style="color: red; float: right;"><?echo ceil(($row['PRODUCT_PRICE'] - $row['PRODUCT_PRICE_SALE'])/$row['PRODUCT_PRICE']*100)?>%</span>
-                                        <?}?>
-                                    </p>
-<!--                                    <p class="buttons"><a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
--->                                </div>
-                                <!-- /.text-->
-                                <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
-                                <div class="ribbon sale">
-                                    <div class="theribbon">SALE</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <?}?>
-                                <!--<div class="ribbon new">
-                                    <div class="theribbon">NEW</div>
-                                    <div class="ribbon-background"></div>
-                                </div>
-                                <div class="ribbon gift">
-                                    <div class="theribbon">GIFT</div>
-                                    <div class="ribbon-background"></div>
-                                </div>-->
-                                <!-- /.ribbon-->
-                            </div>
-                            <!-- /.product            -->
+                            <?} ?>
+                            <!-- /.products-->
                         </div>
-                        <?} ?>
-                        <!-- /.products-->
                     </div>
                     <div class="pages">
                         <nav aria-label="Page navigation example" class="d-flex justify-content-center">
@@ -347,9 +345,9 @@ include 'jsfile.php'
                 $('#cat_third').hide();
                 break;
             case "5":
-                $('#menu_title').text("반팔");
+                $('#menu_title').text("티셔츠");
                 $('#cat_second').text("상의");
-                $('#cat_third').text("반팔");
+                $('#cat_third').text("티셔츠");
                 break;
             case "6":
                 $('#menu_title').text("긴팔");
@@ -427,9 +425,9 @@ include 'jsfile.php'
                 $('#cat_third').text("기타 아우터");
                 break;
             case "21":
-                $('#menu_title').text("데님 팬츠");
+                $('#menu_title').text("청바지");
                 $('#cat_second').text("바지");
-                $('#cat_third').text("데님 팬츠");
+                $('#cat_third').text("청바지");
                 break;
             case "22":
                 $('#menu_title').text("숏 팬츠");
@@ -467,9 +465,9 @@ include 'jsfile.php'
                 $('#cat_third').text("슬리퍼&쪼리&샌들");
                 break;
             case "31":
-                $('#menu_title').text("야구모자");
+                $('#menu_title').text("야구모자/스냅백");
                 $('#cat_second').text("모자");
-                $('#cat_third').text("야구 모자");
+                $('#cat_third').text("야구모자/스냅백");
                 break;
             case "32":
                 $('#menu_title').text("스냅백");
@@ -487,9 +485,9 @@ include 'jsfile.php'
                 $('#cat_third').text("사파리/벙거지");
                 break;
             case "35":
-                $('#menu_title').text("페도라/증절모");
+                $('#menu_title').text("기타모자");
                 $('#cat_second').text("모자");
-                $('#cat_third').text("페도라/증절모");
+                $('#cat_third').text("기타모자");
                 break;
         }
 
@@ -511,8 +509,6 @@ include 'jsfile.php'
                 $('#collapse4').addClass("show");
                 break;
         }
-
-        $('.thumbnail').nailthumb();
     </script>
 </body>
 </html>

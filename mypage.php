@@ -151,7 +151,7 @@ include 'head.php'
                                 </table>
 
                             </div>
-                                <nav aria-label="Page navigation">
+                                <!--<nav aria-label="Page navigation">
                                     <ul class="pagination" style="justify-content: center;">
                                         <li class="page-item"><a href="#" class="page-link"><</a></li>
                                         <li class="page-item active"><a href="#" class="page-link">1</a></li>
@@ -161,7 +161,7 @@ include 'head.php'
                                         <li class="page-item"><a href="#" class="page-link">5</a></li>
                                         <li class="page-item"><a href="#" class="page-link">></a></li>
                                     </ul>
-                                </nav>
+                                </nav>-->
                         <!-- /.box-->
                     </div>
                 </div>

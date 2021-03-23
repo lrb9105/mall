@@ -21,9 +21,9 @@ if($product_manufacture == 'etc'){
     $product_manufacture = $_POST['product_manufacture_input'];
 }
 // 기존가격
-$product_price = $_POST['product_price'];
+$product_price = str_replace(",",'',$_POST['product_price']);
 // 할인가격
-$product_price_sale = $_POST['product_price_sale'];
+$product_price_sale = str_replace(",",'',$_POST['product_price_sale']);
 
 // 할인가격이 없다면 기존가격을 할인가격에 넣어 줌 || 할인가격이 기존가격보다 크다면 할인가격에 기존가격을 넣어 줌
 if(($product_price_sale == '' || $product_price_sale == null) || $product_price_sale > $product_price){

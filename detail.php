@@ -64,8 +64,8 @@ $option1 = mysqli_query($conn, $sqlProductColorInfo);
 // 상품 사이즈 정보
 $sqlProductSizeInfo = " SELECT PO.COLOR, PO.SIZE
                         FROM PRODUCT_OPTION PO
-                        WHERE PO.PRODUCT_SEQ = 39
-                        AND COLOR IN ( SELECT COLOR FROM PRODUCT_OPTION WHERE PRODUCT_SEQ = 39 AND QUANTITY > 0);
+                        WHERE PO.PRODUCT_SEQ = $product_no
+                        AND COLOR IN ( SELECT COLOR FROM PRODUCT_OPTION WHERE PRODUCT_SEQ = $product_no AND QUANTITY > 0);
         ";
 $option2 = mysqli_query($conn, $sqlProductSizeInfo);
 
@@ -233,31 +233,23 @@ include 'head.php'
                 <div class="col-lg-10 order-1 order-lg-2">
                     <div id="productMain" class="row">
                         <div class="col-md-6">
-                            <div class="item" style="width: 100%;"> <img id="img_rep" src="<? echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></div>
+                            <div class="item"">
+                                <img id="img_rep" src="<? echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid">
+                            </div>
                             <!--<div data-slider-id="1" class="owl-carousel shop-detail-carousel">
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
                             </div>-->
-                            <div class="ribbon sale">
-                                <div class="theribbon">SALE</div>
-                                <div class="ribbon-background"></div>
-                            </div>
-                            <!-- /.ribbon-->
-                            <div class="ribbon new">
-                                <div class="theribbon">NEW</div>
-                                <div class="ribbon-background"></div>
-                            </div>
-                            <!-- /.ribbon-->
                         </div>
                         <div class="col-md-6">
                             <form id="form_purchase" method="post" action="checkout4.php" onsubmit="return verifyBeforePurchase();">
                                 <div class="box">
                                     <h1 class="text-center"> <?echo $rowProductInfo['PRODUCT_NAME']?></h1><br>
                                     <div class="product-info">
-                                        <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?>원</del></span></p>
-                                        <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?>원</span>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ceil(($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100)?>%할인<em class="color-lightgrey">(-<?echo number_format($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])?>원)</em></span>
+                                        <p>정상 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; color: #4e555b"><del><?echo number_format(str_replace(",",'',$rowProductInfo['PRODUCT_PRICE']))?>원</del></span></p>
+                                        <p>판매 가격: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 22px; font-weight: bold;"><?echo number_format(str_replace(",",'',$rowProductInfo['PRODUCT_PRICE_SALE']))?>원</span>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="">▼ <?echo ceil(($rowProductInfo['PRODUCT_PRICE'] - $rowProductInfo['PRODUCT_PRICE_SALE'])/$rowProductInfo['PRODUCT_PRICE']*100)?>%할인<em class="color-lightgrey">(-<?echo number_format(str_replace(",",'',$rowProductInfo['PRODUCT_PRICE']) - str_replace(",",'',$rowProductInfo['PRODUCT_PRICE_SALE']))?>원)</em></span>
                                         </p>
                                         <hr>
                                         <div class="option1 form-inline">
@@ -299,7 +291,7 @@ include 'head.php'
                                             <span>배송유형: &nbsp;&nbsp;&nbsp; 무료배송</span>
                                         </div>
                                         <br><br><br>
-                                        <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?></span><span>원</span></p>
+                                        <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo number_format(str_replace(",",'',$rowProductInfo['PRODUCT_PRICE_SALE']))?></span><span>원</span></p>
                                         <input name="product_no" type="number" value="<?echo $product_no?>" hidden>
                                         <input name="menu_no" type="number" value="<?echo $menu_no?>" hidden>
                                     </div>
@@ -322,7 +314,7 @@ include 'head.php'
                                 <p class="text-center buttons"><a href="basket.php" class="btn btn-info"><i class="fa fa-first-order"></i> 바로구매</a><a href="basket.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a><a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a></p>
                             </div> -->
                             <br>
-                            <div data-slider-id="1" class="owl-thumbs">
+                            <div data-slider-id="1" class="owl-thumbs" style="height: 100px;">
                                 <button onclick="changeImg('<?echo $repImgSrc?>')" class="owl-thumb-item"><img src="<?echo $repImgSrc?>" alt="" class="img-fluid"></button>
                                 <?while($rowFileInfo = mysqli_fetch_array($resultFileInfo)){?>
                                     <button onclick="changeImg('<?echo $rowFileInfo['SAVE_PATH']?>')" class="owl-thumb-item"><img src="<?echo $rowFileInfo['SAVE_PATH']?>" alt="" class="img-fluid"></button>
@@ -1072,9 +1064,9 @@ include 'jsfile.php'
                 $('#cat_third').hide();
                 break;
             case "5":
-                $('#menu_title').text("반팔");
+                $('#menu_title').text("티셔츠");
                 $('#cat_second').text("상의");
-                $('#cat_third').text("반팔");
+                $('#cat_third').text("티셔츠");
                 break;
             case "6":
                 $('#menu_title').text("긴팔");
@@ -1152,9 +1144,9 @@ include 'jsfile.php'
                 $('#cat_third').text("기타 아우터");
                 break;
             case "21":
-                $('#menu_title').text("데님 팬츠");
-                $('#cat_second').text("바지");
-                $('#cat_third').text("데님 팬츠");
+                $('#menu_title').text("청바지");
+                $('#cat_second').text("하의");
+                $('#cat_third').text("청바지");
                 break;
             case "22":
                 $('#menu_title').text("숏 팬츠");
@@ -1192,9 +1184,9 @@ include 'jsfile.php'
                 $('#cat_third').text("슬리퍼&쪼리&샌들");
                 break;
             case "31":
-                $('#menu_title').text("야구모자");
+                $('#menu_title').text("야구모자/스냅백");
                 $('#cat_second').text("모자");
-                $('#cat_third').text("야구 모자");
+                $('#cat_third').text("야구 모자/스냅백");
                 break;
             case "32":
                 $('#menu_title').text("스냅백");
@@ -1212,9 +1204,9 @@ include 'jsfile.php'
                 $('#cat_third').text("사파리/벙거지");
                 break;
             case "35":
-                $('#menu_title').text("페도라/증절모");
+                $('#menu_title').text("기타모자");
                 $('#cat_second').text("모자");
-                $('#cat_third').text("페도라/증절모");
+                $('#cat_third').text("기타모자");
                 break;
         }
 
@@ -1243,7 +1235,9 @@ include 'jsfile.php'
         }
 
 
-        let origin_price = <?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>
+        let origin_price = <?echo str_replace(",",'',$rowProductInfo['PRODUCT_PRICE_SALE'])?>;
+
+        console.log(origin_price);
 
         // 수량이 변경 될 때 마다 총 금액 변경해줌
         $('#product_number').on("change", function(){

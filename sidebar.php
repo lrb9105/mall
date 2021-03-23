@@ -18,12 +18,13 @@ $sqlSecondMenuInfo = "SELECT MENU_ID
                           , (SELECT COUNT(*) FROM PRODUCT WHERE SECOND_CATEGORY = MENU_ID AND USE_YN = 'Y') CNT 
                      FROM MENU 
                      WHERE DEPTH = 3
+                     AND USE_YN = 'Y'
                      ORDER BY CAST(MENU_PARENT_ID AS UNSIGNED), MENU_ORDER
             ";
 $resultSecondMenuInfo = mysqli_query($conn, $sqlSecondMenuInfo);
 $countSecondMenuInfo = mysqli_num_rows($resultSecondMenuInfo);
 
-$sizeArr = array(9, 7, 5, 3, 5);
+$sizeArr = array(3, 3, 3, 3, 3);
 ?>
 
 <div class="col-lg-2">

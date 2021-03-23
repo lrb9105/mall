@@ -217,8 +217,8 @@ include 'head.php'
                                 tr += '<td colspan="6">'
                                     + '<div id="answer_div'+i+'">'
                                     + '<textarea name="answer'+i+'" id="answer'+i+'" rows="5" style="width: 100%;" readonly>'+json.answer[i]+'</textarea>'
-                                    + '<button name="btn_answer'+i+'" id="btn_answer_delete'+i+'" class="btn btn-warning" style="float: right; margin-top: 5px; margin-left: 5px;">삭제</button>'
-                                    + '<button name="btn_answer'+i+'" id="btn_answer_modify'+i+'" class="btn btn-info" style="float: right; margin-top: 5px;">수정</button>'
+                                    //+ '<button name="btn_answer'+i+'" id="btn_answer_delete'+i+'" class="btn btn-warning" style="float: right; margin-top: 5px; margin-left: 5px;">삭제</button>'
+                                    //+ '<button name="btn_answer'+i+'" id="btn_answer_modify'+i+'" class="btn btn-info" style="float: right; margin-top: 5px;">수정</button>'
                                     + '</div>'
                                     + '</td>'
                                     + '</tr>';
@@ -322,7 +322,7 @@ include 'head.php'
                                     '<button name="btn_answer'+index+'" id="btn_answer_delete'+index+'" class="btn btn-warning" style="float: right; margin-top: 5px; margin-left: 5px;">삭제</button>'
                                 +  '<button name="btn_answer'+index+'" id="btn_answer_modify'+index+'" class="btn btn-info" style="float: right; margin-top: 5px;">수정</button>';
 
-                            $('#answer_div'+index).append(buttons);
+                            //$('#answer_div'+index).append(buttons);
 
                             // 답변중=>답변완료로 변경
                             $('#answer_state'+index).text('답변완료');

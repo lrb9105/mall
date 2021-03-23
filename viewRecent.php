@@ -101,11 +101,11 @@ include 'head.php'
                         $row = mysqli_fetch_array($result)
                         ?>
                         <div class="col-lg-3 col-md-6">
-                            <div class="product">
+                            <div class="product" style="border: 3px solid grey;">
                                 <div class="flip-container">
-                                    <div class="flipper">
-                                        <div><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid"></a></div>
-                                    </div>
+                                    <a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>">
+                                        <img src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid">
+                                    </a>
                                 </div>
                                 <div class="text">
                                     <h3 style="text-align: left;"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><?echo $row['PRODUCT_NAME']?></a></h3>

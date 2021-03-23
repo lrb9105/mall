@@ -17,14 +17,8 @@
                                         <h5>상의</h5>
                                         <ul class="list-unstyled mb-3">
                                             <!-- DEPTH가 3인 메뉴-->
-                                            <li class="nav-item"><a href="category.php?menu_no=5" class="nav-link">반팔</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=6" class="nav-link">긴팔</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=7" class="nav-link">민소매</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=5" class="nav-link">티셔츠</a></li>
                                             <li class="nav-item"><a href="category.php?menu_no=8" class="nav-link">셔츠</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=9" class="nav-link">맨투맨</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=10" class="nav-link">카라 티셔츠</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=11" class="nav-link">후드</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=12" class="nav-link">니트</a></li>
                                             <li class="nav-item"><a href="category.php?menu_no=13" class="nav-link">기타 상의</a></li>
                                         </ul>
                                     </div>
@@ -38,12 +32,8 @@
                                     <div class="col-md-6 col-lg-3">
                                         <h5>아우터</h5>
                                         <ul class="list-unstyled mb-3">
-                                            <li class="nav-item"><a href="category.php?menu_no=14" class="nav-link">후드 집업</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=15" class="nav-link">라이더 자켓</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=16" class="nav-link">블루종/MA-1</a></li>
                                             <li class="nav-item"><a href="category.php?menu_no=17" class="nav-link">코트</a></li>
                                             <li class="nav-item"><a href="category.php?menu_no=18" class="nav-link">패딩</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=19" class="nav-link">트레이닝 상의</a></li>
                                             <li class="nav-item"><a href="category.php?menu_no=20" class="nav-link">기타 아우터</a></li>
                                         </ul>
                                     </div>
@@ -57,10 +47,8 @@
                                     <div class="col-md-6 col-lg-3">
                                         <h5>바지</h5>
                                         <ul class="list-unstyled mb-3">
-                                            <li class="nav-item"><a href="category.php?menu_no=21" class="nav-link">데님 팬트</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=22" class="nav-link">숏 팬츠</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=21" class="nav-link">청바지</a></li>
                                             <li class="nav-item"><a href="category.php?menu_no=23" class="nav-link">슬랙스</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=24" class="nav-link">트레이닝 바지</a></li>
                                             <li class="nav-item"><a href="category.php?menu_no=25" class="nav-link">기타 바지</a></li>
                                         </ul>
                                     </div>
@@ -89,11 +77,9 @@
                                     <div class="col-md-6 col-lg-3">
                                         <h5>모자</h5>
                                         <ul class="list-unstyled mb-3">
-                                            <li class="nav-item"><a href="category.php?menu_no=31" class="nav-link">야구모자</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=32" class="nav-link">스냅백</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=31" class="nav-link">야구모자/스냅백</a></li>
                                             <li class="nav-item"><a href="category.php?menu_no=33" class="nav-link">비니</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=34" class="nav-link">사파리/벙거지</a></li>
-                                            <li class="nav-item"><a href="category.php?menu_no=35" class="nav-link">페도라/중절모</a></li>
+                                            <li class="nav-item"><a href="category.php?menu_no=35" class="nav-link">기타모자</a></li>
                                         </ul>
                                     </div>
                             </li>

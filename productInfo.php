@@ -146,15 +146,14 @@ include 'head.php'
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
                                 <div class="item"> <img src="<?/* echo $imgPath*/?>" alt="" class="img-fluid"></div>
                             </div>-->
-                            <div class="ribbon sale">
+                            <!--<div class="ribbon sale">
                                 <div class="theribbon">SALE</div>
                                 <div class="ribbon-background"></div>
                             </div>
-                            <!-- /.ribbon-->
                             <div class="ribbon new">
                                 <div class="theribbon">NEW</div>
                                 <div class="ribbon-background"></div>
-                            </div>
+                            </div>-->
                             <!-- /.ribbon-->
                         </div>
                         <div class="col-md-6">

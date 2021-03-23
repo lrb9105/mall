@@ -61,6 +61,7 @@ $sqlSecondCat = "SELECT MENU_ID
                      , MENU_PARENT_ID
                 FROM MENU
                 WHERE DEPTH = 3
+                AND USE_YN = 'Y'
             ";
 $resultSecondCat = mysqli_query($conn, $sqlSecondCat);
 $countSecondCat = mysqli_num_rows($resultSecondCat);
@@ -284,6 +285,7 @@ include 'head.php'
                                                                 <option value="그레이">그레이</option>
                                                                 <option value="베이지">베이지</option>
                                                                 <option value="카키">카키</option>
+                                                                <option value="브라운">브라운</option>
                                                             </select>
                                                         </td>
                                                         <td class="item_title">사이즈</td>
@@ -493,6 +495,7 @@ include 'head.php'
                                 + '<option value="그레이">그레이</option>'
                                 + '<option value="베이지">베이지</option>'
                                 + '<option value="베이지">카키</option>'
+                                + '<option value="브라운">브라운</option>'
                             + '</select>'
                         + '</td>';
                 let trBody= null;
@@ -1002,7 +1005,6 @@ include 'head.php'
                         + '<input type="text" class="form-control" name="model_weight[]">'
                     + '</td>'
                 let trBody= null;
-굼
                 if($('#first_category').val() != '26'){
                     trBody = '<td class="item_title">사이즈</td>'
                         + '<td>'

@@ -313,6 +313,7 @@ include 'head.php'
                                                                     <option value="그레이" <?if($rowProductNumInfo['COLOR'] == '그레이'){?>selected<?}?>>그레이</option>
                                                                     <option value="베이지" <?if($rowProductNumInfo['COLOR'] == '베이지'){?>selected<?}?>>베이지</option>
                                                                     <option value="카키" <?if($rowProductNumInfo['COLOR'] == '카키'){?>selected<?}?>>카키</option>
+                                                                    <option value="브라운" <?if($rowProductNumInfo['COLOR'] == '브라운'){?>selected<?}?>>브라운</option>
                                                                 </select>
                                                             </td>
                                                             <td class="item_title">사이즈</td>
@@ -935,6 +936,7 @@ include 'head.php'
                                 + '<option value="그레이">그레이</option>'
                                 + '<option value="베이지">베이지</option>'
                                 + '<option value="베이지">카키</option>'
+                                + '<option value="브라운">브라운</option>'
                             + '</select>'
                         + '</td>';
                 let trBody= null;
