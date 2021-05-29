@@ -16,22 +16,70 @@
 
     // 데이터 가져오기(자주묻는 질문, 공지사항)
     if($board_no != '3'){
+        // 상품갯수 가져오기
         $sql = "SELECT TITLE, CONTENTS, SEQ, TYPE, CRE_DATETIME
             FROM NOTICE_AND_FAQ
             WHERE TYPE = '$board_no'
             ORDER BY SEQ DESC
-            ";
+        ";
+    // 쿼리를 통해 가져온 결과
+        $result = mysqli_query($conn, $sql);
+
+    // 현재 페이지번호
+        if(!isset($_GET['page_no'])){
+            $page_no = 1;
+        } else{
+            $page_no = $_GET['page_no'];
+        }
+
+    // 총 게시물 개수
+        $total_count_of_post = mysqli_num_rows($result);
+    // 한 페이지당 보여줄 게시물 개수
+        $count_of_post_per_page = 5;
+    // 총 페이지 개수(나머지가 있다면 1추가)
+    //$total_count_of_page = $total_count_of_post / $count_of_post_per_page + ($total_count_of_post % $count_of_post_per_page > 0 ? 1 : 0);
+        $total_count_of_page = ceil($total_count_of_post / $count_of_post_per_page);
+    // 한 페이지에서 보여줄 블록 개수
+        $count_of_block_per_page = 10;
+    // 총 블록그룹 개수(총 페이지 / 페이지 당 블록 수) + 1(나머지 있다면, 없다면 0)
+    //$total_count_of_block = $total_count_of_page / $count_of_block_per_page + ($total_count_of_page % $count_of_block_per_page > 0 ? 1 : 0);
+        $total_count_of_block = ceil($total_count_of_page / $count_of_block_per_page);
+    // 현재 블록그룹 번호
+        if($page_no != 1){
+            $current_num_of_block = ceil($page_no/$count_of_block_per_page);
+        } else{
+            $current_num_of_block = 1;
+        }
+    // 블록의 시작페이지 번호
+        $start_page_num_of_block = $current_num_of_block * $count_of_block_per_page - ($count_of_block_per_page - 1);
+    // 블록의 종료페이지 번호
+        $end_page_num_of_block = $current_num_of_block * $count_of_block_per_page;
+        if($end_page_num_of_block > $total_count_of_page){
+            $end_page_num_of_block = $total_count_of_page;
+        }
+
+    // 조회 해야할 데이터 시작번호
+        $s_point = ($page_no-1) * $count_of_post_per_page;
+
+
+
+        // 실제 데이터 조회
+        $sql = "SELECT TITLE, CONTENTS, SEQ, TYPE, CRE_DATETIME
+            FROM NOTICE_AND_FAQ
+            WHERE TYPE = '$board_no'
+            ORDER BY SEQ DESC
+            LIMIT $s_point,$count_of_post_per_page
+        ";
+
+        // 쿼리를 통해 가져온 결과
+        $result = mysqli_query($conn, $sql);
+        $count = mysqli_num_rows($result);
 
         if($board_no == '1'){
             $board_name = '공지사항';
         } elseif ($board_no == '2'){
             $board_name = '자주묻는질문';
         }
-        // 쿼리를 통해 가져온 결과
-        $result = mysqli_query($conn, $sql);
-
-        //가져온 행의 갯수
-        $count = mysqli_num_rows($result);
     } else{// 데이터 가져오기(자유게시판)
         /*$sql = "SELECT SEQ
                      , TITLE
@@ -150,13 +198,24 @@ include 'head.php'
                             </div>
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination" style="justify-content: center;">
-                                        <li class="page-item"><a href="#" class="page-link"><</a></li>
-                                        <li class="page-item active"><a href="#" class="page-link">1</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">4</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">></a></li>
+                                        <?if($current_num_of_block != 1){ ?>
+                                            <li class="page-item"><a href="board.php?board_no=<?=$board_no?>&page_no=<?= 1?>" aria-label="Previous" class="page-link"><span aria-hidden="true"><<</span><span class="sr-only">Previous</span></a></li>
+                                        <?}?>
+                                        <?if($current_num_of_block != 1){ ?>
+                                            <li class="page-item"><a href="board.php?board_no=<?=$board_no?>menu_no=&page_no=<?= $start_page_num_of_block - 1?>" aria-label="Previous" class="page-link"><span aria-hidden="true"><</span><span class="sr-only">Previous</span></a></li>
+                                        <?}?>
+                                        <?for($i = $start_page_num_of_block; $i <= $end_page_num_of_block; $i++) {
+                                            if($page_no != $i){ ?>
+                                                <li class="page-item"><a href="board.php?board_no=<?=$board_no?>&page_no=<?= $i?>" class="page-link"><?= $i?></a></li>
+                                            <?} else{ ?>
+                                                <li class="page-item active"><a href="board.php?board_no=<?=$board_no?>&page_no=<?= $i?>" class="page-link"><?= $i?></a></li><?}?>
+                                        <?}?>
+                                        <?if($current_num_of_block != $total_count_of_block){?>
+                                            <li class="page-item"><a href="board.php?board_no=<?=$board_no?>&page_no=<?= $end_page_num_of_block + 1?>" aria-label="Next" class="page-link"><span aria-hidden="true">></span><span class="sr-only">Next</span></a></li>
+                                        <?}?>
+                                        <?if($current_num_of_block != $total_count_of_block){?>
+                                            <li class="page-item"><a href="board.php?board_no=<?=$board_no?>&page_no=<?= $total_count_of_page?>" aria-label="Next" class="page-link"><span aria-hidden="true">>></span><span class="sr-only">Next</span></a></li>
+                                        <?}?>
                                     </ul>
                                 </nav>
                             <?} else {?>

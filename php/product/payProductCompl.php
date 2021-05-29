@@ -220,8 +220,32 @@ for($i = 0; $i < count($paymentInfoArr); $i++){
     }
 }
 
-//장바구니에서 삭제
+// 상품수량체크해서 0이라면 품절여부 'Y'로 변경해주기
+$sqlCheckProductCnt = "SELECT SUM(QUANTITY) FROM PRODUCT_OPTION WHERE PRODUCT_SEQ = $product_no";
+$resultCheckProductCnt = mysqli_query($conn, $sqlCheckProductCnt);
+$rowCheckProductCnt = mysqli_fetch_array($resultCheckProductCnt);
 
+// 실패 시 sql출력
+if($resultCheckProductCnt === false){
+    $result = false;
+    echo $sqlCheckProductCnt;
+    echo '<script>alert("실패$sqlCheckProductCnt")</script>';
+    return;
+}
+
+
+if($rowCheckProductCnt[0] <= 0){
+    $sqlUpdateSoldOutYn = "UPDATE PRODUCT SET SOLD_OUT_YN = 'Y' WHERE PRODUCT_SEQ = $product_no ";
+    $resultUpdateSoldOutYn = mysqli_query($conn, $sqlUpdateSoldOutYn);
+
+    // 실패 시 sql출력
+    if($rowCheckProductCnt === false){
+        $result = false;
+        echo $sqlUpdateSoldOutYn;
+        echo '<script>alert("실패$sqlUpdateSoldOutYn")</script>';
+        return;
+    }
+}
 
 
 // insert가 실패했다면 false, 성공이라면 ok

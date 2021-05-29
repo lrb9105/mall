@@ -153,7 +153,7 @@ while($row = mysqli_fetch_array($result)) {
     array_push($dbCreDatetime, $row['CRE_DATETIME']);
     array_push($dbCnt, $row['CNT']);
     array_push($dbDepth, $row['DEPTH']);
-    array_push($dbName, $row['NAME']);
+    array_push($dbName, preg_replace('/.(?=.$)/u','○',$row['NAME']));
     array_push($dbCommentCnt, $row['COMMENT_CNT']);
 }
 

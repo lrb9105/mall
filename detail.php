@@ -11,14 +11,16 @@ $viewRecentList = $_COOKIE['VIEW_RECENT_LIST'];
 
 // 쿠키에 값이 있다면
 if($viewRecentList != null && $viewRecentList != ''){
-    // 해당 상품이 쿠키에 없다면
-    if(strpos($viewRecentList, $product_no.',') === false){
-        $viewRecentList = $viewRecentList.$product_no.',';
-        setcookie("VIEW_RECENT_LIST", $viewRecentList, time() + 3600*24, '/');
+    // 해당 상품이 쿠키에 있다면 쿠키에 있는 상품값 제거
+    if(strpos($viewRecentList, $product_no.',') === true){
+        $viewRecentList = str_replace(','.$product_no,'',$viewRecentList);
     }
+
+    $viewRecentList = $product_no.','.$viewRecentList;
+    setcookie("VIEW_RECENT_LIST", $viewRecentList, time() + 3600*72, '/');
 } else{
     // 쿠키에 추가
-    setcookie("VIEW_RECENT_LIST", $product_no.',', time() + 3600*24, '/');
+    setcookie("VIEW_RECENT_LIST", $product_no, time() + 3600*72, '/');
 }
 
 $referer = $_SERVER['HTTP_REFERER'];
@@ -46,7 +48,8 @@ $sqlProductInfo = "SELECT P.PRODUCT_SEQ,
                 P.ELASTICITY,
                 P.SEASON,
                 P.FIT,
-                P.TOUCH
+                P.TOUCH,
+                P.SOLD_OUT_YN
         FROM PRODUCT P
         WHERE P.PRODUCT_SEQ = $product_no
         ";
@@ -291,14 +294,19 @@ include 'head.php'
                                             <span>배송유형: &nbsp;&nbsp;&nbsp; 무료배송</span>
                                         </div>
                                         <br><br><br>
-                                        <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo number_format(str_replace(",",'',$rowProductInfo['PRODUCT_PRICE_SALE']))?></span><span>원</span></p>
-                                        <input name="product_no" type="number" value="<?echo $product_no?>" hidden>
-                                        <input name="menu_no" type="number" value="<?echo $menu_no?>" hidden>
+                                        <?if($rowProductInfo['SOLD_OUT_YN'] != 'Y') { ?>
+                                            <p style="text-align: right;">총 금액: &nbsp;&nbsp;&nbsp;<span id="total_price" style="font-size: 22px; font-weight: bold; color: red;"><?echo number_format(str_replace(",",'',$rowProductInfo['PRODUCT_PRICE_SALE']))?></span><span>원</span></p>
+                                            <input name="product_no" type="number" value="<?echo $product_no?>" hidden>
+                                            <input name="menu_no" type="number" value="<?echo $menu_no?>" hidden>
+                                        <?} else{?>
+                                            <span style="color: red; font-size: 50px; text-align: right;">품절</span>
+                                        <?}?>
+
                                     </div>
                                     <? //관리자
                                     if($_SESSION['USER_TYPE'] == '0'){?>
                                         <p class="text-center buttons"><button type="button" id="btn_product_modify" class="btn btn-info" onclick="location.href='updateProduct.php?product_no=<?=$product_no?>'">상품수정</button> &nbsp; <button type="button" id="btn_product_delete" class="btn btn-warning">상품삭제</button></p>
-                                    <?} else{ //일반사용자?>
+                                    <?} elseif($rowProductInfo['SOLD_OUT_YN'] != 'Y'){ //일반사용자?>
                                         <p class="text-center buttons"><input id="btn_purchase" type="submit" class="btn btn-info" value="바로구매"><a href="javascript:addCart(<?echo $product_no?>);" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> 장바구니 담기</a></p>
                                     <?}?>
                                     <!--<a href="basket.php" class="btn btn-outline-primary"><i class="fa fa-heart"></i> 찜하기</a>-->
@@ -352,29 +360,29 @@ include 'head.php'
                                                         </td>
                                                         <!--상의-->
                                                         <?if($rowProductInfo['FIRST_CATEGORY'] == '2'){?>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">어깨</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">가슴</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">소매</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">암홀</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">어깨(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">가슴(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">소매(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">암홀(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이(cm)</td>
                                                             <!--아우터-->
                                                         <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '3'){?>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">어깨</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">가슴</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">소매</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">어깨(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">가슴(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">소매(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이(cm)</td>
                                                             <!--바지-->
                                                         <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '4'){?>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">허리단면</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">밑위</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">허벅지단면</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">밑단단면</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">허리단면(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">밑위(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">허벅지단면(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">밑단단면(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이(cm)</td>
                                                             <!--모자-->
                                                         <?} elseif($rowProductInfo['FIRST_CATEGORY'] == '27'){?>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">둘레</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이</td>
-                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">높이</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">둘레(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">총길이(cm)</td>
+                                                            <td width="18%" style="font-size: 15px; border-top: rgb(102,102,102) 2px solid; border-bottom: rgb(102,102,102) 2px solid; font-weight: 700">높이(cm)</td>
                                                         <?}?>
                                                     </tr>
                                                     <!--상의-->
@@ -810,14 +818,6 @@ include 'head.php'
                                                                                         filename.innerText = this.files[0].name;
                                                                                     });
                                                                                 </script>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>상품이미지2</td>
-                                                                                <td>
-                                                                                    <input type="file" name="file" accept="image/*" id="bizFile" style="display: none;">
-                                                                                    <label for="bizFile" class="btn btn-info fileBtn">파일선택</label>
-                                                                                    <span id="fileName">선택된 파일없음</span>
-                                                                                </td>
                                                                             </tr>
                                                                             </tbody>
                                                                         </table>
@@ -1469,7 +1469,7 @@ include 'jsfile.php'
                                 +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_photo_review'+cntPhotoReview+'" aria-expanded="false" aria-controls="collapse_photo_review'+cntPhotoReview+'" class="btn btn-light d-block text-left rounded-0">'
                                 +'<span class="raty" id="raty_'+cntPhotoReview+'" style="margin-right: 50px;"><input id="star_score_'+cntPhotoReview+'"hidden value="'+$("#photo_review_raty").children('input').val()+'"></span>'
                                 +'<span id="photo_review_title_'+cntPhotoReview+'" >'+$("#photo_review_title").val()+'</span>'
-                                +'<span id="photo_review_name_'+cntPhotoReview+'"  style="float: right; color: darkgrey" ><?=$user_name?></span>'
+                                +'<span id="photo_review_name_'+cntPhotoReview+'"  style="float: right; color: darkgrey" ><?=preg_replace('/.(?=.$)/u','○',$user_name)?></span>'
                                 +'</a>'
                                 +'</h4>'
                                 +'</div>'
@@ -1528,7 +1528,7 @@ include 'jsfile.php'
                                 +'<h4 class="mb-0"><a href="#" data-toggle="collapse" data-target="#collapse_review'+cntReview+'" aria-expanded="false" aria-controls="collapse_review'+cntReview+'" class="btn btn-light d-block text-left rounded-0">'
                                 +'<span class="raty" id="raty_review_'+cntReview+'" style="margin-right: 50px;"><input id="star_score_'+cntReview+'"hidden value="'+$("#photo_review_raty").children('input').val()+'"></span>'
                                 +'<span id="review_title_'+cntReview+'" >'+$("#photo_review_title").val()+'</span>'
-                                +'<span  id="review_name_'+cntReview+'" style="float: right; color: darkgrey" ><?=$user_name?></span>'
+                                +'<span  id="review_name_'+cntReview+'" style="float: right; color: darkgrey" ><?=preg_replace('/.(?=.$)/u','○',$user_name)?></span>'
                                 +'</a>'
                                 +'</h4>'
                                 +'</div>'
@@ -2025,7 +2025,7 @@ include 'jsfile.php'
                                 + '<span style="display: inline-block; width: 100px;">답변중</span>'
                                 + '<span id="qanda_type_'+cntQandA+'" style="display: inline-block; width: 80px;">'+$('#question_type').val()+'</span>'
                                 + '<span id="qanda_title_'+cntQandA+'">'+$('#qanda_title').val()+'</span>'
-                                + '<span style="float: right;"><?=$user_name?></span></a></h4>'
+                                + '<span style="float: right;"><?=preg_replace('/.(?=.$)/u','○',$user_name)?></span></a></h4>'
                                 + '</div>'
                                 + '<div id="collapse_qanda'+cntQandA+'" aria-labelledby="heading_qanda'+cntQandA+' data-parent=#accordion_qanda" class="collapse" >'
                                 + '<div id="qanda_contents_'+cntQandA+'" class="card-body contents" style=" margin-left: 173px;" >'

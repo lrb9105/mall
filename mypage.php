@@ -9,10 +9,18 @@
     if($mypage_no == '1') {
         $mypage_name = '주문/배송';
     }
+
+    // 페이지 번호
+    if(isset($_GET['page_no'])){
+        $page_no = $_GET['page_no'];
+    }else {
+        $page_no = 0;
+    }
+
     // mysql커넥션 연결
     $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 
-    // 상품정보 조회
+    // 상품갯수 가져오기
     $sqlOrderProductInfo = "SELECT   OPL.ORDER_NO                       
                       ,  OPL.PRODUCT_SEQ                       
                       ,  OPL.PRODUCT_NAME                       
@@ -35,9 +43,77 @@
         INNER JOIN ORDER_LIST OL ON OPL.ORDER_NO = OL.ORDER_NO
         WHERE OL.ORDER_PERSON_ID = '$login_id'
         ORDER BY ORDER_DATETIME DESC
-        ";
-
+            ";
+    // 쿼리를 통해 가져온 결과
+    $result = mysqli_query($conn, $sqlOrderProductInfo);
+    
+    // 현재 페이지번호
+    if(!isset($_GET['page_no'])){
+        $page_no = 1;
+    } else{
+        $page_no = $_GET['page_no'];
+    }
+    
+    // 총 게시물 개수
+    $total_count_of_post = mysqli_num_rows($result);
+    // 한 페이지당 보여줄 게시물 개수
+    $count_of_post_per_page = 5;
+    // 총 페이지 개수(나머지가 있다면 1추가)
+    //$total_count_of_page = $total_count_of_post / $count_of_post_per_page + ($total_count_of_post % $count_of_post_per_page > 0 ? 1 : 0);
+    $total_count_of_page = ceil($total_count_of_post / $count_of_post_per_page);
+    // 한 페이지에서 보여줄 블록 개수
+    $count_of_block_per_page = 10;
+    // 총 블록그룹 개수(총 페이지 / 페이지 당 블록 수) + 1(나머지 있다면, 없다면 0)
+    //$total_count_of_block = $total_count_of_page / $count_of_block_per_page + ($total_count_of_page % $count_of_block_per_page > 0 ? 1 : 0);
+    $total_count_of_block = ceil($total_count_of_page / $count_of_block_per_page);
+    // 현재 블록그룹 번호
+    if($page_no != 1){
+        $current_num_of_block = ceil($page_no/$count_of_block_per_page);
+    } else{
+        $current_num_of_block = 1;
+    }
+    // 블록의 시작페이지 번호
+    $start_page_num_of_block = $current_num_of_block * $count_of_block_per_page - ($count_of_block_per_page - 1);
+    // 블록의 종료페이지 번호
+    $end_page_num_of_block = $current_num_of_block * $count_of_block_per_page;
+    if($end_page_num_of_block > $total_count_of_page){
+        $end_page_num_of_block = $total_count_of_page;
+    }
+    
+    // 조회 해야할 데이터 시작번호
+    $s_point = ($page_no-1) * $count_of_post_per_page;
+    
+    
+    
+    // 실제 데이터 조회
+    $sqlOrderProductInfo = "SELECT   OPL.ORDER_NO                       
+                      ,  OPL.PRODUCT_SEQ                       
+                      ,  OPL.PRODUCT_NAME                       
+                      ,  OPL.PRODUCT_COLOR                       
+                      ,  OPL.PRODUCT_SIZE                       
+                      ,  OPL.PRODUCT_NUMBER                       
+                      ,  OPL.PRODUCT_PRICE                       
+                      ,  OPL.PRODUCT_DELIVERY_FEE                       
+                      ,  OPL.PRODUCT_ORDER_PRICE                       
+                      ,  OPL.SRC  
+                      ,  OL.ORDER_DATETIME
+                      ,  OL.ORDER_STATE
+                      ,  P.FIRST_CATEGORY 
+                      ,  P.SECOND_CATEGORY 
+                      ,  OL.INVOICE_NUMBER
+                      ,  OPL.REVIEW_YN
+                      ,  OL.ORDER_PERSON_ID
+        FROM ORDER_PRODUCT_LIST OPL 
+        INNER JOIN PRODUCT P ON OPL.PRODUCT_SEQ = P.PRODUCT_SEQ
+        INNER JOIN ORDER_LIST OL ON OPL.ORDER_NO = OL.ORDER_NO
+        WHERE OL.ORDER_PERSON_ID = '$login_id'
+        ORDER BY ORDER_DATETIME DESC
+            LIMIT $s_point,$count_of_post_per_page
+            ";
+    
+    // 쿼리를 통해 가져온 결과
     $resultOrderProductInfo = mysqli_query($conn, $sqlOrderProductInfo);
+    $count = mysqli_num_rows($result);
 
     $referer = $_SERVER['HTTP_REFERER']
 ?>
@@ -140,7 +216,7 @@ include 'head.php'
                                             <td class="product_number"><?echo substr($rowProductInfo['ORDER_DATETIME'],0,10)?></td>
                                             <td class="product_number"><a href="orderDetail.php?order_no=<?echo $rowProductInfo['ORDER_NO']?>"><?echo $rowProductInfo['ORDER_NO']?></a></td>
                                             <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img style="width: 100px;" class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
-                                            <td><span style="text-align: center;"class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['PRODUCT_COLOR']?></span><br>사이즈: <span class="product_size"><?echo $rowProductInfo['PRODUCT_SIZE']?></span><br>수량: <span class="product_size"><?echo $rowProductInfo['PRODUCT_NUMBER']?></span></td>
+                                            <td><span style="text-align: center;"class="product_name"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['PRODUCT_COLOR']?></span><br>사이즈: <span class="product_size"><?echo $rowProductInfo['PRODUCT_SIZE']?></span><br>수량: <span class="product_size"><?echo $rowProductInfo['PRODUCT_NUMBER']?></span></td>
                                             <td class="product_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?></td>
                                             <td class="invoice_number"><?echo $rowProductInfo['INVOICE_NUMBER']?></td>
                                             <td class="product_price"><?echo $rowProductInfo['ORDER_STATE']?><?if($rowProductInfo['ORDER_STATE'] == '배송중' && $login_id == $rowProductInfo['ORDER_PERSON_ID']){?><br><button onclick="purcharseCompl(<?echo $rowProductInfo['ORDER_NO']?>)" id="btn_purchase_compl" class="btn btn-info">구매확정</button> <?}?></td>
@@ -149,19 +225,29 @@ include 'head.php'
 
                                     </tbody>
                                 </table>
-
-                            </div>
-                                <!--<nav aria-label="Page navigation">
+                                <nav aria-label="Page navigation">
                                     <ul class="pagination" style="justify-content: center;">
-                                        <li class="page-item"><a href="#" class="page-link"><</a></li>
-                                        <li class="page-item active"><a href="#" class="page-link">1</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">4</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">5</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">></a></li>
+                                        <?if($current_num_of_block != 1){ ?>
+                                            <li class="page-item"><a href="mypage.php?mypage_no=1&page_no=<?= 1?>" aria-label="Previous" class="page-link"><span aria-hidden="true"><<</span><span class="sr-only">Previous</span></a></li>
+                                        <?}?>
+                                        <?if($current_num_of_block != 1){ ?>mypage
+                                            <li class="page-item"><a href="mypage.phpmenu_no=&page_no=<?= $start_page_num_of_block - 1?>" aria-label="Previous" class="page-link"><span aria-hidden="true"><</span><span class="sr-only">Previous</span></a></li>
+                                        <?}?>
+                                        <?for($i = $start_page_num_of_block; $i <= $end_page_num_of_block; $i++) {
+                                            if($page_no != $i){ ?>
+                                                <li class="page-item"><a href="mypage.php?mypage_no=1&page_no=<?= $i?>" class="page-link"><?= $i?></a></li>
+                                            <?} else{ ?>
+                                                <li class="page-item active"><a href="mypage.php?mypage_no=1&page_no=<?= $i?>" class="page-link"><?= $i?></a></li><?}?>
+                                        <?}?>
+                                        <?if($current_num_of_block != $total_count_of_block){?>
+                                            <li class="page-item"><a href="mypage.php?mypage_no=1&page_no=<?= $end_page_num_of_block + 1?>" aria-label="Next" class="page-link"><span aria-hidden="true">></span><span class="sr-only">Next</span></a></li>
+                                        <?}?>
+                                        <?if($current_num_of_block != $total_count_of_block){?>
+                                            <li class="page-item"><a href="mypage.php?mypage_no=1&page_no=<?= $total_count_of_page?>" aria-label="Next" class="page-link"><span aria-hidden="true">>></span><span class="sr-only">Next</span></a></li>
+                                        <?}?>
                                     </ul>
-                                </nav>-->
+                                </nav>
+                            </div>
                         <!-- /.box-->
                     </div>
                 </div>

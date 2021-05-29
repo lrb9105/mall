@@ -27,6 +27,7 @@ $sql = "SELECT P.PRODUCT_SEQ,
         WHERE P.SECOND_CATEGORY = $menu_no
         AND F.TYPE = 0
         AND P.USE_YN = 'Y'
+        ORDER BY SOLD_OUT_YN ASC
         ";
 // 쿼리를 통해 가져온 결과
 $result = mysqli_query($conn, $sql);
@@ -41,12 +42,12 @@ if(!isset($_GET['page_no'])){
 // 총 게시물 개수
 $total_count_of_post = mysqli_num_rows($result);
 // 한 페이지당 보여줄 게시물 개수
-$count_of_post_per_page = 10;
+$count_of_post_per_page = 8;
 // 총 페이지 개수(나머지가 있다면 1추가)
 //$total_count_of_page = $total_count_of_post / $count_of_post_per_page + ($total_count_of_post % $count_of_post_per_page > 0 ? 1 : 0);
 $total_count_of_page = ceil($total_count_of_post / $count_of_post_per_page);
 // 한 페이지에서 보여줄 블록 개수
-$count_of_block_per_page = 10;
+$count_of_block_per_page = 2;
 // 총 블록그룹 개수(총 페이지 / 페이지 당 블록 수) + 1(나머지 있다면, 없다면 0)
 //$total_count_of_block = $total_count_of_page / $count_of_block_per_page + ($total_count_of_page % $count_of_block_per_page > 0 ? 1 : 0);
 $total_count_of_block = ceil($total_count_of_page / $count_of_block_per_page);
@@ -72,15 +73,15 @@ $order_type = '';
 
 if($type != ''){
     if($type == 'popularity'){
-        $order_type = " ORDER BY NUM_OF_SELL DESC";
+        $order_type = " ORDER BY  SOLD_OUT_YN ASC, NUM_OF_SELL DESC";
     } elseif($type == 'new_product'){
-        $order_type = " ORDER BY CRE_DATETIME DESC";
+        $order_type = " ORDER BY SOLD_OUT_YN ASC, CRE_DATETIME DESC";
     } elseif($type == 'higher_price'){
-        $order_type = " ORDER BY CAST(PRODUCT_PRICE_SALE AS UNSIGNED) DESC";
+        $order_type = " ORDER BY SOLD_OUT_YN ASC, CAST(PRODUCT_PRICE_SALE AS UNSIGNED) DESC";
     } elseif($type == 'lower_price'){
-        $order_type = " ORDER BY CAST(PRODUCT_PRICE_SALE AS UNSIGNED) ASC";
+        $order_type = " ORDER BY SOLD_OUT_YN ASC, CAST(PRODUCT_PRICE_SALE AS UNSIGNED) ASC";
     } elseif($type == 'sale_percent'){
-        $order_type = " ORDER BY ((CAST(PRODUCT_PRICE AS UNSIGNED) - CAST(PRODUCT_PRICE_SALE AS UNSIGNED)) / CAST(PRODUCT_PRICE AS UNSIGNED)) DESC";
+        $order_type = " ORDER BY SOLD_OUT_YN ASC, ((CAST(PRODUCT_PRICE AS UNSIGNED) - CAST(PRODUCT_PRICE_SALE AS UNSIGNED)) / CAST(PRODUCT_PRICE AS UNSIGNED)) DESC";
     }
 }
 
@@ -98,12 +99,14 @@ $sql = "SELECT P.PRODUCT_SEQ,
                 P.CLEANING_METHOD,
                 P.DETAIL_INFO,
                 P.CRE_DATETIME,
+                P.SOLD_OUT_YN,
                 F.SAVE_PATH
         FROM PRODUCT P
         INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
         WHERE P.SECOND_CATEGORY = $menu_no
         AND F.TYPE = 0
         AND P.USE_YN = 'Y'
+        ORDER BY SOLD_OUT_YN ASC
         LIMIT $s_point,$count_of_post_per_page
         ";
 
@@ -120,6 +123,7 @@ if($order_type != ''){
                 P.CLEANING_METHOD,
                 P.DETAIL_INFO,
                 P.CRE_DATETIME,
+                P.SOLD_OUT_YN,
                 F.SAVE_PATH
         FROM PRODUCT P
         INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
@@ -196,7 +200,7 @@ include 'head.php'
                     </div>
                     <div class="box info-bar">
                         <div class="row">
-                            <div class="col-md-12 col-lg-3 products-showing">전체 <strong><?echo $count?>개</strong> 상품</div>
+                            <div class="col-md-12 col-lg-3 products-showing">전체 <strong><?echo $total_count_of_post?>개</strong> 상품</div>
                         </div>
                         <div class="row">
                             <div class="col-lg-12 col-md-12 text-left text-lg-left">
@@ -219,26 +223,36 @@ include 'head.php'
                                     <div class="product" style="border: 3px solid grey;">
                                         <div class="flip-container">
                                             <a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>">
-                                                <img id='front' src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid">
+                                                <?if($row['SOLD_OUT_YN'] != 'Y') {?>
+                                                    <img id='front' src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid">
+                                                <?} else{?>
+                                                    <img style="opacity: 0.2;" id='front' src="<?echo $row['SAVE_PATH']?>" alt="" class="img-fluid">
+                                                <?}?>
                                             </a>
                                         </div>
                                         <div class="text">
                                             <h3 style="text-align: left;"><a href="detail.php?menu_no=<?echo $row['SECOND_CATEGORY']?>&product_no=<?echo $row['PRODUCT_SEQ']?>"><?echo $row['PRODUCT_NAME']?></a></h3>
                                             <p class="price" style="text-align: left;">
-                                                <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
+                                                <?if($row['SOLD_OUT_YN'] != 'Y' && $row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
                                                     <del style="font-size: 15px;"><?echo number_format($row['PRODUCT_PRICE'])?>원</del><br>
                                                 <?} else{ ?>
                                                     <del></del><br>
                                                 <?}?>
-                                                <span><?echo number_format($row['PRODUCT_PRICE_SALE'])?>원</span>
-                                                <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
+                                                <span>
+                                                    <?if($row['SOLD_OUT_YN'] != 'Y') {?>
+                                                    <?echo number_format($row['PRODUCT_PRICE_SALE'])?>원
+                                                    <?} else{?>
+                                                        <span style="color: red">품절</span>
+                                                    <?}?>
+                                                </span>
+                                                <?if($row['SOLD_OUT_YN'] != 'Y' && $row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
                                                     <span style="color: red; float: right;"><?echo ceil(($row['PRODUCT_PRICE'] - $row['PRODUCT_PRICE_SALE'])/$row['PRODUCT_PRICE']*100)?>%</span>
                                                 <?}?>
                                             </p>
                                             <!--                                    <p class="buttons"><a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>장바구니추가</a></p>
                                             -->                                </div>
                                         <!-- /.text-->
-                                        <?if($row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
+                                        <?if($row['SOLD_OUT_YN'] != 'Y' &&$row['PRODUCT_PRICE'] != $row['PRODUCT_PRICE_SALE']){?>
                                             <div class="ribbon sale">
                                                 <div class="theribbon">SALE</div>
                                                 <div class="ribbon-background"></div>
@@ -264,7 +278,7 @@ include 'head.php'
                         <nav aria-label="Page navigation example" class="d-flex justify-content-center">
                             <ul class="pagination">
                                 <?if($current_num_of_block != 1){ ?>
-                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Previous" class="page-link"><span aria-hidden="true">시작</span><span class="sr-only">Previous</span></a></li>
+                                    <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Previous" class="page-link"><span aria-hidden="true"><<</span><span class="sr-only">Previous</span></a></li>
                                 <?}?>
                                 <?if($current_num_of_block != 1){ ?>
                                     <li class="page-item"><a href="category.php?menu_no=<?echo $menu_no?>&page_no=<?= $start_page_num_of_block - 1?><?if($type != ''){ ?>&type=<?echo $type?><?}?>" aria-label="Previous" class="page-link"><span aria-hidden="true"><</span><span class="sr-only">Previous</span></a></li>

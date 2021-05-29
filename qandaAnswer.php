@@ -197,16 +197,17 @@ include 'head.php'
                                 +             '<u>' + json.productName[i] + '</u>'
                                 +         '</a>'
                                 +     '</td>'
-                                +    '<td style="text-align: left;">'
+                                +    '<td style="text-align: left; width: 30%;">'
                                 +       '<u>' + json.title[i] + '</u>'
                                 +     '</td>'
-                                +     '<td>'+ json.name[i] +'</td>'
-                                +     '<td>'+ json.creDatetime[i].substring(0,10) +'</td>'
+                                +     '<td style="width: 10%;">'+ json.name[i] +'</td>'
+                                +     '<td style="width: 10%;">'+ json.creDatetime[i].substring(0,10) +'</td>'
                                 + '</tr>'
                                 + '<tr id="collapse'+i+'" aria-labelledby="heading'+i+'" data-parent="#accordion_qanda" class="collapse" >';
                             // 답변중, 답변완료 상태에 따라 textarea readOnly 결정
                             if(json.answerState[i] == '답변중'){
                                     tr += '<td colspan="6">'
+                                            + '<div style="text-align: left;">' + json.contents[i] + '</div><br>'
                                             + '<div id="answer_div'+i+'">'
                                                 + '<textarea name="answer'+i+'" id="answer'+i+'" rows="5" style="width: 100%;"></textarea>'
                                                 + '<button onclick="updateAnswer('+ json.seq[i] +','+ i + ');" name="btn_answer'+i+'" id="btn_answer_write'+i+'" class="btn btn-info" style="float: right; margin-top: 5px;">답변완료</button>'
@@ -215,6 +216,7 @@ include 'head.php'
                                     + '</tr>';
                             } else{
                                 tr += '<td colspan="6">'
+                                    + '<div style="text-align: left;">' + json.contents[i] + '</div><br>'
                                     + '<div id="answer_div'+i+'">'
                                     + '<textarea name="answer'+i+'" id="answer'+i+'" rows="5" style="width: 100%;" readonly>'+json.answer[i]+'</textarea>'
                                     //+ '<button name="btn_answer'+i+'" id="btn_answer_delete'+i+'" class="btn btn-warning" style="float: right; margin-top: 5px; margin-left: 5px;">삭제</button>'

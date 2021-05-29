@@ -131,7 +131,7 @@ while($rowPhotoReviewInfo = mysqli_fetch_array($resultPhotoReviewInfo)) {
     array_push($dbSavePath, $rowPhotoReviewInfo['SAVE_PATH']);
     array_push($dbProductSize, $rowPhotoReviewInfo['PRODUCT_SIZE']);
     array_push($dbProductColor, $rowPhotoReviewInfo['PRODUCT_COLOR']);
-    array_push($dbName, $rowPhotoReviewInfo['NAME']);
+    array_push($dbName, preg_replace('/.(?=.$)/u','○',$rowPhotoReviewInfo['NAME']));
 }
 
 // insert가 실패했다면 false, 성공이라면 ok

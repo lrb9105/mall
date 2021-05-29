@@ -4,7 +4,7 @@ $conn = mysqli_connect('127.0.0.1', 'lrb9105', '!vkdnj91556', 'MALL');
 // 첫번째 메뉴정보
 $sqlFirstMenuInfo = "SELECT MENU_ID 
                           , MENU_NAME 
-                          , (SELECT COUNT(*) FROM PRODUCT WHERE FIRST_CATEGORY = MENU_ID AND USE_YN = 'Y') CNT 
+                          , (SELECT COUNT(*) FROM PRODUCT P INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ WHERE FIRST_CATEGORY = MENU_ID AND USE_YN = 'Y' AND F.TYPE = 0 AND P.USE_YN = 'Y') CNT 
                      FROM MENU 
                      WHERE DEPTH = 2
                      ORDER BY CAST(MENU_PARENT_ID AS UNSIGNED), MENU_ORDER
@@ -15,7 +15,7 @@ $countFirstMenuInfo = mysqli_num_rows($resultFirstMenuInfo);
 //두번째 메뉴 정보
 $sqlSecondMenuInfo = "SELECT MENU_ID 
                           , MENU_NAME 
-                          , (SELECT COUNT(*) FROM PRODUCT WHERE SECOND_CATEGORY = MENU_ID AND USE_YN = 'Y') CNT 
+                          , (SELECT COUNT(*) FROM PRODUCT P INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ WHERE SECOND_CATEGORY = MENU_ID AND USE_YN = 'Y' AND F.TYPE = 0 AND P.USE_YN = 'Y') CNT 
                      FROM MENU 
                      WHERE DEPTH = 3
                      AND USE_YN = 'Y'

@@ -52,6 +52,7 @@ $sql = "SELECT P.PRODUCT_SEQ,
         FROM PRODUCT P
         INNER JOIN FILE F ON P.PRODUCT_SEQ = REF_SEQ
         WHERE F.TYPE = 0
+        AND SOLD_OUT_YN = 'N'
         ORDER BY P.NUM_OF_SELL DESC
         LIMIT 0,16
         ";

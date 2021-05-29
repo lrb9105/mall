@@ -34,6 +34,7 @@ $sqlCartInfo = "SELECT P.PRODUCT_SEQ,
         INNER JOIN FILE F ON P.PRODUCT_SEQ = F.REF_SEQ
         WHERE C.REGISTER_ID = '$login_id'
         AND F.TYPE = 0
+        AND P.SOLD_OUT_YN = 'N'
         ";
 $resultCartInfo = mysqli_query($conn, $sqlCartInfo);
 $count = mysqli_num_rows($resultCartInfo);
@@ -108,7 +109,7 @@ include 'head.php'
                                         <tr class="product_info">
                                             <td><input class="chk" type="checkbox" id="chk_<?echo $cnt?>"><input id="cart_seq_<?echo $cnt?>" value="<?echo $rowCartInfo['CART_SEQ']?>" hidden><input id="menu_no_<?echo $cnt?>" value="<?echo $rowCartInfo['FIRST_CATEGORY']?>" hidden></td>
                                             <td id="img_<?echo $cnt?>" style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowCartInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowCartInfo['PRODUCT_SEQ']?>"><img class="product_img" src="<?echo $rowCartInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
-                                            <td><span id="product_name_<?echo $cnt?>" class="product_name"><a href="#"><?echo $rowCartInfo['PRODUCT_NAME']?></a></span><br>색상: <span id="product_color_<?echo $cnt?>" class="product_color"><?echo $rowCartInfo['COLOR']?></span> 사이즈: <span id="product_size_<?echo $cnt?>" class="product_size"><?echo $rowCartInfo['SIZE']?></span><input id="product_no_<?echo $cnt?>" class="product_no" value="<?echo $rowCartInfo['PRODUCT_SEQ']?>" type="hidden"></td>
+                                            <td><span id="product_name_<?echo $cnt?>" class="product_name"><a href="#"><?echo $rowCartInfo['PRODUCT_NAME']?></a></span><br>색상: <span id="product_color_<?echo $cnt?>" class="product_color"><?echo $rowCartInfo['COLOR']?></span> /&nbsp;사이즈: <span id="product_size_<?echo $cnt?>" class="product_size"><?echo $rowCartInfo['SIZE']?></span><input id="product_no_<?echo $cnt?>" class="product_no" value="<?echo $rowCartInfo['PRODUCT_SEQ']?>" type="hidden"></td>
                                             <td class="product_number"><input id="product_number_<?echo $cnt?>" type="number" value="<?echo $rowCartInfo['QUANTITY']?>"><button type="button" onclick="modifyQuantity(<?echo $rowCartInfo['CART_SEQ']?>, <?echo $cnt?>);" style="margin-left: 3px;" id="btn_modify_quantity" class="btn btn-outline-dark">변경</button> </td>
                                             <td class="product_price" id="product_price_<?echo $cnt?>"><?echo number_format($rowCartInfo['PRODUCT_PRICE_SALE'])?>원</td>
                                             <td class="product_delivery_fee">0원</td>

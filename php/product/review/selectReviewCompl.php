@@ -126,7 +126,7 @@ while($rowReviewInfo = mysqli_fetch_array($resultReviewInfo)) {
     array_push($dbEvalThickness, $rowReviewInfo['EVAL_THICKNESS']);
     array_push($dbProductSize, $rowReviewInfo['PRODUCT_SIZE']);
     array_push($dbProductColor, $rowReviewInfo['PRODUCT_COLOR']);
-    array_push($dbName, $rowReviewInfo['NAME']);
+    array_push($dbName, preg_replace('/.(?=.$)/u','○',$rowReviewInfo['NAME']));
 }
 
 // select가 실패했다면 false, 성공이라면 ok

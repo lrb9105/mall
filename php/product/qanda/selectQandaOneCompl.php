@@ -56,7 +56,7 @@ while($rowQAndAInfo = mysqli_fetch_array($resultQAndAInfo)) {
     array_push($dbWriter, $rowQAndAInfo['WRITER']);
     array_push($dbAnswer, $rowQAndAInfo['ANSWER']);
     array_push($dbAnswerYn, $rowQAndAInfo['ANSWER_YN']);
-    array_push($dbName, $rowQAndAInfo['NAME']);
+    array_push($dbName, preg_replace('/.(?=.$)/u','○',$rowQAndAInfo['NAME']));
 }
 
 // select가 실패했다면 false, 성공이라면 ok

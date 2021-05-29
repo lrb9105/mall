@@ -143,7 +143,7 @@ include 'head.php'
                                         ?>
                                         <tr class="product_info">
                                             <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><img class="product_img" src="<?echo $rowProductInfo['SRC']?>" alt="<?echo $rowProductInfo['PRODUCT_NAME']?>"></a></td>
-                                            <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['PRODUCT_COLOR']?></span> / 사이즈: <span class="product_size"><?echo $rowProductInfo['PRODUCT_SIZE']?></span></td>
+                                            <td><span class="product_name"><a href="/mall/detail.php?menu_no=<?echo $rowProductInfo['SECOND_CATEGORY']?>&product_no=<?echo $rowProductInfo['PRODUCT_SEQ']?>"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $rowProductInfo['PRODUCT_COLOR']?></span> / 사이즈: <span class="product_size"><?echo $rowProductInfo['PRODUCT_SIZE']?></span></td>
                                             <td class="product_number"><?echo $rowProductInfo['PRODUCT_NUMBER']?></td>
                                             <td class="product_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE'])?>원</td>
                                             <td class="product_delivery_fee">0원</td>

@@ -97,7 +97,7 @@ while($rowReviewInfo = mysqli_fetch_array($resultReviewInfo)) {
     array_push($dbEvalThickness, $rowReviewInfo['EVAL_THICKNESS']);
     array_push($dbProductSize, $rowReviewInfo['PRODUCT_SIZE']);
     array_push($dbProductColor, $rowReviewInfo['PRODUCT_COLOR']);
-    array_push($dbName, $rowReviewInfo['NAME']);
+    array_push($dbName, preg_replace('/.(?=.$)/u','○',$rowReviewInfo['NAME']));
     array_push($dbSavePath, $rowReviewInfo['SAVE_PATH']);
     array_push($dbFileName, $rowReviewInfo['FILE_NAME_ORIGIN']);
 }

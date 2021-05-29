@@ -157,7 +157,7 @@ include 'head.php'
                                             ?>
                                             <tr class="product_info">
                                                 <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><img class="product_img" src="<?echo $rowProductInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
-                                                <td><span class="product_name"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1?></span> 사이즈: <span class="product_size"><?echo $option2?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
+                                                <td><span class="product_name"><a href="/mall/detail.php?menu_no=<?echo $menu_no?>&product_no=<?echo $product_no?>"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1?></span> /&nbsp;사이즈: <span class="product_size"><?echo $option2?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
                                                 <td class="product_number"><?echo $product_number?></td>
                                                 <td class="product_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?>원</td>
                                                 <?if($delivery_payment =='0'){?>
@@ -178,15 +178,15 @@ include 'head.php'
                                             ?>
                                             <tr class="product_info">
                                                 <td style="text-align: center;"><a href="/mall/detail.php?menu_no=<?echo $menu_no[$cnt]?>&product_no=<?echo $product_no[$cnt]?>"><img class="product_img" src="<?echo $rowProductInfo['SAVE_PATH']?>" alt="<?echo $current_product_name?>"></a></td>
-                                                <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option1[$cnt]?></span> 사이즈: <span class="product_size"><?echo $option2[$cnt]?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
+                                                <td><span class="product_name"><a href="#"><?echo $rowProductInfo['PRODUCT_NAME']?></a></span><br>색상: <span class="product_color"><?echo $option2[$cnt]?></span> /&nbsp;사이즈: <span class="product_size"><?echo $option1[$cnt]?></span><input class="product_no" value="<?echo $rowProductInfo['PRODUCT_SEQ']?>" type="hidden"></td>
                                                 <td class="product_number"><?echo $product_number[$cnt]?></td>
-                                                <td class="product_price"><?echo $rowProductInfo['PRODUCT_PRICE_SALE']?>원</td>
+                                                <td class="product_price"><?echo number_format($rowProductInfo['PRODUCT_PRICE_SALE'])?>원</td>
                                                 <?if($delivery_payment =='0'){?>
                                                     <td class="product_delivery_fee">2,500원</td>
                                                 <?} else {?>
                                                     <td class="product_delivery_fee">0원</td>
                                                 <?}?>
-                                                <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo $current_price?>원</span><input class="cart_no" value="<?echo $cart_no[$cnt]?>" hidden></td>
+                                                <td><span style="font-weight: bold; color: red;" class="product_order_price"><?echo number_format($current_price)?>원</span><input class="cart_no" value="<?echo $cart_no[$cnt]?>" hidden></td>
                                             </tr>
                                         <?
                                             $cnt++;
@@ -470,14 +470,16 @@ include 'jsfile.php'
             return;*/
 
            if(confirm("결제를 진행하시겠습니까?")){
+               let productName = $('.product_name').first().text();
                let IMP = window.IMP; // 생략가능
+
                IMP.init('imp47249292'); // 'iamport' 대신 부여받은 "가맹점 식별코드"를 사용
 
                IMP.request_pay({
                    pg : 'inicis', // version 1.1.0부터 지원.
                    pay_method : 'card',
                    merchant_uid : 'merchant_' + new Date().getTime(),
-                   name : '상품',
+                   name : productName,
                    amount : Number($('#total_price').text().replace(",","")),
                    buyer_email : $('#email_front').val() + '@' + $('#email_back').val(),
                    buyer_name : $('#order_person').val(),
